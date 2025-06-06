@@ -33,6 +33,8 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
         setIsOpen(false);
     };
 
+    console.log(isOpen);
+
     return (
         <div className="relative border-r border-gray-400">
             <button

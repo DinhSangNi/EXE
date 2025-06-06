@@ -16,7 +16,7 @@ const PhoneLoginForm: React.FC = () => {
 
     return (
         <form className="mb-4" onSubmit={handleSubmit}>
-            <div className="flex border border-gray-400 rounded-lg overflow-hidden mb-3">
+            <div className=" border border-gray-400 rounded-lg mb-3">
                 <CountrySelect
                     selectedCountry={selectedCountry}
                     onCountryChange={setSelectedCountry}
@@ -26,7 +26,7 @@ const PhoneLoginForm: React.FC = () => {
                     placeholder="Số điện thoại"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="flex-1 px-3 py-3 text-base outline-none"
+                    className="w-full px-3 py-3 text-base outline-none border-t border-gray-400 "
                 />
             </div>
 
