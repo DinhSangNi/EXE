@@ -1,15 +1,13 @@
-import { useState } from "react";
-import LoginPage from "./pages/Auth/LoginPage";
-import "./index.css";
+
+import { BrowserRouter } from "react-router-dom";
+import AppRouter from "./routes/AppRouter";
+
 function App() {
     return (
-        <div className="min-h-screen bg-gray-100">
-            <main className="p-12 md:p-8 flex justify-center items-center min-h-[60vh]">
-                <div className="flex gap-8 flex-wrap justify-center">
-                    <LoginPage />
-                </div>
-            </main>
-        </div>
+        <BrowserRouter>
+            <AppRouter />
+        </BrowserRouter>
     );
 }
+
 export default App;
