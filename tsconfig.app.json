@@ -29,5 +29,5 @@
             "@icons/*": ["src/assets/icons/*"]
         }
     },
-    "include": ["src", "prettier.config.cjs"]
+    "include": ["src"]
 }
