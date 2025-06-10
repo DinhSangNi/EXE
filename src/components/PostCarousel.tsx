@@ -1,22 +1,24 @@
-import { Carousel } from "antd";
-import PostCard from "./PostCard";
 import { useRef } from "react";
-import type { CarouselRef } from "antd/es/carousel";
-
+import PostCard from "./PostCard";
+import "swiper/css";
+import { Swiper, SwiperSlide } from "swiper/react";
+import SwiperCore from "swiper";
 type Props = {
     title?: string;
     data?: any;
 };
 
 const PostCarousel = ({ title, data }: Props) => {
-    const carouselRef = useRef<CarouselRef>(null);
+    const swiperRef = useRef<SwiperCore>(null);
 
     const handleNext = () => {
-        if (carouselRef.current) carouselRef.current?.next();
+        if (!swiperRef.current) return;
+        swiperRef.current?.slideNext();
     };
 
     const handlePrevious = () => {
-        if (carouselRef.current) carouselRef.current?.prev();
+        if (!swiperRef.current) return;
+        swiperRef.current?.slidePrev();
     };
 
     return (
@@ -42,20 +44,32 @@ const PostCarousel = ({ title, data }: Props) => {
                         </button>
                     </div>
                 </div>
-                <Carousel
-                    ref={carouselRef}
-                    dots={false}
-                    slidesToShow={6}
-                    slidesToScroll={1}
+                <Swiper
+                    onSwiper={(swiper) => (swiperRef.current = swiper)}
+                    spaceBetween={10}
+                    slidesPerView={2}
+                    breakpoints={{
+                        640: { slidesPerView: 3 },
+                        768: { slidesPerView: 4 },
+                        1024: { slidesPerView: 5 },
+                        1280: {
+                            slidesPerView: 6,
+                        },
+                        1536: {
+                            slidesPerView: 7,
+                        },
+                    }}
                 >
                     {Array.from({ length: 10 }, () => {
                         return (
-                            <div>
-                                <PostCard imageSrc="https://a0.muscache.com/im/pictures/miso/Hosting-823410792395034757/original/47e59899-0f67-4790-9035-ec74f499af64.jpeg?im_w=1200" />
-                            </div>
+                            <SwiperSlide>
+                                <div>
+                                    <PostCard imageSrc="https://a0.muscache.com/im/pictures/miso/Hosting-823410792395034757/original/47e59899-0f67-4790-9035-ec74f499af64.jpeg?im_w=1200" />
+                                </div>
+                            </SwiperSlide>
                         );
                     })}
-                </Carousel>
+                </Swiper>
             </div>
         </>
     );

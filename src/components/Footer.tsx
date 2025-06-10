@@ -42,7 +42,7 @@ const Footer = () => {
         <>
             <div className="mt-20 w-full bg-gray-100">
                 <div className="mx-auto w-[90%] py-14">
-                    <div className="flex justify-between">
+                    <div className="sm:grid sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
                         {rentalCategory.map((rentalCate) => {
                             return (
                                 <div>
@@ -59,7 +59,7 @@ const Footer = () => {
                         })}
                     </div>
                     <div className="my-4 h-[2px] w-full bg-gray-200"></div>
-                    <div className="flex justify-between">
+                    <div className="grid grid-cols-2 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         <div>
                             <h1 className="cursor-pointer pb-2 text-[0.9rem] font-bold hover:text-red-500">
                                 Về UHome

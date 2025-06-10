@@ -33,38 +33,38 @@ const CountrySelect: React.FC<CountrySelectProps> = ({
         setIsOpen(false);
     };
 
-    console.log(isOpen);
-
     return (
-        <div className="relative border-r border-gray-400">
+        <div className="relative">
             <button
                 type="button"
-                className="flex items-center gap-2 px-3 py-3 bg-white text-base min-w-[120px] w-full"
+                className="flex w-full min-w-[120px] items-center gap-2 px-3 py-3 text-base"
                 onClick={() => setIsOpen(!isOpen)}
             >
                 <span className="text-lg">{selectedCountry.flag}</span>
                 <span className="text-gray-900">{selectedCountry.code}</span>
-                <span className="text-xs text-gray-500 ml-auto">▼</span>
+                <span className="ml-auto text-xs text-gray-500">▼</span>
             </button>
 
             {isOpen && (
-                <div className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg shadow-md z-50 max-h-52 overflow-y-auto">
-                    {countries.map((country) => (
-                        <button
-                            key={country.code}
-                            type="button"
-                            className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-gray-100"
-                            onClick={() => handleCountrySelect(country)}
-                        >
-                            <span className="text-lg">{country.flag}</span>
-                            <span className="flex-1 text-gray-900">
-                                {country.name}
-                            </span>
-                            <span className="text-gray-700">
-                                {country.code}
-                            </span>
-                        </button>
-                    ))}
+                <div className="absolute left-0 right-0 top-full z-50 max-h-52 overflow-hidden rounded-b-lg border border-gray-300">
+                    <div className="max-h-52 overflow-y-auto bg-white shadow-md">
+                        {countries.map((country) => (
+                            <button
+                                key={country.code}
+                                type="button"
+                                className="flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-100"
+                                onClick={() => handleCountrySelect(country)}
+                            >
+                                <span className="text-lg">{country.flag}</span>
+                                <span className="flex-1 text-gray-900">
+                                    {country.name}
+                                </span>
+                                <span className="text-gray-700">
+                                    {country.code}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>

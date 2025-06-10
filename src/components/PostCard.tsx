@@ -9,12 +9,14 @@ const PostCard = ({ imageSrc }: Props) => {
     return (
         <>
             <div className="relative cursor-pointer">
-                <FaRegHeart className="absolute right-7 top-4 h-6 w-6 bg-transparent hover:scale-105 hover:transition-transform hover:duration-200" />
-                <img
-                    src={imageSrc}
-                    alt="Post's image"
-                    className="h-full w-full rounded-3xl object-cover lg:h-[200px] lg:w-[200px]"
-                />
+                <FaRegHeart className="absolute right-4 top-4 h-6 w-6 bg-transparent hover:scale-105 hover:transition-transform hover:duration-200" />
+                <div className="aspect-square w-full">
+                    <img
+                        src={imageSrc}
+                        alt="Post's image"
+                        className="h-full w-full rounded-3xl object-cover"
+                    />
+                </div>
                 <div>
                     <h1 className="font-bold">Phòng Trọ Tại Quy Nhơn</h1>
                     <div className="flex items-center gap-4">

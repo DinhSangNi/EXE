@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { IoHome } from "react-icons/io5";
 import { FaConciergeBell } from "react-icons/fa";
 import { FaBars } from "react-icons/fa6";
@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { NavOptions } from "@/stores/enum";
 import { Dropdown, Modal, type MenuProps } from "antd";
 import { useAnimation, motion } from "framer-motion";
+import AuthModal from "./Auth/AuthModal";
 
 type Props = {
     isTop: boolean;
@@ -33,17 +34,27 @@ const NavBar = ({ isTop }: Props) => {
             ),
             key: "0",
         },
-
+        {
+            label: (
+                <div className="w-[200px]">
+                    <p className="font-bold">Tin đã lưu</p>
+                </div>
+            ),
+            key: "1",
+        },
         {
             type: "divider",
         },
         {
             label: (
-                <div className="font-bold">
+                <div
+                    className="font-bold"
+                    onClick={() => setOpenAuthModal(true)}
+                >
                     <p>Đăng nhập hoặc Đăng ký</p>
                 </div>
             ),
-            key: "1",
+            key: "2",
         },
     ];
 
@@ -51,6 +62,7 @@ const NavBar = ({ isTop }: Props) => {
         NavOptions.ACCOMMODATION
     );
     const [openHostModal, setOpenHostModal] = useState<boolean>(false);
+    const [openAuthModal, setOpenAuthModal] = useState<boolean>(false);
     const [selectedHostOption, setSelectedHostOption] =
         useState<NavOptions | null>();
     const optionRef = useRef<HTMLDivElement>(null);
@@ -72,8 +84,6 @@ const NavBar = ({ isTop }: Props) => {
         }
     }, [controls, isTop]);
 
-    console.log("selectedHostOption: ", selectedHostOption);
-
     return (
         <>
             <div className="w-full">
@@ -93,7 +103,7 @@ const NavBar = ({ isTop }: Props) => {
                         initial={{ opacity: 1 }}
                         animate={controls}
                         ref={optionRef}
-                        className="flex h-fit w-3/5 justify-center gap-10 text-[0.9rem]"
+                        className="flex h-fit w-3/5 justify-center gap-10 text-[0.8rem] md:text-[0.9rem]"
                     >
                         <button
                             className="group relative flex cursor-pointer items-center gap-2 pb-2"
@@ -195,6 +205,13 @@ const NavBar = ({ isTop }: Props) => {
                         </div>
                     </div>
                 </Modal>
+
+                {/* Login/Sing UP Modal */}
+                <AuthModal
+                    isOpen={openAuthModal}
+                    onClose={() => setOpenAuthModal(false)}
+                    mode="login"
+                />
             </div>
         </>
     );

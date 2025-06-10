@@ -16,31 +16,32 @@ const PhoneLoginForm: React.FC = () => {
 
     return (
         <form className="mb-4" onSubmit={handleSubmit}>
-            <div className=" border border-gray-400 rounded-lg mb-3">
+            <div className="mb-3 rounded-lg border border-gray-400">
                 <CountrySelect
                     selectedCountry={selectedCountry}
                     onCountryChange={setSelectedCountry}
                 />
+                <div className="h-[1px] w-full bg-gray-300"></div>
                 <input
                     type="tel"
                     placeholder="Số điện thoại"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="w-full px-3 py-3 text-base outline-none border-t border-gray-400 "
+                    className="w-full rounded-b-lg border-none px-3 py-3 text-base"
                 />
             </div>
 
-            <div className="text-xs text-black leading-relaxed mb-4">
+            <div className="mb-4 text-xs leading-relaxed text-black">
                 Chúng tôi sẽ gọi hoặc nhắn tin cho bạn để xác nhận số điện
                 thoại. Có áp dụng phí dữ liệu và phí tin nhắn tiêu chuẩn.{" "}
-                <span className="underline font-bold cursor-pointer">
+                <span className="cursor-pointer font-bold underline">
                     Chính sách về quyền riêng tư
                 </span>
             </div>
 
             <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[#E61E4D] via-[#E31C5F] to-[#D70466] text-white font-semibold text-base py-3 rounded-lg transition-all hover:from-[#D01346] hover:via-[#CA1A5B] hover:to-[#C1045C]"
+                className="w-full rounded-lg bg-gradient-to-r from-[#E61E4D] via-[#E31C5F] to-[#D70466] py-3 text-base font-semibold text-white transition-all hover:from-[#D01346] hover:via-[#CA1A5B] hover:to-[#C1045C]"
             >
                 Tiếp tục
             </button>

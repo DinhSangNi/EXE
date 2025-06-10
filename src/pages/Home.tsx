@@ -14,33 +14,33 @@ const Home = () => {
                     <PostCarousel title="Bài đăng mới" />
                 </div>
                 <div className="mx-auto mt-14 w-[90%]">
-                    <div className="flex w-full px-6 shadow-2xl">
-                        <div className="w-1/2">
+                    <div className="w-full px-6 py-4 shadow-2xl md:flex">
+                        <div className="md:w-1/2">
                             <img
                                 src="https://phongtro123.com/images/contact-us-pana-orange.svg"
                                 alt="admin support image"
                                 className="w-2/3 justify-self-center object-cover"
                             />
                         </div>
-                        <div className="flex w-1/2 flex-col justify-center text-center">
+                        <div className="flex flex-col justify-center text-center md:w-1/2">
                             <div className="flex w-full justify-center">
-                                <PiHeadphonesFill className="h-10 w-10" />
+                                <PiHeadphonesFill className="text-[2rem] md:h-10 md:w-10" />
                             </div>
-                            <h1 className="mt-2 text-[1.6rem] font-semibold">
+                            <h1 className="mt-2 text-[1rem] font-semibold md:text-[1.6rem]">
                                 Hỗ trợ chủ nhà đăng tin
                             </h1>
-                            <p className="mt-4 text-gray-600">
+                            <p className="mt-4 text-[0.8rem] text-gray-600 md:text-[1rem]">
                                 Nếu bạn cần hỗ trợ đăng tin, vui lòng liên hệ số
                                 điện thoại bên dưới:
                             </p>
                             <div className="mt-6 flex w-full justify-center gap-4 text-white">
                                 <button className="flex items-center gap-2 rounded-xl bg-red-500 px-4 py-2">
-                                    <FaPhoneAlt className="text-[1rem]" /> ĐT:
+                                    <FaPhoneAlt className="text-[0.8rem] md:text-[1.2rem]" />
                                     0909316890
                                 </button>
                                 <button className="flex items-center gap-2 rounded-xl bg-blue-500 px-4 py-2">
-                                    <BiMessageRoundedDetail className="text-[1.2rem]" />
-                                    Zalo: 0909316890
+                                    <BiMessageRoundedDetail className="text-[0.8rem] md:text-[1.2rem]" />
+                                    0909316890
                                 </button>
                             </div>
                         </div>

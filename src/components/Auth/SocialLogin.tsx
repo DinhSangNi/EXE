@@ -21,31 +21,31 @@ const SocialLogin: React.FC = () => {
     return (
         <div className="flex flex-col gap-4">
             <button
-                className="flex items-center justify-center gap-3 w-full px-4 py-3 border border-black rounded-lg bg-white text-black text-sm font-semibold hover:bg-gray-100 transition"
+                className="flex w-full items-center justify-center gap-3 rounded-lg border border-black bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-gray-100"
                 onClick={handleGoogleLogin}
             >
                 <img
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/800px-Google_%22G%22_logo.svg.png"
                     alt="Google logo"
-                    className="w-5 h-5"
+                    className="h-5 w-5"
                 />
                 Tiếp tục với Google
             </button>
 
             <button
-                className="flex items-center justify-center gap-3 w-full px-4 py-3 border border-black rounded-lg bg-white text-black text-sm font-semibold hover:bg-gray-100 transition"
+                className="flex w-full items-center justify-center gap-3 rounded-lg border border-black bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-gray-100"
                 onClick={handleAppleLogin}
             >
                 <img
                     src="https://pnghunter.com/get-logo.php?id=3806"
                     alt="Apple logo"
-                    className="w-5 h-5"
+                    className="h-5 w-5"
                 />
                 Tiếp tục với Apple
             </button>
 
             <button
-                className="flex items-center justify-center gap-3 w-full px-4 py-3 border border-black rounded-lg bg-white text-black text-sm font-semibold hover:bg-gray-100 transition"
+                className="flex w-full items-center justify-center gap-3 rounded-lg border border-black bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-gray-100"
                 onClick={handleEmailLogin}
             >
                 <MailOutlined className="text-lg" />
@@ -53,13 +53,13 @@ const SocialLogin: React.FC = () => {
             </button>
 
             <button
-                className="flex items-center justify-center gap-3 w-full px-4 py-3 border border-black rounded-lg bg-white text-black text-sm font-semibold hover:bg-gray-100 transition"
+                className="flex w-full items-center justify-center gap-3 rounded-lg border border-black bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-gray-100"
                 onClick={handleFacebookLogin}
             >
                 <img
                     src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_%282019%29.png/1200px-Facebook_Logo_%282019%29.png"
                     alt="Facebook logo"
-                    className="w-5 h-5"
+                    className="h-5 w-5"
                 />
                 Tiếp tục với Facebook
             </button>
