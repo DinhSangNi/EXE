@@ -6,7 +6,12 @@ import { useEffect, useRef, useState } from "react";
 import { NavOptions } from "@/stores/enum";
 import { Dropdown, Modal, type MenuProps } from "antd";
 import { useAnimation, motion } from "framer-motion";
-import AuthModal from "./Auth/AuthModal";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "@/stores/store";
+import { AuthServices } from "@/services/auth";
+import { logout } from "@/stores/userSlice";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
     isTop: boolean;
@@ -22,10 +27,38 @@ const hostOptions = [
 ];
 
 const NavBar = ({ isTop }: Props) => {
+    const storedUser = useSelector((state: RootState) => state.user);
+    const dispatch = useDispatch<AppDispatch>();
+    const [selectedOption, setSelectedOption] = useState<NavOptions>(
+        NavOptions.ACCOMMODATION
+    );
+    const [openHostModal, setOpenHostModal] = useState<boolean>(false);
+    const [selectedHostOption, setSelectedHostOption] =
+        useState<NavOptions | null>();
+    const optionRef = useRef<HTMLDivElement>(null);
+    const searchAnt = useAnimation();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            await AuthServices.logout();
+            dispatch(logout());
+            toast.success("Đăng xuất thành công !", {
+                position: "top-center",
+            });
+            navigate("/login");
+        } catch (error) {
+            console.log("error: ", error);
+        }
+    };
+
     const items: MenuProps["items"] = [
         {
             label: (
-                <div className="w-[200px]">
+                <div
+                    className="w-[200px]"
+                    onClick={() => setOpenHostModal(true)}
+                >
                     <p className="font-bold">Trở thành Host</p>
                     <p className="text-[0.8rem] text-gray-600">
                         Bắt đầu cho thuê và kiếm thêm thu nhập thật dễ dàng
@@ -46,11 +79,12 @@ const NavBar = ({ isTop }: Props) => {
             type: "divider",
         },
         {
-            label: (
-                <div
-                    className="font-bold"
-                    onClick={() => setOpenAuthModal(true)}
-                >
+            label: storedUser.id ? (
+                <div className="font-bold" onClick={handleLogout}>
+                    <p>Đăng xuất</p>
+                </div>
+            ) : (
+                <div className="font-bold" onClick={() => navigate("/login")}>
                     <p>Đăng nhập hoặc Đăng ký</p>
                 </div>
             ),
@@ -58,31 +92,19 @@ const NavBar = ({ isTop }: Props) => {
         },
     ];
 
-    const [selectedOption, setSelectedOption] = useState<NavOptions>(
-        NavOptions.ACCOMMODATION
-    );
-    const [openHostModal, setOpenHostModal] = useState<boolean>(false);
-    const [openAuthModal, setOpenAuthModal] = useState<boolean>(false);
-    const [selectedHostOption, setSelectedHostOption] =
-        useState<NavOptions | null>();
-    const optionRef = useRef<HTMLDivElement>(null);
-    const controls = useAnimation();
-
-    // const navigate = useNavigate();
-
     useEffect(() => {
         if (!isTop) {
-            controls.start({
+            searchAnt.start({
                 y: -64,
                 transition: { duration: 0.3 },
             });
         } else {
-            controls.start({
+            searchAnt.start({
                 y: 0,
                 transition: { duration: 0.3 },
             });
         }
-    }, [controls, isTop]);
+    }, [searchAnt, isTop]);
 
     return (
         <>
@@ -101,7 +123,7 @@ const NavBar = ({ isTop }: Props) => {
                     {/* CenterSide */}
                     <motion.div
                         initial={{ opacity: 1 }}
-                        animate={controls}
+                        animate={searchAnt}
                         ref={optionRef}
                         className="flex h-fit w-3/5 justify-center gap-10 text-[0.8rem] md:text-[0.9rem]"
                     >
@@ -113,7 +135,7 @@ const NavBar = ({ isTop }: Props) => {
                         >
                             <IoHome className="h-8 w-8 text-red-500 transition-transform duration-300 group-hover:scale-110" />
                             <p
-                                className={` ${selectedOption === NavOptions.ACCOMMODATION ? "text-black" : "text-gray-500"}`}
+                                className={`font-bold ${selectedOption === NavOptions.ACCOMMODATION ? "text-black" : "text-gray-500"}`}
                             >
                                 {NavOptions.ACCOMMODATION}
                             </p>
@@ -129,7 +151,7 @@ const NavBar = ({ isTop }: Props) => {
                         >
                             <FaConciergeBell className="h-8 w-8 text-orange-300 transition-transform duration-300 group-hover:scale-110" />
                             <p
-                                className={` ${selectedOption === NavOptions.SERVICE ? "text-black" : "text-gray-500"}`}
+                                className={`font-bold ${selectedOption === NavOptions.SERVICE ? "text-black" : "text-gray-500"}`}
                             >
                                 {NavOptions.SERVICE}
                             </p>
@@ -150,8 +172,16 @@ const NavBar = ({ isTop }: Props) => {
                             </p>
                         </button>
                         <Dropdown menu={{ items }} trigger={["click"]}>
-                            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300">
-                                <FaBars className="h-3 w-3" />
+                            <button className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200 hover:bg-gray-300">
+                                {storedUser.id ? (
+                                    <img
+                                        src={storedUser.avatar ?? ""}
+                                        alt="user_avatar"
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <FaBars className="h-3 w-3" />
+                                )}
                             </button>
                         </Dropdown>
                     </div>
@@ -205,13 +235,6 @@ const NavBar = ({ isTop }: Props) => {
                         </div>
                     </div>
                 </Modal>
-
-                {/* Login/Sing UP Modal */}
-                <AuthModal
-                    isOpen={openAuthModal}
-                    onClose={() => setOpenAuthModal(false)}
-                    mode="login"
-                />
             </div>
         </>
     );

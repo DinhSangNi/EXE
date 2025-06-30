@@ -40,17 +40,20 @@ const rentalCategory = [
 const Footer = () => {
     return (
         <>
-            <div className="mt-20 w-full bg-gray-100">
+            <div className="h-[450px] w-full bg-gray-100">
                 <div className="mx-auto w-[90%] py-14">
                     <div className="sm:grid sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
                         {rentalCategory.map((rentalCate) => {
                             return (
-                                <div>
+                                <div key={rentalCate.title}>
                                     <h1 className="cursor-pointer pb-2 text-[0.9rem] font-bold hover:text-red-500">
                                         {rentalCate.title}
                                     </h1>
                                     {rentalCate.category.map((cate) => (
-                                        <p className="cursor-pointer py-1 text-[0.8rem] hover:text-red-500">
+                                        <p
+                                            key={cate}
+                                            className="cursor-pointer py-1 text-[0.8rem] hover:text-red-500"
+                                        >
                                             {cate}
                                         </p>
                                     ))}

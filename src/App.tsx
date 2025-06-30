@@ -1,12 +1,22 @@
-
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 import AppRouter from "./routes/AppRouter";
+import { Provider as ReduxProvider } from "react-redux";
+import { store } from "./stores/store";
+
+const queryClient = new QueryClient();
 
 function App() {
     return (
-        <BrowserRouter>
-            <AppRouter />
-        </BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+                <ReduxProvider store={store}>
+                    <AppRouter />
+                    <ToastContainer />
+                </ReduxProvider>
+            </BrowserRouter>
+        </QueryClientProvider>
     );
 }
 

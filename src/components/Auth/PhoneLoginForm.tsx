@@ -1,34 +1,63 @@
-import React, { useState } from "react";
-import CountrySelect from "./CountrySelect";
 import "../../index.css";
-const PhoneLoginForm: React.FC = () => {
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [selectedCountry, setSelectedCountry] = useState({
-        code: "+84",
-        name: "Việt Nam",
-        flag: "🇻🇳",
-    });
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        console.log("Phone login:", selectedCountry.code + phoneNumber);
-    };
+const phoneSchema = z.object({
+    phone: z.string().length(10, {
+        message: "Phone must have 10 digits",
+    }),
+});
+
+export type FormData = z.infer<typeof phoneSchema>;
+
+const PhoneLoginForm: React.FC = () => {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<FormData>({
+        resolver: zodResolver(phoneSchema),
+    });
+    // const [phoneNumber, setPhoneNumber] = useState("");
+    // const [selectedCountry, setSelectedCountry] = useState({
+    //     code: "+84",
+    //     name: "Việt Nam",
+    //     flag: "🇻🇳",
+    // });
+
+    const onSubmit = () => {};
 
     return (
-        <form className="mb-4" onSubmit={handleSubmit}>
-            <div className="mb-3 rounded-lg border border-gray-400">
-                <CountrySelect
+        <div className="mb-4">
+            <div className="mb-3">
+                <h1>Xác thực số điện thoại</h1>
+                {/* <CountrySelect
                     selectedCountry={selectedCountry}
                     onCountryChange={setSelectedCountry}
-                />
-                <div className="h-[1px] w-full bg-gray-300"></div>
-                <input
+                /> */}
+                {/* <div className="h-[1px] w-full bg-gray-300"></div> */}
+                {/* <input
                     type="tel"
                     placeholder="Số điện thoại"
                     value={phoneNumber}
                     onChange={(e) => setPhoneNumber(e.target.value)}
                     className="w-full rounded-b-lg border-none px-3 py-3 text-base"
-                />
+                /> */}
+                <form onSubmit={handleSubmit(onSubmit)} className="">
+                    <div className="mb-5 flex flex-col">
+                        {/* <label>Họ và tên:</label> */}
+                        <input
+                            className="rounded-lg border-2 border-gray-400 p-2 shadow-md"
+                            {...register("phone")}
+                        />
+                        {errors.phone && (
+                            <p className="text-[0.9rem] text-red-500">
+                                {errors.phone.message}
+                            </p>
+                        )}
+                    </div>
+                </form>
             </div>
 
             <div className="mb-4 text-xs leading-relaxed text-black">
@@ -45,7 +74,7 @@ const PhoneLoginForm: React.FC = () => {
             >
                 Tiếp tục
             </button>
-        </form>
+        </div>
     );
 };
 

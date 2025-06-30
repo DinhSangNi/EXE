@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import PostCard from "./PostCard";
-import "swiper/css";
+// import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
     data?: any;
 };
 
-const PostCarousel = ({ title, data }: Props) => {
+const PostCarousel = ({ title }: Props) => {
     const swiperRef = useRef<SwiperCore>(null);
 
     const handleNext = () => {

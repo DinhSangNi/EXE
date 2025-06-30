@@ -3,10 +3,10 @@ import axios, {
     type AxiosResponse,
     type InternalAxiosRequestConfig,
 } from "axios";
-import AuthServices from "../services/authServices/AuthServices";
+import { AuthServices } from "@/services/auth";
 
 const api = axios.create({
-    baseURL: "http://localhost:3000",
+    baseURL: import.meta.env.VITE_BASE_URL || "http://localhost:3000",
     headers: {
         "Content-Type": "application/json",
     },
@@ -54,7 +54,8 @@ api.interceptors.response.use(
 
         if (
             error.response?.status === 401 &&
-            originalRequest.url !== "/auth/refresh"
+            originalRequest.url !== "/auth/refresh" &&
+            originalRequest.url !== "/auth/verify-otp"
         ) {
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
