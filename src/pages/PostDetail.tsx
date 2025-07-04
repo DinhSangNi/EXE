@@ -1,7 +1,7 @@
 import CustomButton from "@/components/CustomButton";
 import { Carousel, Divider } from "antd";
 import type { CarouselRef } from "antd/es/carousel";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { FaPhoneAlt } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
 import {
@@ -9,6 +9,8 @@ import {
     IoHeartOutline,
     IoShareSocialOutline,
 } from "react-icons/io5";
+import { useParams } from "react-router-dom";
+import { PostServices } from "@/services/post";
 
 const images = [
     "https://a0.muscache.com/im/pictures/miso/Hosting-1397561542042482589/original/601053bc-52f7-40e7-ad93-7d728d80e3af.jpeg?im_w=1200",
@@ -19,12 +21,51 @@ const images = [
 
 const PostDetail = () => {
     const [imageIndex, setImageIndex] = useState(0);
+    const [post, setPost] = useState<any>(null);
     const carouselRef = useRef<CarouselRef>(null);
+    const { id } = useParams();
+
+    useEffect(() => {
+        if (id) {
+            PostServices.getById(id as string).then((res) => {
+                setPost(res.data.metadata);
+            });
+        }
+    }, [id]);
 
     const goToSlide = (slideIndex: number) => {
         if (!carouselRef.current) return;
         carouselRef.current.goTo(slideIndex);
     };
+
+    // Helper: format price
+    const formatPrice = (price: number) => {
+        return price?.toLocaleString("vi-VN") + " VND";
+    };
+
+    // Helper: get owner avatar
+    const getOwnerAvatar = () => {
+        if (!post?.owner?.medias?.length) return undefined;
+        // Ưu tiên ảnh có purpose là avatar, nếu không lấy ảnh đầu tiên
+        const avatar = post.owner.medias.find(
+            (m: any) => m.purpose === "avatar"
+        );
+        return avatar?.url || post.owner.medias[0]?.url;
+    };
+
+    // Sắp xếp medias: video trước, ảnh sau
+    const sortedMedias = (post?.medias || []).reduce(
+        (acc: { videos: any[]; images: any[] }, media: any) => {
+            if (media.type?.startsWith("video")) {
+                acc.videos.push(media);
+            } else if (media.type?.startsWith("image")) {
+                acc.images.push(media);
+            }
+            return acc;
+        },
+        { videos: [], images: [] }
+    );
+    const displayMedias = [...sortedMedias.videos, ...sortedMedias.images];
 
     return (
         <>
@@ -41,34 +82,49 @@ const PostDetail = () => {
                                 setImageIndex(current)
                             }
                         >
-                            {images.map((img) => {
-                                return (
-                                    <div className="h-[350px] w-full">
+                            {displayMedias.map((media: any, idx: number) => (
+                                <div
+                                    className="h-[350px] w-full"
+                                    key={media.id || idx}
+                                >
+                                    {media.type?.startsWith("video") ? (
+                                        <video
+                                            src={media.url}
+                                            controls
+                                            className="h-full w-full object-contain"
+                                        />
+                                    ) : (
                                         <img
-                                            src={img}
+                                            src={media.url}
                                             alt=""
                                             className="h-full w-full object-contain"
                                         />
-                                    </div>
-                                );
-                            })}
+                                    )}
+                                </div>
+                            ))}
                         </Carousel>
                         <div className="mt-4 flex gap-2">
-                            {images.map((img, index: number) => {
-                                console.log(index === imageIndex);
-                                return (
-                                    <div
-                                        className={`h-[60px] w-[60px] cursor-pointer overflow-hidden rounded-lg ${index === imageIndex && "border-2 border-red-400"}`}
-                                        onClick={() => goToSlide(index)}
-                                    >
+                            {displayMedias.map((media: any, index: number) => (
+                                <div
+                                    key={media.id || index}
+                                    className={`h-[60px] w-[60px] cursor-pointer overflow-hidden rounded-lg ${index === imageIndex && "border-2 border-red-400"}`}
+                                    onClick={() => goToSlide(index)}
+                                >
+                                    {media.type?.startsWith("video") ? (
+                                        <video
+                                            src={media.url}
+                                            className="h-full w-full object-cover"
+                                            style={{ pointerEvents: "none" }}
+                                        />
+                                    ) : (
                                         <img
-                                            src={img}
+                                            src={media.url}
                                             alt=""
                                             className="h-full w-full object-cover"
                                         />
-                                    </div>
-                                );
-                            })}
+                                    )}
+                                </div>
+                            ))}
                         </div>
                         <div className="mt-6 flex justify-between text-[0.9rem] md:hidden">
                             <button className="item flex items-center gap-1 px-2 py-1 hover:bg-gray-200">
@@ -88,14 +144,21 @@ const PostDetail = () => {
                         {/* Post Information */}
                         <div className="mt-6 w-full">
                             <h1 className="text-[1.2rem] font-bold">
-                                KÍ TÚC XÁ FULL TIỆN NGHI CHỈ 1TR5 TẠI QUẬN PHÚ
-                                NHUẬN - THÁNG 6 GIẢM THÊM 300K
+                                {post?.title || "Tiêu đề bài đăng"}
                             </h1>
                             <div className="my-4 flex w-full justify-between">
                                 <h2 className="text-[1.1rem] font-bold underline">
-                                    <span>1.2 triệu/tháng</span>
+                                    <span>
+                                        {post
+                                            ? formatPrice(post.price)
+                                            : "1.2 triệu/tháng"}
+                                    </span>
                                     <span> · </span>
-                                    <span>100 m²</span>
+                                    <span>
+                                        {post?.square
+                                            ? `${post.square} m²`
+                                            : "100 m²"}
+                                    </span>
                                 </h2>
                                 <p className="text-[0.9rem]">
                                     Cập nhật: 2 giờ trước
@@ -111,15 +174,35 @@ const PostDetail = () => {
                                     <p>Ngày hết hạn:</p>
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <p>Quận Phú Nhuận</p>
-                                    <p>Hồ Chí Minh</p>
                                     <p>
-                                        17/1A Đường Hồ Văn Huê, Quận Phú Nhuận,
-                                        Hồ Chí Minh
+                                        {post?.district?.split("|")[1] ||
+                                            "Quận ..."}
                                     </p>
-                                    <p>#676088</p>
-                                    <p>Thứ 3, 22:21 03/06/2025</p>
-                                    <p>Thứ 3, 22:21 10/06/2025</p>
+                                    <p>
+                                        {post?.city?.split("|")[1] ||
+                                            "Tỉnh ..."}
+                                    </p>
+                                    <p>
+                                        {post?.street},{" "}
+                                        {post?.ward?.split("|")[1]},{" "}
+                                        {post?.district?.split("|")[1]},{" "}
+                                        {post?.city?.split("|")[1]}
+                                    </p>
+                                    <p>#{post?.id?.slice(0, 6) || "Mã tin"}</p>
+                                    <p>
+                                        {post?.createdAt
+                                            ? new Date(
+                                                  post.createdAt
+                                              ).toLocaleString()
+                                            : "Ngày đăng"}
+                                    </p>
+                                    <p>
+                                        {post?.expiredAt
+                                            ? new Date(
+                                                  post.expiredAt
+                                              ).toLocaleString()
+                                            : "Ngày hết hạn"}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -131,27 +214,22 @@ const PostDetail = () => {
                                 Thông tin mô tả
                             </h2>
                             <div className="flex flex-col gap-2 text-[0.8rem]">
-                                <p>
-                                    LÀ CHỈ CÒN 1.200.000 BẠN CÓ 1 CHỖ Ở GỒM
-                                    Không gian hiện đại,đầy đủ tiện nghi,giường
-                                    tầng,tủ đồ cá nhân Wifi mạnh,miễn phí nhiều
-                                    dịch vụ khác.....
-                                </p>
-                                <p>- Nội thất trang bị đầy đủ</p>
-                                <p>- Giờ giấc tự do , ra vào cổng vân tay</p>
-                                <p>
-                                    - DV vệ sinh hàng ngày , không phát sinh chi
-                                    phí Phù hợp cho sinh viên và người đi làm
-                                </p>
-                                <p>
-                                    - Vị trí cạnh các khu trung tâm và trường
-                                    Đại Học
-                                </p>
-                                <p>Địa chỉ:</p>
-                                <p>CN1: 52 Nguyễn Giản Thanh, P15, Quận 10</p>
-                                <p> CN2: 163 Thành Thái, P14, Quận 10</p>
-                                <p>CN3: 17/1A Hồ Văn Huê, P9, Phú Nhuận</p>
-                                <p>CN4: 60 Nguyễn Tri Phương, P6, Quận 5</p>
+                                <p>{post?.description}</p>
+                                {/* Tiện ích */}
+                                {post?.postAmenities?.length > 0 && (
+                                    <div>
+                                        <b>Tiện ích:</b>
+                                        <ul className="list-disc pl-5">
+                                            {post.postAmenities.map(
+                                                (item: any) => (
+                                                    <li key={item.id}>
+                                                        {item.amenity?.name}
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <Divider />
@@ -164,14 +242,15 @@ const PostDetail = () => {
                             <div className="flex w-full items-center gap-4">
                                 <div className="aspect-square w-2/5 overflow-hidden rounded-full sm:w-[120px] md:w-[150px]">
                                     <img
-                                        src="https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2025/04/03/1_1743695856.jpg"
+                                        src={getOwnerAvatar()}
                                         alt=""
                                         className="h-full w-full object-cover"
                                     />
                                 </div>
                                 <div className="">
                                     <h1 className="my-2 font-bold">
-                                        NGUYỄN VĂN HẬU
+                                        {post?.owner?.name ||
+                                            "Tên chủ bài đăng"}
                                     </h1>
                                     <p className="text-[0.8rem]">
                                         <span>4 tin đăng</span>
@@ -180,12 +259,12 @@ const PostDetail = () => {
                                     </p>
                                     <div className="mt-2 flex w-full items-center gap-2">
                                         <CustomButton
-                                            title="0909316890"
+                                            title={post?.owner?.phone || "SĐT"}
                                             icon={<FaPhoneAlt />}
                                             className="bg-red-500 text-[0.8rem] text-white lg:text-[0.9rem]"
                                         />
                                         <CustomButton
-                                            title="0909316890"
+                                            title={post?.owner?.phone || "SĐT"}
                                             icon={<BiMessageRoundedDetail />}
                                             className="bg-blue-500 text-[0.8rem] text-white lg:text-[0.9rem]"
                                         />
@@ -201,12 +280,14 @@ const PostDetail = () => {
                         <div className="hidden h-[350px] w-full flex-col items-center p-4 shadow-xl md:flex">
                             <div className="aspect-square w-[6rem] overflow-hidden rounded-full">
                                 <img
-                                    src="https://pt123.cdn.static123.com/images/thumbs/450x300/fit/2025/04/03/1_1743695856.jpg"
+                                    src={getOwnerAvatar()}
                                     alt=""
                                     className="h-full w-full object-cover"
                                 />
                             </div>
-                            <h1 className="my-2 font-bold">NGUYỄN VĂN HẬU</h1>
+                            <h1 className="my-2 font-bold">
+                                {post?.owner?.name || "Tên chủ bài đăng"}
+                            </h1>
                             <p className="text-[0.8rem]">
                                 <span>4 tin đăng</span>
                                 <span> · </span>
@@ -214,12 +295,12 @@ const PostDetail = () => {
                             </p>
                             <div className="mt-2 flex flex-col items-center gap-2 lg:w-1/2">
                                 <CustomButton
-                                    title="0909316890"
+                                    title={post?.owner?.phone || "SĐT"}
                                     icon={<FaPhoneAlt />}
                                     className="w-full bg-red-500 text-white md:text-[0.8rem] lg:text-[0.9rem]"
                                 />
                                 <CustomButton
-                                    title="0909316890"
+                                    title={post?.owner?.phone || "SĐT"}
                                     icon={<BiMessageRoundedDetail />}
                                     className="w-full bg-blue-500 text-white md:text-[0.8rem] lg:text-[0.9rem]"
                                 />
@@ -246,33 +327,52 @@ const PostDetail = () => {
                                 Tin đăng nổi bật
                             </h1>
 
-                            {images.map((img) => {
-                                return (
-                                    <div className="flex w-full gap-4 p-2">
-                                        {/* Post's Image */}
-                                        <div className="h-[90px] w-[90px] overflow-hidden rounded-lg">
+                            {displayMedias.map((media: any, idx: number) => (
+                                <div
+                                    className="flex w-full gap-4 p-2"
+                                    key={media.id || idx}
+                                >
+                                    {/* Post's Image */}
+                                    <div className="h-[90px] w-[90px] overflow-hidden rounded-lg">
+                                        {media.type?.startsWith("video") ? (
+                                            <video
+                                                src={media.url}
+                                                className="h-full w-full object-cover"
+                                                style={{
+                                                    pointerEvents: "none",
+                                                }}
+                                            />
+                                        ) : (
                                             <img
-                                                src={img}
+                                                src={media.url}
                                                 alt=""
                                                 className="h-full w-full object-cover"
                                             />
-                                        </div>
+                                        )}
+                                    </div>
 
-                                        {/* Post's Information */}
-                                        <div className="w-2/3">
-                                            <h1 className="line-clamp-2 text-[0.9rem]">
-                                                KÍ TÚC XÁ FULL TIỆN NGHI CHỈ
-                                                1TR5 TẠI QUẬN PHÚ NHUẬN - THÁNG
-                                                6 GIẢM THÊM 300K
-                                            </h1>
-                                            <div className="flex w-full justify-between text-[0.8rem]">
-                                                <p>1.2 triệu/tháng</p>
-                                                <p>2 giờ trước</p>
-                                            </div>
+                                    {/* Post's Information */}
+                                    <div className="w-2/3">
+                                        <h1 className="line-clamp-2 text-[0.9rem]">
+                                            {post?.title}
+                                        </h1>
+                                        <div className="flex w-full justify-between text-[0.8rem]">
+                                            <p>
+                                                {post
+                                                    ? formatPrice(post.price)
+                                                    : "1.2 triệu/tháng"}
+                                            </p>
+                                            <p>
+                                                {post?.updatedAt
+                                                    ? new Date(
+                                                          post.updatedAt
+                                                      ).toLocaleString()
+                                                    : "2 giờ trước"}
+                                            </p>
                                         </div>
                                     </div>
-                                );
-                            })}
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>
