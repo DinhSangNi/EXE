@@ -3,13 +3,17 @@ import PostCard from "./PostCard";
 // import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
+import { useNavigate } from "react-router-dom";
+
 type Props = {
     title?: string;
     data?: any;
+    loading?: boolean;
 };
 
-const PostCarousel = ({ title }: Props) => {
+const PostCarousel = ({ title, data = [], loading = false }: Props) => {
     const swiperRef = useRef<SwiperCore>(null);
+    const navigate = useNavigate();
 
     const handleNext = () => {
         if (!swiperRef.current) return;
@@ -60,15 +64,24 @@ const PostCarousel = ({ title }: Props) => {
                         },
                     }}
                 >
-                    {Array.from({ length: 10 }, () => {
-                        return (
-                            <SwiperSlide>
-                                <div>
-                                    <PostCard imageSrc="https://a0.muscache.com/im/pictures/miso/Hosting-823410792395034757/original/47e59899-0f67-4790-9035-ec74f499af64.jpeg?im_w=1200" />
-                                </div>
-                            </SwiperSlide>
-                        );
-                    })}
+                    {data.map((post: any, idx: number) => (
+                        <SwiperSlide key={post?.id || idx}>
+                            <div
+                                onClick={() =>
+                                    post &&
+                                    post.id &&
+                                    navigate(`/posts/${post.id}`)
+                                }
+                            >
+                                <PostCard
+                                    imageSrc={post?.medias?.[0]?.url}
+                                    title={post?.title}
+                                    price={post?.price}
+                                    loading={loading || !post}
+                                />
+                            </div>
+                        </SwiperSlide>
+                    ))}
                 </Swiper>
             </div>
         </>

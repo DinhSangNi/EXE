@@ -2,16 +2,36 @@ import PostCarousel from "@/components/PostCarousel";
 import { PiHeadphonesFill } from "react-icons/pi";
 import { FaPhoneAlt } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
+import { useEffect, useState } from "react";
+import { PostServices } from "@/services/post";
 
 const Home = () => {
+    const [posts, setPosts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        setLoading(true);
+        PostServices.getAll()
+            .then((res) => {
+                setPosts(res.data.metadata || []);
+            })
+            .finally(() => setLoading(false));
+    }, []);
     return (
         <>
             <div className="w-full">
                 <div className="mx-auto mt-14 w-[90%]">
-                    <PostCarousel title="Chỗ ở đề xuất" />
+                    <PostCarousel
+                        title="Chỗ ở đề xuất"
+                        data={loading ? Array(6).fill(null) : posts}
+                        loading={loading}
+                    />
                 </div>
                 <div className="mx-auto mt-14 w-[90%]">
-                    <PostCarousel title="Bài đăng mới" />
+                    <PostCarousel
+                        title="Bài đăng mới"
+                        data={loading ? Array(6).fill(null) : posts}
+                        loading={loading}
+                    />
                 </div>
                 <div className="mx-auto mt-14 w-[90%]">
                     <div className="w-full px-6 py-4 shadow-2xl md:flex">
