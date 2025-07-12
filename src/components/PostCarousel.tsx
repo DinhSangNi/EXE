@@ -26,6 +26,8 @@ const PostCarousel = ({ title, data = [], loading = false }: Props) => {
         swiperRef.current?.slidePrev();
     };
 
+    console.log("data: ", data);
+
     return (
         <>
             <div className="w-full">
@@ -65,7 +67,7 @@ const PostCarousel = ({ title, data = [], loading = false }: Props) => {
                         },
                     }}
                 >
-                    {data.map((post: any, idx: number) => (
+                    {data?.data?.map((post: any, idx: number) => (
                         <SwiperSlide key={post?.id || idx}>
                             <div
                                 onClick={() =>
