@@ -12,6 +12,8 @@ import { Post } from 'src/entity/post.entity';
 import { UpdatePostDto } from 'src/dto/request/post-update.dto';
 import { Category } from 'src/entity/category.entity';
 import dayjs from 'dayjs';
+import { FilterPostDto } from 'src/dto/request/post-filter.dto';
+import { PaginationResponse } from 'src/dto/Response/paginationResponse.dto';
 
 @Injectable()
 export class PostService {
@@ -59,6 +61,7 @@ export class PostService {
       longitude,
       square,
       price,
+      priority,
       url,
       mediaIds = [],
       amenityIds = [],
@@ -78,6 +81,7 @@ export class PostService {
       longitude,
       square,
       price,
+      priority: priority ?? 0,
       owner: { id: userId },
       category: {
         id: categoryId,
@@ -115,8 +119,8 @@ export class PostService {
     });
   }
 
-  async getAll(): Promise<Post[]> {
-    return await this.postRepository
+  async getAll(filter: FilterPostDto): Promise<PaginationResponse<Post[]>> {
+    const query = this.postRepository
       .createQueryBuilder('post')
       .leftJoin('post.owner', 'owner')
       .leftJoinAndSelect(
@@ -130,9 +134,71 @@ export class PostService {
       .leftJoinAndSelect('postAmenities.amenity', 'amenity')
       .leftJoinAndSelect('post.category', 'category')
       .addSelect(['owner.name'])
-      .where('post.deletedAt IS NULL')
-      .orderBy('post.createdAt', 'DESC')
-      .getMany();
+      .where('post.deletedAt IS NULL');
+
+    if (filter.minPrice !== undefined) {
+      query.andWhere('post.price >= :minPrice', { minPrice: filter.minPrice });
+    }
+    if (filter.maxPrice !== undefined) {
+      query.andWhere('post.price <= :maxPrice', { maxPrice: filter.maxPrice });
+    }
+
+    if (filter.minSquare !== undefined) {
+      query.andWhere('post.square >= :minSquare', {
+        minSquare: filter.minSquare,
+      });
+    }
+    if (filter.maxSquare !== undefined) {
+      query.andWhere('post.square <= :maxSquare', {
+        maxSquare: filter.maxSquare,
+      });
+    }
+    if (filter.category) {
+      query.andWhere('category.id = :category', { category: filter.category });
+    }
+
+    if (filter.province) {
+      query.andWhere('post.city = :province', {
+        province: filter.province,
+      });
+    }
+    if (filter.district) {
+      query.andWhere('post.district = :district', {
+        district: filter.district,
+      });
+    }
+    if (filter.ward) {
+      query.andWhere('post.ward = :ward', { ward: filter.ward });
+    }
+
+    if (filter.amenities && filter.amenities.length > 0) {
+      filter.amenities.forEach((amenityId, index) => {
+        query.andWhere(
+          `EXISTS (
+        SELECT 1 FROM post_amenities pa${index}
+        WHERE pa${index}.postId = post.id AND pa${index}.amenityId = :amenityId${index}
+      )`,
+          { [`amenityId${index}`]: amenityId },
+        );
+      });
+    }
+
+    const limit = filter.limit ?? 10;
+    const page = filter.page ?? 1;
+
+    query.skip((page - 1) * limit).take(limit);
+
+    const [items, total] = await query
+      .orderBy('post.updatedAt', 'DESC')
+      .getManyAndCount();
+
+    return {
+      page: filter.page,
+      limit: filter.limit,
+      totalPages: Math.ceil(total / limit),
+      totalItems: total,
+      data: items,
+    };
   }
 
   async getById(id: string): Promise<Post> {
@@ -153,8 +219,12 @@ export class PostService {
     return post;
   }
 
-  async getAllByUserId(userId: string): Promise<Post[]> {
-    const posts = await this.postRepository.find({
+  async getAllByUserId(
+    userId: string,
+    filter: FilterPostDto,
+  ): Promise<PaginationResponse<Post[]>> {
+    // Lấy tất cả record không theo filter
+    const totalAllItems = await this.postRepository.count({
       where: {
         owner: {
           id: userId,
@@ -171,7 +241,80 @@ export class PostService {
         'category',
       ],
     });
-    return posts;
+
+    const query = this.postRepository
+      .createQueryBuilder('post')
+      .leftJoin('post.owner', 'owner')
+      .leftJoinAndSelect(
+        'owner.medias',
+        'ownerMedia',
+        'ownerMedia.purpose LIKE :purpose',
+        { purpose: '%avatar%' },
+      )
+      .leftJoinAndSelect('post.medias', 'postMedia')
+      .leftJoinAndSelect('post.postAmenities', 'postAmenities')
+      .leftJoinAndSelect('postAmenities.amenity', 'amenity')
+      .leftJoinAndSelect('post.category', 'category')
+      .addSelect(['owner.name'])
+      .where('post.deletedAt IS NULL');
+
+    if (filter.minPrice !== undefined) {
+      query.andWhere('post.price >= :minPrice', { minPrice: filter.minPrice });
+    }
+    if (filter.maxPrice !== undefined) {
+      query.andWhere('post.price <= :maxPrice', { maxPrice: filter.maxPrice });
+    }
+
+    if (filter.minSquare !== undefined) {
+      query.andWhere('post.square >= :minSquare', {
+        minSquare: filter.minSquare,
+      });
+    }
+    if (filter.maxSquare !== undefined) {
+      query.andWhere('post.square <= :maxSquare', {
+        maxSquare: filter.maxSquare,
+      });
+    }
+    if (filter.category) {
+      query.andWhere('category.id = :category', { category: filter.category });
+    }
+
+    if (filter.province) {
+      query.andWhere('post.province = :province', {
+        province: filter.province,
+      });
+    }
+    if (filter.district) {
+      query.andWhere('post.district = :district', {
+        district: filter.district,
+      });
+    }
+    if (filter.ward) {
+      query.andWhere('post.ward = :ward', { ward: filter.ward });
+    }
+
+    if (filter.amenities && filter.amenities.length > 0) {
+      filter.amenities.forEach((amenityId, index) => {
+        query.andWhere(
+          `EXISTS (
+        SELECT 1 FROM post_amenities pa${index}
+        WHERE pa${index}.postId = post.id AND pa${index}.amenityId = :amenityId${index}
+      )`,
+          { [`amenityId${index}`]: amenityId },
+        );
+      });
+    }
+
+    const limit = filter.limit ?? 10;
+    const page = filter.page ?? 1;
+
+    query.skip((page - 1) * limit).take(limit);
+
+    const [items, total] = await query
+      .orderBy('post.updatedAt', 'DESC')
+      .getManyAndCount();
+
+    return new PaginationResponse<Post[]>(total, items, totalAllItems);
   }
 
   async update(

@@ -71,6 +71,10 @@ export class CreatePostDto {
   @IsNumber()
   price: number;
 
+  @ApiProperty({ description: 'Độ ưu tiên', example: 0 })
+  @IsNumber()
+  priority: number;
+
   @ApiPropertyOptional({
     description: 'URL video nếu có (thường là YouTube)',
     example: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',

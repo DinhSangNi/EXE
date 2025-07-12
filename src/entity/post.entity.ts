@@ -52,6 +52,9 @@ export class Post {
   @Column('float')
   price: number;
 
+  @Column('integer')
+  priority: number;
+
   @OneToMany(() => Media, (media) => media.post)
   medias: Media[];
 
