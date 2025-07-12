@@ -72,6 +72,7 @@ export class CreatePostDto {
   price: number;
 
   @ApiProperty({ description: 'Độ ưu tiên', example: 0 })
+  @IsOptional()
   @IsNumber()
   priority: number;
 

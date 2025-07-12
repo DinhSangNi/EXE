@@ -5,8 +5,10 @@ import {
   Min,
   IsUUID,
   IsArray,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { PostSortOption } from 'src/constants/post-sort.enum';
 
 export class FilterPostDto {
   @IsOptional()
@@ -63,4 +65,8 @@ export class FilterPostDto {
   @Type(() => Number)
   @IsNumber()
   limit?: number;
+
+  @IsOptional()
+  @IsEnum(PostSortOption)
+  sort?: PostSortOption;
 }
