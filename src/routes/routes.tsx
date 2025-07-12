@@ -14,6 +14,14 @@ import EditAccomodationPost from "@/pages/EditAccomodationPost";
 
 export const routes = [
     {
+        path: "/login",
+        element: <Login />,
+    },
+    {
+        path: "/register",
+        element: <Register />,
+    },
+    {
         path: "/",
         element: <MainLayout />,
         children: [
@@ -89,14 +97,7 @@ export const routes = [
             },
         ],
     },
-    {
-        path: "/login",
-        element: <Login />,
-    },
-    {
-        path: "/register",
-        element: <Register />,
-    },
+
     {
         path: "*",
         element: <NotFound />,
