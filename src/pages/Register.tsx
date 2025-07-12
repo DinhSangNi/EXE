@@ -40,6 +40,7 @@ const Register = () => {
             if (verifyRes.status === 200) {
                 const signUpRes = await AuthServices.register(signUpFormData);
                 if (signUpRes.status === 201) {
+                    console.log("signUpRes: ", signUpRes);
                     const metadata = signUpRes.data.metadata;
                     localStorage.setItem("accessToken", metadata.accessToken);
                     dispatch(
@@ -55,16 +56,20 @@ const Register = () => {
                     toast.success("Sign up succesfully!", {
                         position: "top-center",
                     });
+                    navigate("/");
                 }
             }
         } catch (error: any) {
-            switch (error.response.data.message) {
-                case "Invalid OTP":
-                    setError("Mã OTP không khớp hoặc đã hết hạn !");
-                    break;
-                case "User already exists":
-                    setError("Người dùng đã tồn tại !");
-                    break;
+            console.log("error: ", error);
+            if (error.response) {
+                switch (error.response.data.message) {
+                    case "Invalid OTP":
+                        setError("Mã OTP không khớp hoặc đã hết hạn !");
+                        break;
+                    case "User already exists":
+                        setError("Người dùng đã tồn tại !");
+                        break;
+                }
             }
         } finally {
             setVerifyEmailLoading(false);

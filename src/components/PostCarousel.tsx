@@ -1,14 +1,15 @@
 import { useRef } from "react";
 import PostCard from "./PostCard";
-// import "swiper/css";
+import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
+import type { Post } from "@/stores/type";
 type Props = {
     title?: string;
-    data?: any;
+    data?: Post[];
 };
 
-const PostCarousel = ({ title }: Props) => {
+const PostCarousel = ({ title, data }: Props) => {
     const swiperRef = useRef<SwiperCore>(null);
 
     const handleNext = () => {
@@ -46,29 +47,31 @@ const PostCarousel = ({ title }: Props) => {
                 </div>
                 <Swiper
                     onSwiper={(swiper) => (swiperRef.current = swiper)}
-                    spaceBetween={10}
-                    slidesPerView={2}
+                    spaceBetween={25}
+                    slidesPerView={1}
                     breakpoints={{
-                        640: { slidesPerView: 3 },
-                        768: { slidesPerView: 4 },
-                        1024: { slidesPerView: 5 },
+                        640: { slidesPerView: 1 },
+                        768: { slidesPerView: 1 },
+                        1024: { slidesPerView: 2 },
                         1280: {
-                            slidesPerView: 6,
+                            slidesPerView: 3,
                         },
                         1536: {
-                            slidesPerView: 7,
+                            slidesPerView: 3,
                         },
                     }}
                 >
-                    {Array.from({ length: 10 }, () => {
-                        return (
-                            <SwiperSlide>
-                                <div>
-                                    <PostCard imageSrc="https://a0.muscache.com/im/pictures/miso/Hosting-823410792395034757/original/47e59899-0f67-4790-9035-ec74f499af64.jpeg?im_w=1200" />
-                                </div>
-                            </SwiperSlide>
-                        );
-                    })}
+                    {data &&
+                        data.map((item) => {
+                            return (
+                                <SwiperSlide key={item.id}>
+                                    <PostCard
+                                        className="h-[450px] border border-gray-200"
+                                        data={item}
+                                    />
+                                </SwiperSlide>
+                            );
+                        })}
                 </Swiper>
             </div>
         </>

@@ -3,11 +3,13 @@ import { CategoryServices } from "@/services/category";
 import { useQuery } from "@tanstack/react-query";
 import { Select } from "antd";
 import type { DefaultOptionType } from "antd/es/select";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 type Props = {
     className?: string;
+    title?: ReactNode;
     value?: string;
+    mode?: "filter" | "default";
     onChange?: (value: string) => void;
     setAreaUnit?: (value: AreaUnit) => void;
     setPriceUnit?: (value: PriceUnit) => void;
@@ -20,7 +22,9 @@ type CategoryOption = DefaultOptionType & {
 
 const CategorySelector = ({
     className,
+    title,
     value,
+    mode = "default",
     onChange,
     setAreaUnit,
     setPriceUnit,
@@ -38,11 +42,13 @@ const CategorySelector = ({
         },
     });
 
-    const options =
+    let options =
         categories?.metadata?.map((cat: any) => ({
             label: cat.name,
             value: cat.id,
-        })) || [];
+        })) ?? [];
+    mode === "filter" &&
+        (options = [{ label: "Tất cả", value: "" }, ...options]);
 
     const [selected, setSelected] = useState<string | undefined>(
         value ? value : undefined
@@ -88,7 +94,7 @@ const CategorySelector = ({
 
     return (
         <div className={className}>
-            <h1 className="mb-1">Loại chuyên mục</h1>
+            {title ? title : <h1 className="mb-1">Loại chuyên mục</h1>}
 
             {isLoading ? (
                 <p>Đang tải...</p>
@@ -98,6 +104,7 @@ const CategorySelector = ({
                 <Select
                     className="w-full"
                     value={selected}
+                    defaultValue={""}
                     options={options}
                     placeholder="--Chọn loại chuyên mục--"
                     onChange={handleChange}

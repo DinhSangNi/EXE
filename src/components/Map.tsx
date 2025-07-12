@@ -1,12 +1,13 @@
 import { getLatLngFromAddress } from "@/utils/googleMap";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
-import { memo, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 type Props = {
-    address: string;
-    onChange: (location: Coordinates) => void;
+    address?: string;
+    onChange?: (location: Coordinates) => void;
     lat?: number;
     lng?: number;
+    coordinates?: Coordinates[];
 };
 
 export type Coordinates = {
@@ -14,61 +15,59 @@ export type Coordinates = {
     lng: number;
 };
 
-const containerStyle = {
-    width: "100%",
-    height: "100%",
-};
-
 const quyNhonCoordinates = {
     lat: 13.782,
     lng: 109.2193,
 };
 
-const Map = memo(({ address, onChange, lat, lng }: Props) => {
-    // console.log("address: ", address);
-    const [mapView, setMapView] = useState<{
-        location: Coordinates;
-        zoom: number;
-    }>();
+const Map = ({ address, onChange, lat, lng, coordinates }: Props) => {
+    const mapRef = useRef<google.maps.Map | null>(null);
+
+    const onLoad = useCallback((map: google.maps.Map) => {
+        mapRef.current = map;
+    }, []);
 
     useEffect(() => {
-        if (address) {
-            const convertAddressToCoordinates = async () => {
-                const resolvedCoordinates = await getLatLngFromAddress(address);
-                if (resolvedCoordinates) {
-                    setMapView(resolvedCoordinates);
-                    onChange(resolvedCoordinates.location);
-                }
-            };
-            convertAddressToCoordinates();
-        } else if (lat && lng) {
-            setMapView({
-                location: { lat, lng },
-                zoom: 15,
-            });
-            onChange({ lat, lng });
+        if (!mapRef.current) return;
+
+        if (coordinates) {
+            if (coordinates.length === 1) {
+                mapRef.current.panTo(coordinates[0]);
+            } else {
+                const bounds = new google.maps.LatLngBounds();
+                coordinates.forEach((c) => bounds.extend(c));
+                mapRef.current.fitBounds(bounds, 100);
+            }
         }
-    }, [address, lat, lng]);
+
+        if (lat && lng) mapRef.current.panTo({ lat, lng });
+
+        if (address) {
+            (async () => {
+                const res = await getLatLngFromAddress(address);
+                if (res) {
+                    mapRef.current!.panTo(res.location);
+                    onChange?.(res.location);
+                }
+            })();
+        }
+    }, [coordinates, lat, lng, address]);
 
     return (
-        <>
-            <LoadScript
-                googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+        <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
+            <GoogleMap
+                mapContainerStyle={{ width: "100%", height: "100%" }}
+                center={coordinates?.[0] ?? quyNhonCoordinates}
+                zoom={12}
+                onLoad={onLoad}
             >
-                <GoogleMap
-                    mapContainerStyle={containerStyle}
-                    center={mapView?.location || quyNhonCoordinates}
-                    zoom={mapView ? mapView.zoom : 12}
-                >
-                    {mapView ? (
-                        <Marker position={mapView.location} />
-                    ) : (
-                        <Marker position={quyNhonCoordinates} />
-                    )}
-                </GoogleMap>
-            </LoadScript>
-        </>
+                {/* {(coordinates ?? []).map((c, i) => (
+                    <Marker key={`${c.lat}-${c.lng}-${i}`} position={c} />
+                ))} */}
+                {coordinates?.[0] && <Marker position={coordinates?.[0]} />}
+            </GoogleMap>
+        </LoadScript>
     );
-});
+};
 
 export default Map;

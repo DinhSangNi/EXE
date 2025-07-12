@@ -2,13 +2,38 @@ import PostCarousel from "@/components/PostCarousel";
 import { PiHeadphonesFill } from "react-icons/pi";
 import { FaPhoneAlt } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
+import { useQuery } from "@tanstack/react-query";
+import { PostServices } from "@/services/post";
+import type { PaginationResponse, Post } from "@/stores/type";
+import Spinner from "@/components/Spinner";
 
 const Home = () => {
+    const { data: posts, isLoading } = useQuery({
+        queryKey: ["posts"],
+        queryFn: async () => {
+            const res = await PostServices.getAll();
+            const paginatedRes: PaginationResponse<Post[]> = res.data.metadata;
+            return paginatedRes.data.filter(
+                (post) => post.status === "approved"
+            );
+        },
+        staleTime: 3 * 60 * 1000,
+    });
+
+    if (isLoading)
+        return (
+            <div className="flex h-[calc(100vh-var(--header-height))] items-center">
+                <Spinner />
+            </div>
+        );
+
+    console.log("posts: ", posts);
+
     return (
         <>
             <div className="w-full">
                 <div className="mx-auto mt-14 w-[90%]">
-                    <PostCarousel title="Chỗ ở đề xuất" />
+                    <PostCarousel title="Chỗ ở đề xuất" data={posts} />
                 </div>
                 <div className="mx-auto mt-14 w-[90%]">
                     <PostCarousel title="Bài đăng mới" />

@@ -297,7 +297,7 @@ const CreatePost = () => {
                                 />
                             </div>
                             {/* Map */}
-                            {/* <div className="w-full">
+                            <div className="w-full">
                                 <h1 className="mb-1 text-[0.9rem]">Bản đồ</h1>
                                 <div className="h-[300px] w-full">
                                     <Map
@@ -305,7 +305,7 @@ const CreatePost = () => {
                                         onChange={setLocation}
                                     />
                                 </div>
-                            </div> */}
+                            </div>
                         </div>
                         {/* Category */}
                         <div className="mb-8 w-full">

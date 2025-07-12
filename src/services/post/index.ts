@@ -1,15 +1,19 @@
 import api from "@/config/axios";
-import type { CreateRoomDto } from "@/stores/type";
+import type { CreateRoomDto, postFilter } from "@/stores/type";
 
 export const PostServices = {
     create: async (input: CreateRoomDto) => {
         return await api.post(`/post`, input);
     },
-    getAll: async () => {
-        return await api.get(`/post`);
+    getAll: async (filter: postFilter) => {
+        return await api.get(`/post`, {
+            params: filter,
+        });
     },
-    getAllByUserId: async () => {
-        return await api.get(`/post/user`);
+    getAllByUserId: async (filter?: postFilter) => {
+        return await api.get(`/post/user`, {
+            params: filter,
+        });
     },
     getById: async (id: string) => {
         return await api.get(`/post/${id}`);

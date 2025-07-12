@@ -16,7 +16,7 @@ const PostManagementCard = ({ className, data }: Props) => {
     const navigate = useNavigate();
 
     const handleEdit = () => {
-        navigate(`/host/posts/edit/${data?.id}`);
+        navigate(`/posts/edit/${data?.id}`);
     };
 
     const items: MenuProps["items"] = [

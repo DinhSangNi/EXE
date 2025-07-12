@@ -2,6 +2,9 @@ import { useAnimation, motion } from "framer-motion";
 import NavBar from "./NavBar";
 import Searchbar from "./SearchBar";
 import { useEffect, useState } from "react";
+import { getCSSVarPx } from "@/utils/css";
+
+const headerHeight = getCSSVarPx("header-height");
 
 const Header = () => {
     const [isTop, setIsTop] = useState<boolean>(true);
@@ -33,7 +36,7 @@ const Header = () => {
         <>
             <motion.div
                 initial={{
-                    height: 162,
+                    height: headerHeight,
                 }}
                 animate={controls}
                 className="fixed z-30 w-full bg-gray-100 p-4"

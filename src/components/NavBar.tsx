@@ -52,45 +52,120 @@ const NavBar = ({ isTop }: Props) => {
         }
     };
 
-    const items: MenuProps["items"] = [
-        {
-            label: (
-                <div
-                    className="w-[200px]"
-                    onClick={() => setOpenHostModal(true)}
-                >
-                    <p className="font-bold">Trở thành Host</p>
-                    <p className="text-[0.8rem] text-gray-600">
-                        Bắt đầu cho thuê và kiếm thêm thu nhập thật dễ dàng
-                    </p>
-                </div>
-            ),
-            key: "0",
-        },
-        {
-            label: (
-                <div className="w-[200px]">
-                    <p className="font-bold">Tin đã lưu</p>
-                </div>
-            ),
-            key: "1",
-        },
-        {
-            type: "divider",
-        },
-        {
-            label: storedUser.id ? (
-                <div className="font-bold" onClick={handleLogout}>
-                    <p>Đăng xuất</p>
-                </div>
-            ) : (
-                <div className="font-bold" onClick={() => navigate("/login")}>
-                    <p>Đăng nhập hoặc Đăng ký</p>
-                </div>
-            ),
-            key: "2",
-        },
-    ];
+    let items: MenuProps["items"] = [];
+
+    switch (storedUser.role) {
+        case "user":
+            items = [
+                {
+                    label: (
+                        <div
+                            className="w-[200px]"
+                            onClick={() => setOpenHostModal(true)}
+                        >
+                            <p className="font-bold">Trở thành Host</p>
+                            <p className="text-[0.8rem] text-gray-600">
+                                Bắt đầu cho thuê và kiếm thêm thu nhập thật dễ
+                                dàng
+                            </p>
+                        </div>
+                    ),
+                    key: "0",
+                },
+                {
+                    label: (
+                        <div className="w-[200px]">
+                            <p className="font-bold">Tin đã lưu</p>
+                        </div>
+                    ),
+                    key: "1",
+                },
+                {
+                    type: "divider",
+                },
+                {
+                    label: storedUser.id ? (
+                        <div className="font-bold" onClick={handleLogout}>
+                            <p>Đăng xuất</p>
+                        </div>
+                    ) : (
+                        <div
+                            className="font-bold"
+                            onClick={() => navigate("/login")}
+                        >
+                            <p>Đăng nhập hoặc Đăng ký</p>
+                        </div>
+                    ),
+                    key: "2",
+                },
+            ];
+            break;
+        case "admin":
+            items = [
+                {
+                    label: (
+                        <div
+                            className="w-[200px]"
+                            onClick={() => navigate("/admin/overview")}
+                        >
+                            <p className="font-bold">Bảng điều khiển</p>
+                        </div>
+                    ),
+                    key: "0",
+                },
+                {
+                    type: "divider",
+                },
+                {
+                    label: storedUser.id ? (
+                        <div className="font-bold" onClick={handleLogout}>
+                            <p>Đăng xuất</p>
+                        </div>
+                    ) : (
+                        <div
+                            className="font-bold"
+                            onClick={() => navigate("/login")}
+                        >
+                            <p>Đăng nhập hoặc Đăng ký</p>
+                        </div>
+                    ),
+                    key: "2",
+                },
+            ];
+            break;
+        default:
+            items = [
+                {
+                    label: (
+                        <div
+                            className="w-[200px]"
+                            onClick={() => navigate("/admin/overview")}
+                        >
+                            {/* <p className="font-bold">Bảng điều khiển</p> */}
+                        </div>
+                    ),
+                    key: "0",
+                },
+                {
+                    type: "divider",
+                },
+                {
+                    label: storedUser.id ? (
+                        <div className="font-bold" onClick={handleLogout}>
+                            <p>Đăng xuất</p>
+                        </div>
+                    ) : (
+                        <div
+                            className="font-bold"
+                            onClick={() => navigate("/login")}
+                        >
+                            <p>Đăng nhập hoặc Đăng ký</p>
+                        </div>
+                    ),
+                    key: "2",
+                },
+            ];
+    }
 
     useEffect(() => {
         if (!isTop) {
@@ -163,14 +238,16 @@ const NavBar = ({ isTop }: Props) => {
 
                     {/* RightSide */}
                     <div className="flex w-1/5 items-center justify-end gap-4">
-                        <button
-                            className="hidden h-9 items-center rounded-full p-3 hover:bg-gray-300 lg:flex"
-                            onClick={() => setOpenHostModal(true)}
-                        >
-                            <p className="text-[0.9rem] font-bold">
-                                Trở thành Host
-                            </p>
-                        </button>
+                        {storedUser?.role === "user" && (
+                            <button
+                                className="hidden h-9 items-center rounded-full p-3 hover:bg-gray-300 lg:flex"
+                                onClick={() => setOpenHostModal(true)}
+                            >
+                                <p className="text-[0.9rem] font-bold">
+                                    Đăng tin
+                                </p>
+                            </button>
+                        )}
                         <Dropdown menu={{ items }} trigger={["click"]}>
                             <button className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200 hover:bg-gray-300">
                                 {storedUser.id ? (
@@ -198,6 +275,7 @@ const NavBar = ({ isTop }: Props) => {
                         <div>
                             <button
                                 className={`rounded-lg bg-gray-200 px-6 py-2 text-white ${selectedHostOption && "bg-gray-800"}`}
+                                onClick={() => navigate("")}
                             >
                                 Tiếp tục
                             </button>
