@@ -31,39 +31,76 @@ const LeftSideBar = ({ className }: Props) => {
     };
 
     let menuItems: MenuItemType[] = [];
-    if (user.role === "host") {
-        menuItems = [
-            {
-                key: "dashboard",
-                label: <p>Tổng quan</p>,
-                icon: <FaTachometerAlt />,
-            },
-            {
-                key: "account",
-                label: <p>Tài khoản của tôi</p>,
-                icon: <FaUser />,
-                children: [
-                    {
-                        key: "account/profile",
-                        label: <p>Hồ sơ</p>,
-                    },
-                    {
-                        key: "account/change-password",
-                        label: <p>Đổi mật khẩu</p>,
-                    },
-                ],
-            },
-            {
-                key: "posts",
-                label: "Quản lí bài đăng",
-                icon: <FaHome />,
-            },
-            {
-                key: "posts/create",
-                label: "Tạo bài đăng mới",
-                icon: <BsHouseAddFill />,
-            },
-        ];
+
+    switch (user.role) {
+        case "user":
+            menuItems = [
+                {
+                    key: "dashboard",
+                    label: <p>Tổng quan</p>,
+                    icon: <FaTachometerAlt />,
+                },
+                {
+                    key: "account",
+                    label: <p>Tài khoản của tôi</p>,
+                    icon: <FaUser />,
+                    children: [
+                        {
+                            key: "account/profile",
+                            label: <p>Hồ sơ</p>,
+                        },
+                        {
+                            key: "account/change-password",
+                            label: <p>Đổi mật khẩu</p>,
+                        },
+                    ],
+                },
+                {
+                    key: "posts",
+                    label: "Quản lí bài đăng",
+                    icon: <FaHome />,
+                },
+                {
+                    key: "posts/create",
+                    label: "Tạo bài đăng mới",
+                    icon: <BsHouseAddFill />,
+                },
+            ];
+            break;
+        case "admin":
+            menuItems = [
+                {
+                    key: "dashboard",
+                    label: <p>Tổng quan</p>,
+                    icon: <FaTachometerAlt />,
+                },
+                {
+                    key: "account",
+                    label: <p>Tài khoản của tôi</p>,
+                    icon: <FaUser />,
+                    children: [
+                        {
+                            key: "account/profile",
+                            label: <p>Hồ sơ</p>,
+                        },
+                        {
+                            key: "account/change-password",
+                            label: <p>Đổi mật khẩu</p>,
+                        },
+                    ],
+                },
+                {
+                    key: "users",
+                    label: "Quản lí người dùng",
+                    icon: <FaHome />,
+                },
+                {
+                    key: "posts",
+                    label: "Quản lí bài đăng",
+                    icon: <FaHome />,
+                },
+            ];
+            break;
     }
 
     // 👉 Navigate khi click

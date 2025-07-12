@@ -16,6 +16,7 @@ const Home = () => {
             })
             .finally(() => setLoading(false));
     }, []);
+
     return (
         <>
             <div className="w-full">
@@ -25,6 +26,7 @@ const Home = () => {
                         data={loading ? Array(6).fill(null) : posts}
                         loading={loading}
                     />
+
                 </div>
                 <div className="mx-auto mt-14 w-[90%]">
                     <PostCarousel

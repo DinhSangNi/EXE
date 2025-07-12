@@ -6,6 +6,7 @@ type Props = {
     value?: string | null;
     onChange?: (value: string) => void;
     type: "province" | "district" | "ward";
+    mode?: "default" | "filter";
     provinceCode?: string | null;
     districtCode?: string | null;
     className?: string;
@@ -14,6 +15,7 @@ type Props = {
 const AddressSelector = ({
     value,
     type,
+    mode = "default",
     provinceCode,
     districtCode,
     className,
@@ -53,6 +55,12 @@ const AddressSelector = ({
                                     label: province.name,
                                 })
                             );
+                            mode === "filter" &&
+                                type === "province" &&
+                                (resolvedData = [
+                                    { label: "Toàn quốc", value: "" },
+                                    ...resolvedData,
+                                ]);
                         }
                         break;
 
@@ -172,6 +180,11 @@ const AddressSelector = ({
                 <Select
                     labelInValue={true}
                     value={selected}
+                    defaultValue={
+                        mode === "filter" && type === "province"
+                            ? { label: "Tất cả", value: "" }
+                            : undefined
+                    }
                     showSearch
                     filterOption={false}
                     placeholder={

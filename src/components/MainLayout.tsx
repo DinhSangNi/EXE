@@ -7,7 +7,7 @@ const MainLayout = () => {
         <>
             <div className="h-full w-full">
                 <Header />
-                <main className="w-full pt-[162px]">
+                <main className="w-full pt-[var(--header-height)]">
                     <Outlet />
                 </main>
                 <Footer />

@@ -7,8 +7,10 @@ import NotFound from "@/pages/NotFound";
 import PostDetail from "@/pages/PostDetail";
 import Register from "@/pages/Register";
 import { Outlet } from "react-router-dom";
-import Posts from "@/pages/Posts";
+import PostsManagement from "@/pages/PostsManagement";
 import EditPost from "@/pages/EditPost";
+import AdminOverview from "@/pages/AdminOverview";
+import Posts from "@/pages/posts";
 
 export const routes = [
     {
@@ -18,6 +20,10 @@ export const routes = [
             {
                 path: "/",
                 element: <Home />,
+            },
+            {
+                path: "/posts",
+                element: <Posts />,
             },
             {
                 path: "/posts/:id",
@@ -30,7 +36,7 @@ export const routes = [
         element: <DashboardLayout />,
         children: [
             {
-                path: "host",
+                path: "user",
                 element: <Outlet />,
                 children: [
                     {
@@ -47,9 +53,37 @@ export const routes = [
                             },
                             {
                                 path: "",
-                                element: <Posts />,
+                                element: <PostsManagement />,
                             },
                         ],
+                    },
+                ],
+            },
+            {
+                path: "admin",
+                element: <Outlet />,
+                children: [
+                    {
+                        path: "posts",
+                        element: <Outlet />,
+                        children: [
+                            {
+                                path: "edit/:id",
+                                element: <EditPost />,
+                            },
+                            {
+                                path: "create",
+                                element: <CreatePost />,
+                            },
+                            {
+                                path: "",
+                                element: <PostsManagement role="admin" />,
+                            },
+                        ],
+                    },
+                    {
+                        path: "overview",
+                        element: <AdminOverview />,
                     },
                 ],
             },

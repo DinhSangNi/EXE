@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import PostCard from "./PostCard";
-// import "swiper/css";
+import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ type Props = {
 };
 
 const PostCarousel = ({ title, data = [], loading = false }: Props) => {
+
     const swiperRef = useRef<SwiperCore>(null);
     const navigate = useNavigate();
 
@@ -50,17 +51,17 @@ const PostCarousel = ({ title, data = [], loading = false }: Props) => {
                 </div>
                 <Swiper
                     onSwiper={(swiper) => (swiperRef.current = swiper)}
-                    spaceBetween={10}
-                    slidesPerView={2}
+                    spaceBetween={25}
+                    slidesPerView={1}
                     breakpoints={{
-                        640: { slidesPerView: 3 },
-                        768: { slidesPerView: 4 },
-                        1024: { slidesPerView: 5 },
+                        640: { slidesPerView: 1 },
+                        768: { slidesPerView: 1 },
+                        1024: { slidesPerView: 2 },
                         1280: {
-                            slidesPerView: 6,
+                            slidesPerView: 3,
                         },
                         1536: {
-                            slidesPerView: 7,
+                            slidesPerView: 3,
                         },
                     }}
                 >
@@ -82,6 +83,7 @@ const PostCarousel = ({ title, data = [], loading = false }: Props) => {
                             </div>
                         </SwiperSlide>
                     ))}
+
                 </Swiper>
             </div>
         </>
