@@ -98,14 +98,14 @@ const EditPost = () => {
     });
     const navigate = useNavigate();
 
+    console.log(location);
+
     const {
-        handleSubmit,
         control,
-        formState: { errors, dirtyFields },
+        formState: { errors },
         watch,
         reset,
         setValue,
-        setError,
     } = useForm<CreateRoomForm>({
         resolver: zodResolver(createRoomFormSchema),
         defaultValues: {
