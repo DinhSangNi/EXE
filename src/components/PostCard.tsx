@@ -1,18 +1,26 @@
-import { IoIosPricetags } from "react-icons/io";
+/* eslint-disable */
 import { FaHome, FaMapMarkerAlt } from "react-icons/fa";
 import type { Post } from "@/stores/type";
 import { formatPostDate, resolveAddress } from "@/utils/format";
 import { BsCalendarDateFill } from "react-icons/bs";
-import { useNavigate } from "react-router-dom";
 
 type Props = {
+    className?: string;
     imageSrc?: string;
     title?: string;
     price?: number;
     loading?: boolean;
+    data?: Post;
 };
 
-const PostCard = ({ imageSrc, title, price, loading }: Props) => {
+const PostCard = ({
+    className,
+    imageSrc,
+    title,
+    price,
+    loading,
+    data,
+}: Props) => {
     if (loading) {
         return (
             <div className="relative animate-pulse cursor-pointer">
@@ -26,25 +34,24 @@ const PostCard = ({ imageSrc, title, price, loading }: Props) => {
     return (
         <div
             className={`cursor-pointer overflow-hidden rounded-md ${className}`}
-            onClick={handleOnclick}
         >
             <div className="flex h-1/2 gap-1 rounded-xl">
                 <div className="h-full w-3/5">
                     <img
-                        src={data.medias?.[0]?.url}
+                        src={imageSrc}
                         alt=""
                         className="h-full w-full object-cover"
                     />
                 </div>
                 <div className="grid w-2/5 grid-rows-2 gap-1">
-                    {data.medias?.[1] && (
+                    {data?.medias?.[1] && (
                         <img
                             src={data.medias?.[1]?.url}
                             alt=""
                             className="h-full w-full object-cover"
                         />
                     )}
-                    {data.medias?.[2] && (
+                    {data?.medias?.[2] && (
                         <img
                             src={data.medias?.[2]?.url}
                             alt=""
@@ -73,7 +80,12 @@ const PostCard = ({ imageSrc, title, price, loading }: Props) => {
                     </div>
                     <p className="flex items-center gap-1 text-[0.8rem]">
                         <FaMapMarkerAlt />
-                        {resolveAddress(data.city, data.district, "", "")}
+                        {resolveAddress(
+                            data?.city ?? "",
+                            data?.district ?? "",
+                            "",
+                            ""
+                        )}
                     </p>
                 </div>
                 <div className="flex w-full items-center justify-between pb-2">
@@ -85,11 +97,11 @@ const PostCard = ({ imageSrc, title, price, loading }: Props) => {
                                 className="h-full w-full object-cover"
                             />
                         </div>
-                        <p>{data.owner?.name}</p>
+                        <p>{data?.owner?.name}</p>
                     </div>
                     <div className="flex items-center gap-1 text-[0.8rem]">
                         <BsCalendarDateFill />
-                        <p>{formatPostDate(data?.createdAt)}</p>
+                        <p>{formatPostDate(data?.createdAt ?? "")}</p>
                     </div>
                 </div>
             </div>

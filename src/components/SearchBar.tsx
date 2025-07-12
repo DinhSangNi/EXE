@@ -157,30 +157,40 @@ const Searchbar = ({ isTop }: Props) => {
                         {!address.province.name ? (
                             <div className="max-h-[300px] overflow-y-auto">
                                 {provinces &&
-                                    provinces.map((pro: any) => (
-                                        <div
-                                            className="w-full cursor-pointer px-4 py-2 hover:bg-gray-100"
-                                            onClick={() =>
-                                                handleSelectProvince(pro)
-                                            }
-                                        >
-                                            <p>{pro.name}</p>
-                                        </div>
-                                    ))}
+                                    provinces.map(
+                                        (pro: {
+                                            name: string;
+                                            code: number;
+                                        }) => (
+                                            <div
+                                                className="w-full cursor-pointer px-4 py-2 hover:bg-gray-100"
+                                                onClick={() =>
+                                                    handleSelectProvince(pro)
+                                                }
+                                            >
+                                                <p>{pro.name}</p>
+                                            </div>
+                                        )
+                                    )}
                             </div>
                         ) : (
                             <div className="max-h-[300px] overflow-y-auto">
                                 {districts &&
-                                    districts.map((dis: any) => (
-                                        <div
-                                            className="w-full cursor-pointer px-4 py-2 hover:bg-gray-100"
-                                            onClick={() =>
-                                                handleSelectDistrict(dis)
-                                            }
-                                        >
-                                            <p>{dis.name}</p>
-                                        </div>
-                                    ))}
+                                    districts.map(
+                                        (dis: {
+                                            name: string;
+                                            code: number;
+                                        }) => (
+                                            <div
+                                                className="w-full cursor-pointer px-4 py-2 hover:bg-gray-100"
+                                                onClick={() =>
+                                                    handleSelectDistrict(dis)
+                                                }
+                                            >
+                                                <p>{dis.name}</p>
+                                            </div>
+                                        )
+                                    )}
                             </div>
                         )}
                     </div>

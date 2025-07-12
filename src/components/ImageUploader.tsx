@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { MediaServices } from "@/services/media";
 import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";

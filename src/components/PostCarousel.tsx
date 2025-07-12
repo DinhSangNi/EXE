@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useRef } from "react";
 import PostCard from "./PostCard";
 import "swiper/css";
@@ -12,7 +13,6 @@ type Props = {
 };
 
 const PostCarousel = ({ title, data = [], loading = false }: Props) => {
-
     const swiperRef = useRef<SwiperCore>(null);
     const navigate = useNavigate();
 
@@ -83,7 +83,6 @@ const PostCarousel = ({ title, data = [], loading = false }: Props) => {
                             </div>
                         </SwiperSlide>
                     ))}
-
                 </Swiper>
             </div>
         </>

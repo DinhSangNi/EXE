@@ -3,7 +3,6 @@ import { IoHome } from "react-icons/io5";
 import { FaConciergeBell } from "react-icons/fa";
 import { FaBars } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
-import { NavOptions } from "@/stores/enum";
 import { Dropdown, Modal, type MenuProps } from "antd";
 import { useAnimation, motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,22 +18,23 @@ type Props = {
 
 const hostOptions = [
     {
-        title: NavOptions.ACCOMMODATION,
+        title: "accomodation",
     },
     {
-        title: NavOptions.SERVICE,
+        title: "service",
     },
 ];
 
 const NavBar = ({ isTop }: Props) => {
     const storedUser = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch<AppDispatch>();
-    const [selectedOption, setSelectedOption] = useState<NavOptions>(
-        NavOptions.ACCOMMODATION
-    );
+    const [selectedOption, setSelectedOption] = useState<
+        "accomodation" | "service"
+    >("accomodation");
     const [openHostModal, setOpenHostModal] = useState<boolean>(false);
-    const [selectedHostOption, setSelectedHostOption] =
-        useState<NavOptions | null>();
+    const [selectedHostOption, setSelectedHostOption] = useState<
+        "accomodation" | "service" | null
+    >();
     const optionRef = useRef<HTMLDivElement>(null);
     const searchAnt = useAnimation();
     const navigate = useNavigate();
@@ -204,34 +204,30 @@ const NavBar = ({ isTop }: Props) => {
                     >
                         <button
                             className="group relative flex cursor-pointer items-center gap-2 pb-2"
-                            onClick={() =>
-                                setSelectedOption(NavOptions.ACCOMMODATION)
-                            }
+                            onClick={() => setSelectedOption("accomodation")}
                         >
                             <IoHome className="h-8 w-8 text-red-500 transition-transform duration-300 group-hover:scale-110" />
                             <p
-                                className={`font-bold ${selectedOption === NavOptions.ACCOMMODATION ? "text-black" : "text-gray-500"}`}
+                                className={`font-bold ${selectedOption === "accomodation" ? "text-black" : "text-gray-500"}`}
                             >
-                                {NavOptions.ACCOMMODATION}
+                                {"accomodation"}
                             </p>
                             <span
-                                className={`absolute bottom-0 h-[2px] w-full origin-left scale-x-0 bg-black transition-transform duration-300 group-hover:scale-x-100 ${selectedOption === NavOptions.ACCOMMODATION && "scale-x-100"}`}
+                                className={`absolute bottom-0 h-[2px] w-full origin-left scale-x-0 bg-black transition-transform duration-300 group-hover:scale-x-100 ${selectedOption === "accomodation" && "scale-x-100"}`}
                             ></span>
                         </button>
                         <button
                             className="group relative flex cursor-pointer items-center gap-2 pb-2"
-                            onClick={() =>
-                                setSelectedOption(NavOptions.SERVICE)
-                            }
+                            onClick={() => setSelectedOption("service")}
                         >
                             <FaConciergeBell className="h-8 w-8 text-orange-300 transition-transform duration-300 group-hover:scale-110" />
                             <p
-                                className={`font-bold ${selectedOption === NavOptions.SERVICE ? "text-black" : "text-gray-500"}`}
+                                className={`font-bold ${selectedOption === "service" ? "text-black" : "text-gray-500"}`}
                             >
-                                {NavOptions.SERVICE}
+                                {"service"}
                             </p>
                             <span
-                                className={`absolute bottom-0 h-[2px] w-full origin-left scale-x-0 bg-black transition-transform duration-300 group-hover:scale-x-100 ${selectedOption === NavOptions.SERVICE && "scale-x-100"}`}
+                                className={`absolute bottom-0 h-[2px] w-full origin-left scale-x-0 bg-black transition-transform duration-300 group-hover:scale-x-100 ${selectedOption === "service" && "scale-x-100"}`}
                             ></span>
                         </button>
                     </motion.div>
@@ -287,18 +283,21 @@ const NavBar = ({ isTop }: Props) => {
                             Bạn muốn cung cấp gì?
                         </h1>
                         <div className="mt-6 flex justify-between gap-4">
-                            {hostOptions.map((opt: { title: NavOptions }) => {
+                            {hostOptions.map((opt: { title: string }) => {
                                 return (
                                     <div
                                         key={opt.title}
                                         className={`relative h-[300px] flex-1 cursor-pointer rounded-xl border-2 transition-colors duration-200 hover:bg-gray-200 ${selectedHostOption === opt.title ? "border-black" : "border-gray-200"}`}
                                         onClick={() => {
-                                            setSelectedHostOption(opt.title);
+                                            setSelectedHostOption(
+                                                opt.title as
+                                                    | "accomodation"
+                                                    | "service"
+                                            );
                                         }}
                                     >
                                         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                                            {opt.title ===
-                                            NavOptions.ACCOMMODATION ? (
+                                            {opt.title === "accomodation" ? (
                                                 <IoHome className="h-16 w-16" />
                                             ) : (
                                                 <FaConciergeBell className="h-16 w-16" />

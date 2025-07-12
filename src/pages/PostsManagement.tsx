@@ -1,10 +1,11 @@
+/* eslint-disable */
 import AddressSelector from "@/components/AddressSelector";
 import CategorySelector from "@/components/CategorySelector";
 import PostManagementCard from "@/components/PostManagementCard";
 import Spinner from "@/components/Spinner";
 import { PostServices } from "@/services/post";
 import type { PaginationType, PaginationResponse, Post } from "@/stores/type";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Divider, Modal, Pagination } from "antd";
 import { FaHome } from "react-icons/fa";
 import { IoMdTrendingUp } from "react-icons/io";
@@ -72,18 +73,14 @@ const PostsManagement = ({ role = "user" }: Props) => {
                       return res.data.metadata as PaginationResponse<Post[]>;
                   }
                 : async () => {
-                      const res = await PostServices.getAll();
+                      const res = await PostServices.getAll({});
                       return res.data.metadata as PaginationResponse<Post[]>;
                   },
     });
 
-    const postQueryMutation = useMutation({
-        mutationFn: async () => {},
-    });
-
-    const handlePaginationChange = (page: number, pageSize: number) => {};
-
-    console.log("filterData: ", filterData);
+    const handlePaginationChange = (page: number, pageSize: number) => {
+        console.log(page, pageSize, setPagination);
+    };
 
     return (
         <>

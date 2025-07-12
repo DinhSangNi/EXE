@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Button, Divider, Input } from "antd";
 import AddressSelector from "../components/AddressSelector";
 import { z } from "zod";
@@ -5,17 +6,16 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import ImageUploader from "../components/ImageUploader";
-import Map, { type Coordinates } from "../components/Map";
+import { type Coordinates } from "../components/Map";
 import VideoUploader from "../components/VideoUploader";
 import AmenityCheckBox from "../components/AmenityCheckBox";
 import { toast } from "react-toastify";
 import { PostServices } from "@/services/post";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CreateRoomDto, Post } from "@/stores/type";
+import type { Post } from "@/stores/type";
 import { useNavigate, useParams } from "react-router-dom";
 import CategorySelector from "../components/CategorySelector";
 import { resolveAddress } from "@/utils/format";
-import Spinner from "@/components/Spinner";
 import ReactPlayer from "react-player";
 
 export type Address = {

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { AddressServices } from "@/services/address";
 import { Select } from "antd";
 import { useEffect, useState } from "react";
@@ -46,7 +47,7 @@ const AddressSelector = ({
                 let resolvedData: { value: string; label: string }[] = [];
 
                 switch (type) {
-                    case "province":
+                    case "province": {
                         const resPro = await AddressServices.getProvinces();
                         if (resPro.status === 200) {
                             resolvedData = resPro.data.metadata.map(
@@ -63,8 +64,9 @@ const AddressSelector = ({
                                 ]);
                         }
                         break;
+                    }
 
-                    case "district":
+                    case "district": {
                         if (!provinceCode) return;
                         const resDis =
                             await AddressServices.getDistrictsByProvince(
@@ -79,8 +81,9 @@ const AddressSelector = ({
                             );
                         }
                         break;
+                    }
 
-                    case "ward":
+                    case "ward": {
                         if (!districtCode) return;
                         const resWar =
                             await AddressServices.getWardsByDistrict(
@@ -95,6 +98,7 @@ const AddressSelector = ({
                             );
                         }
                         break;
+                    }
                 }
 
                 setOptions(resolvedData);

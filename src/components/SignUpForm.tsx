@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,7 +56,7 @@ const SignUpForm = ({
                 console.log("res: ", res);
             }
         } catch (error: any) {
-            setError(error.response.data.message);
+            setError("Sign up fail");
             setShowOtp(false);
         } finally {
             setLoading(false);

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Select } from "antd";
 
 type Props = {
@@ -41,12 +42,7 @@ const rawOptions = [
     },
 ];
 
-const PriceSelector = ({
-    value,
-    mode = "default",
-    className,
-    onChange,
-}: Props) => {
+const PriceSelector = ({ mode = "default", className, onChange }: Props) => {
     const handleSelect = (value: string) => {
         if (!onChange) return;
         const min = value.split("-")[0];

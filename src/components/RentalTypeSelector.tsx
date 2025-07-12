@@ -25,7 +25,7 @@ const RentalTypeSelector = ({ className, value, onChange }: Props) => {
 
     const handleChange = (value: string) => {
         setSelected(value);
-        onChange && onChange(value);
+        onChange?.(value);
     };
     return (
         <div className={`${className}`}>

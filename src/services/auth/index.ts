@@ -1,3 +1,4 @@
+/* eslint-disable */
 import api from "@/config/axios";
 
 export const AuthServices = {

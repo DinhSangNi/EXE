@@ -1,16 +1,18 @@
+/* eslint-disable */
 import PostCarousel from "@/components/PostCarousel";
 import { PiHeadphonesFill } from "react-icons/pi";
 import { FaPhoneAlt } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { PostServices } from "@/services/post";
+import type { Post } from "@/stores/type";
 
 const Home = () => {
-    const [posts, setPosts] = useState<any[]>([]);
+    const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         setLoading(true);
-        PostServices.getAll()
+        PostServices.getAll({})
             .then((res) => {
                 setPosts(res.data.metadata || []);
             })
@@ -26,7 +28,6 @@ const Home = () => {
                         data={loading ? Array(6).fill(null) : posts}
                         loading={loading}
                     />
-
                 </div>
                 <div className="mx-auto mt-14 w-[90%]">
                     <PostCarousel

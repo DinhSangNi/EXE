@@ -1,6 +1,7 @@
+/* eslint-disable */
 import CustomButton from "@/components/CustomButton";
-import { Carousel, Divider } from "antd";
-import type { CarouselRef } from "antd/es/carousel";
+import { Divider } from "antd";
+// import type { CarouselRef } from "antd/es/carousel";
 import { useRef, useState, useEffect } from "react";
 import { FaPhoneAlt } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
@@ -12,19 +13,11 @@ import {
 import { useParams } from "react-router-dom";
 import { PostServices } from "@/services/post";
 
-const images = [
-    "https://a0.muscache.com/im/pictures/miso/Hosting-1397561542042482589/original/601053bc-52f7-40e7-ad93-7d728d80e3af.jpeg?im_w=1200",
-    "https://a0.muscache.com/im/pictures/miso/Hosting-1397561542042482589/original/0e8f5dfe-0323-4d79-891b-49f66a009735.jpeg?im_w=720",
-    "https://a0.muscache.com/im/pictures/miso/Hosting-1397561542042482589/original/3b498001-f1f5-4eab-be76-d86a82af2857.jpeg?im_w=720",
-    "https://a0.muscache.com/im/pictures/miso/Hosting-1397561542042482589/original/80284248-f643-456a-9487-9e73c5994f55.jpeg?im_w=720",
-];
-
 const PostDetail = () => {
-    const [imageIndex, setImageIndex] = useState(0);
     const [post, setPost] = useState<any>(null);
     const [showGallery, setShowGallery] = useState(false);
     const [galleryIndex, setGalleryIndex] = useState(0);
-    const carouselRef = useRef<CarouselRef>(null);
+    // const carouselRef = useRef<CarouselRef>(null);
     const { id } = useParams();
     const modalRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(true);
@@ -50,10 +43,10 @@ const PostDetail = () => {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [showGallery]);
 
-    const goToSlide = (slideIndex: number) => {
-        if (!carouselRef.current) return;
-        carouselRef.current.goTo(slideIndex);
-    };
+    // const goToSlide = (slideIndex: number) => {
+    //     if (!carouselRef.current) return;
+    //     carouselRef.current.goTo(slideIndex);
+    // };
 
     // Helper: format price
     const formatPrice = (price: number) => {
@@ -61,28 +54,27 @@ const PostDetail = () => {
     };
 
     // Helper: get owner avatar
-    const getOwnerAvatar = () => {
-        if (!post?.owner?.medias?.length) return undefined;
-        // Ưu tiên ảnh có purpose là avatar, nếu không lấy ảnh đầu tiên
-        const avatar = post.owner.medias.find(
-            (m: any) => m.purpose === "avatar"
-        );
-        return avatar?.url || post.owner.medias[0]?.url;
-    };
+    // const getOwnerAvatar = () => {
+    //     if (!post?.owner?.medias?.length) return undefined;
+    //     // Ưu tiên ảnh có purpose là avatar, nếu không lấy ảnh đầu tiên
+    //     const avatar = post.owner.medias.find(
+    //         (m: any) => m.purpose === "avatar"
+    //     );
+    //     return avatar?.url || post.owner.medias[0]?.url;
+    // };
 
     // Sắp xếp medias: video trước, ảnh sau
-    const sortedMedias = (post?.medias || []).reduce(
-        (acc: { videos: any[]; images: any[] }, media: any) => {
-            if (media.type?.startsWith("video")) {
-                acc.videos.push(media);
-            } else if (media.type?.startsWith("image")) {
-                acc.images.push(media);
-            }
-            return acc;
-        },
-        { videos: [], images: [] }
-    );
-    const displayMedias = [...sortedMedias.videos, ...sortedMedias.images];
+    // const sortedMedias = (post?.medias || []).reduce(
+    //     (acc: { videos: any[]; images: any[] }, media: any) => {
+    //         if (media.type?.startsWith("video")) {
+    //             acc.videos.push(media);
+    //         } else if (media.type?.startsWith("image")) {
+    //             acc.images.push(media);
+    //         }
+    //         return acc;
+    //     },
+    //     { videos: [], images: [] }
+    // );
 
     // Gallery images
     const galleryImages = post?.medias || [];

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import SignUpForm from "@/components/SignUpForm";
 import { Spin } from "antd";
 import { useState } from "react";

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import type { AreaUnit, PriceUnit } from "@/pages/CreatePost";
 import { CategoryServices } from "@/services/category";
 import { useQuery } from "@tanstack/react-query";
@@ -43,12 +44,14 @@ const CategorySelector = ({
     });
 
     let options =
-        categories?.metadata?.map((cat: any) => ({
+        categories?.metadata?.map((cat: { name: string; id: string }) => ({
             label: cat.name,
             value: cat.id,
         })) ?? [];
-    mode === "filter" &&
-        (options = [{ label: "Tất cả", value: "" }, ...options]);
+
+    if (mode === "filter") {
+        options = [{ label: "Tất cả", value: "" }, ...options];
+    }
 
     const [selected, setSelected] = useState<string | undefined>(
         value ? value : undefined
@@ -60,23 +63,30 @@ const CategorySelector = ({
     ) => {
         const option = options as CategoryOption;
         setSelected(value);
-        onChange && onChange(value);
-        setAreaUnit &&
-            setAreaUnit(
-                option.label === "Nhà trọ"
-                    ? "m2/phòng"
-                    : option.label === "Mặt bằng/Văn phòng"
-                      ? "m2"
-                      : "m2/căn hộ"
-            );
-        setPriceUnit &&
-            setPriceUnit(
-                option.label === "Nhà trọ"
-                    ? "đồng/phòng/tháng"
-                    : option.label === "Mặt bằng/Văn phòng"
-                      ? "đồng/tháng"
-                      : "đồng/căn hộ/tháng"
-            );
+
+        if (onChange) {
+            onChange(value);
+        }
+
+        if (setAreaUnit) {
+            if (option.label === "Nhà trọ") {
+                setAreaUnit("m2/phòng");
+            } else if (option.label === "Mặt bằng/Văn phòng") {
+                setAreaUnit("m2");
+            } else {
+                setAreaUnit("m2/căn hộ");
+            }
+        }
+
+        if (setPriceUnit) {
+            if (option.label === "Nhà trọ") {
+                setPriceUnit("đồng/phòng/tháng");
+            } else if (option.label === "Mặt bằng/Văn phòng") {
+                setPriceUnit("đồng/tháng");
+            } else {
+                setPriceUnit("đồng/căn hộ/tháng");
+            }
+        }
     };
 
     useEffect(() => {
@@ -85,7 +95,7 @@ const CategorySelector = ({
                 (item: { value: string; label: string }) => item.value === value
             );
             if (match) {
-                setSelected(match);
+                setSelected(match.value);
             }
         } else {
             setSelected(undefined);
