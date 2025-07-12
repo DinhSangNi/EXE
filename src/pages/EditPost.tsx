@@ -155,53 +155,53 @@ const EditPost = () => {
     const street = watch("street");
     const videoUrl = watch("videoUrl");
 
-    const handleOnSubmit = async (formData: CreateRoomForm) => {
-        const changedFields = Object.keys(dirtyFields).reduce((result, key) => {
-            const k = key as keyof CreateRoomForm;
-            result[k] = formData[k] as CreateRoomForm[typeof k];
-            return result;
-        }, {} as Partial<CreateRoomForm>);
+    // const handleOnSubmit = async (formData: CreateRoomForm) => {
+    //     const changedFields = Object.keys(dirtyFields).reduce((result, key) => {
+    //         const k = key as keyof CreateRoomForm;
+    //         result[k] = formData[k] as CreateRoomForm[typeof k];
+    //         return result;
+    //     }, {} as Partial<CreateRoomForm>);
 
-        const { imageIds, videoId, videoUrl, province, ...restChanged } =
-            changedFields;
+    //     const { imageIds, videoId, videoUrl, province, ...restChanged } =
+    //         changedFields;
 
-        const isYouTubeUrl = (url: string) => {
-            return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(
-                url
-            );
-        };
+    //     const isYouTubeUrl = (url: string) => {
+    //         return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(
+    //             url
+    //         );
+    //     };
 
-        if (!videoUrl || !isYouTubeUrl(videoUrl)) {
-            setError("videoUrl", {
-                message: "Link video phải là video YouTube hợp lệ!",
-            });
-            return;
-        }
+    //     if (!videoUrl || !isYouTubeUrl(videoUrl)) {
+    //         setError("videoUrl", {
+    //             message: "Link video phải là video YouTube hợp lệ!",
+    //         });
+    //         return;
+    //     }
 
-        const resolvedChangedData = {
-            ...restChanged,
-            ...(province && { city: province }),
-            ...(location && {
-                latitude: location.lat,
-                longitude: location.lng,
-            }),
-            ...(videoUrl && { url: videoUrl }),
-            ...(imageIds || videoId
-                ? {
-                      mediaIds: [
-                          ...(imageIds || []),
-                          ...(videoId ? [videoId] : []),
-                      ],
-                  }
-                : {}),
-        };
+    //     const resolvedChangedData = {
+    //         ...restChanged,
+    //         ...(province && { city: province }),
+    //         ...(location && {
+    //             latitude: location.lat,
+    //             longitude: location.lng,
+    //         }),
+    //         ...(videoUrl && { url: videoUrl }),
+    //         ...(imageIds || videoId
+    //             ? {
+    //                   mediaIds: [
+    //                       ...(imageIds || []),
+    //                       ...(videoId ? [videoId] : []),
+    //                   ],
+    //               }
+    //             : {}),
+    //     };
 
-        updateMutation.mutateAsync(resolvedChangedData);
+    //     updateMutation.mutateAsync(resolvedChangedData);
 
-        // console.log("changedFields: ", changedFields);
-        // console.log("resolvedChangedData: ", resolvedChangedData);
-        // console.log("data: ", resolvedChangedData);
-    };
+    //     // console.log("changedFields: ", changedFields);
+    //     // console.log("resolvedChangedData: ", resolvedChangedData);
+    //     // console.log("data: ", resolvedChangedData);
+    // };
 
     useEffect(() => {
         setAddress(resolveAddress(province, district, ward, street ?? ""));
@@ -264,7 +264,7 @@ const EditPost = () => {
                 </h1>
                 <Divider />
                 <div className="">
-                    <form onSubmit={handleSubmit(handleOnSubmit)}>
+                    <form>
                         {/* Address */}
                         <div className="mb-8 w-full">
                             <h1 className="mb-4 text-[1.2rem] font-bold">
