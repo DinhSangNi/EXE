@@ -6,16 +6,15 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import ImageUploader from "../components/ImageUploader";
-import { type Coordinates } from "../components/Map";
+import Map, { type Coordinates } from "../components/Map";
 import VideoUploader from "../components/VideoUploader";
 import AmenityCheckBox from "../components/AmenityCheckBox";
 import { toast } from "react-toastify";
 import { PostServices } from "@/services/post";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { Post } from "@/stores/type";
-import { useNavigate, useParams } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { CreateRoomDto } from "@/stores/type";
+import { useNavigate } from "react-router-dom";
 import CategorySelector from "../components/CategorySelector";
-import { resolveAddress } from "@/utils/format";
 import ReactPlayer from "react-player";
 
 export type Address = {
@@ -86,9 +85,8 @@ export type CreateRoomForm = {
     amenityIds?: string[];
 };
 
-const EditPost = () => {
+const CreateAccommodationPost = () => {
     const queryClient = useQueryClient();
-    const { id } = useParams();
     const [address, setAddress] = useState<string>("");
     const [areaUnit, setAreaUnit] = useState<AreaUnit>("m2/phòng");
     const [priceUnit, setPriceUnit] = useState<PriceUnit>("đồng/phòng/tháng");
@@ -97,14 +95,27 @@ const EditPost = () => {
         lng: 109.2193,
     });
     const navigate = useNavigate();
-
-    console.log(location);
+    const createMutation = useMutation({
+        mutationFn: async (payload: CreateRoomDto) => {
+            return await PostServices.create(payload);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["rooms"],
+            });
+            toast.success("Đã tạo phòng thành công !");
+            navigate("/user/posts");
+        },
+        onError: () => {
+            toast.error("Tạo phòng không thành công !");
+        },
+    });
 
     const {
+        handleSubmit,
         control,
         formState: { errors },
         watch,
-        reset,
         setValue,
     } = useForm<CreateRoomForm>({
         resolver: zodResolver(createRoomFormSchema),
@@ -113,39 +124,14 @@ const EditPost = () => {
             district: "",
             ward: "",
             street: "",
-            categoryId: "",
+            categoryId: undefined,
             title: "",
             description: "",
             square: undefined,
-            price: undefined,
             imageIds: undefined,
             videoId: undefined,
             videoUrl: undefined,
             amenityIds: undefined,
-        },
-    });
-
-    const { data: post, isSuccess } = useQuery({
-        queryKey: ["posts", id],
-        queryFn: async (): Promise<Post> => {
-            const res = await PostServices.getById(id as string);
-            return res.data.metadata;
-        },
-        // staleTime: 3 * 60 * 1000,
-    });
-    const updateMutation = useMutation({
-        mutationFn: async (payload: Partial<CreateRoomForm>) => {
-            return await PostServices.update(id as string, payload);
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["posts"],
-            });
-            toast.success("Đã tạo bài đăng thành công !");
-            navigate("/host/posts");
-        },
-        onError: () => {
-            toast.error("Tạo bài đăng không thành công !");
         },
     });
 
@@ -155,116 +141,46 @@ const EditPost = () => {
     const street = watch("street");
     const videoUrl = watch("videoUrl");
 
-    // const handleOnSubmit = async (formData: CreateRoomForm) => {
-    //     const changedFields = Object.keys(dirtyFields).reduce((result, key) => {
-    //         const k = key as keyof CreateRoomForm;
-    //         result[k] = formData[k] as CreateRoomForm[typeof k];
-    //         return result;
-    //     }, {} as Partial<CreateRoomForm>);
+    const handleOnSubmit = async (data: CreateRoomForm) => {
+        console.log("call");
+        const mediaIds = [
+            ...(data.imageIds || []),
+            ...(data.videoId ? [data.videoId] : []),
+        ];
 
-    //     const { imageIds, videoId, videoUrl, province, ...restChanged } =
-    //         changedFields;
+        const { imageIds, videoId, videoUrl, province, ...rest } = data;
+        if (!videoUrl?.includes("youtube") && videoUrl) {
+            setValue("videoUrl", undefined);
+            return;
+        }
+        const resolvedData = {
+            ...rest,
+            city: province,
+            latitude: location.lat,
+            longitude: location.lng,
+            mediaIds: mediaIds,
+            url: videoUrl,
+        };
 
-    //     const isYouTubeUrl = (url: string) => {
-    //         return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(
-    //             url
-    //         );
-    //     };
-
-    //     if (!videoUrl || !isYouTubeUrl(videoUrl)) {
-    //         setError("videoUrl", {
-    //             message: "Link video phải là video YouTube hợp lệ!",
-    //         });
-    //         return;
-    //     }
-
-    //     const resolvedChangedData = {
-    //         ...restChanged,
-    //         ...(province && { city: province }),
-    //         ...(location && {
-    //             latitude: location.lat,
-    //             longitude: location.lng,
-    //         }),
-    //         ...(videoUrl && { url: videoUrl }),
-    //         ...(imageIds || videoId
-    //             ? {
-    //                   mediaIds: [
-    //                       ...(imageIds || []),
-    //                       ...(videoId ? [videoId] : []),
-    //                   ],
-    //               }
-    //             : {}),
-    //     };
-
-    //     updateMutation.mutateAsync(resolvedChangedData);
-
-    //     // console.log("changedFields: ", changedFields);
-    //     // console.log("resolvedChangedData: ", resolvedChangedData);
-    //     // console.log("data: ", resolvedChangedData);
-    // };
+        createMutation.mutateAsync(resolvedData);
+        console.log("data: ", resolvedData);
+    };
 
     useEffect(() => {
-        setAddress(resolveAddress(province, district, ward, street ?? ""));
+        setAddress(
+            `${street ? `${street}, ` : ""}${ward ? `${ward.split("|")[1]}, ` : ""}${district ? `${district.split("|")[1]}, ` : ""}${province ? `${province.split("|")[1]}` : ""}`
+        );
     }, [province, district, ward, street]);
 
-    useEffect(() => {
-        if (isSuccess && post) {
-            console.log("post: ", post);
-            console.log(
-                "url: ",
-                post.medias.filter((item) => item.type.includes("video"))?.[0]
-                    ?.url ?? undefined
-            );
-            reset({
-                province: post.city,
-                district: post.district,
-                ward: post.ward,
-                street: post.street,
-                categoryId: post.category.id,
-                title: post.title,
-                description: post.description,
-                square: post.square,
-                price: post.price,
-                imageIds: post.medias.map((item) => {
-                    if (item.type.includes("image")) {
-                        return item.id;
-                    }
-                }),
-                videoId:
-                    post.medias.filter((item) =>
-                        item.type.includes("video/")
-                    )?.[0]?.id ?? undefined,
-                videoUrl:
-                    post.medias.filter((item) =>
-                        item.type.includes("video")
-                    )?.[0]?.url ?? undefined,
-                amenityIds: post.postAmenities.map((item) => item.amenity.id),
-            });
-            setLocation({
-                lat: post.latitude,
-                lng: post.longitude,
-            });
-        }
-    }, [isSuccess, post]);
-
-    console.log("videoUrl: ", videoUrl);
-
-    // if (isLoading)
-    //     return (
-    //         <div className="mx-auto flex min-h-screen w-3/4 items-center pb-8 pt-4">
-    //             <Spinner className="h-[100px] w-[100px]" />
-    //         </div>
-    //     );
+    console.log("errors: ", errors);
 
     return (
         <>
             <div className="mx-auto min-h-screen w-3/4 pb-8 pt-4">
-                <h1 className="text-[1.4rem] font-bold">
-                    Chỉnh sửa bài đăng: {id}
-                </h1>
+                <h1 className="text-[1.4rem] font-bold">Tạo phòng mới</h1>
                 <Divider />
                 <div className="">
-                    <form>
+                    <form onSubmit={handleSubmit(handleOnSubmit)}>
                         {/* Address */}
                         <div className="mb-8 w-full">
                             <h1 className="mb-4 text-[1.2rem] font-bold">
@@ -283,16 +199,9 @@ const EditPost = () => {
                                                             ? field.value
                                                             : null
                                                     }
-                                                    onChange={(
-                                                        value: string
-                                                    ) => {
-                                                        field.onChange(value);
-                                                        setValue(
-                                                            "district",
-                                                            ""
-                                                        );
-                                                        setValue("ward", "");
-                                                    }}
+                                                    onChange={(value: string) =>
+                                                        field.onChange(value)
+                                                    }
                                                     type="province"
                                                     className="w-1/4 text-[0.9rem]"
                                                 />
@@ -318,12 +227,9 @@ const EditPost = () => {
                                                             "|"
                                                         )?.[0]
                                                     }
-                                                    onChange={(
-                                                        value: string
-                                                    ) => {
-                                                        field.onChange(value);
-                                                        // setValue("ward", "");
-                                                    }}
+                                                    onChange={(value: string) =>
+                                                        field.onChange(value)
+                                                    }
                                                     type="district"
                                                     className="w-1/4 text-[0.9rem]"
                                                 />
@@ -397,12 +303,10 @@ const EditPost = () => {
                             <div className="w-full">
                                 <h1 className="mb-1 text-[0.9rem]">Bản đồ</h1>
                                 <div className="h-[300px] w-full">
-                                    {/* <Map
-                                        lat={location.lat}
-                                        lng={location.lng}
+                                    <Map
                                         address={address}
                                         onChange={setLocation}
-                                    /> */}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -482,7 +386,6 @@ const EditPost = () => {
                                     render={({ field }) => {
                                         return (
                                             <Input
-                                                {...field}
                                                 placeholder="Diện tích..."
                                                 id="square"
                                                 onChange={(e) => {
@@ -515,7 +418,7 @@ const EditPost = () => {
                                     htmlFor="price"
                                     className="mb-1 text-[0.9rem]"
                                 >
-                                    Giá
+                                    Diện tích
                                 </label>
                                 <Controller
                                     name="price"
@@ -523,7 +426,6 @@ const EditPost = () => {
                                     render={({ field }) => {
                                         return (
                                             <Input
-                                                value={field.value}
                                                 placeholder="Giá..."
                                                 id="price"
                                                 onChange={(e) => {
@@ -605,10 +507,6 @@ const EditPost = () => {
                                 name="imageIds"
                                 render={({ field }) => (
                                     <ImageUploader
-                                        defaultImages={post?.medias.filter(
-                                            (item) =>
-                                                item.type.includes("image")
-                                        )}
                                         imageIds={field.value}
                                         setImageIds={field.onChange}
                                     />
@@ -633,6 +531,7 @@ const EditPost = () => {
                                     control={control}
                                     render={({ field }) => (
                                         <Input
+                                            className="mb-4"
                                             {...field}
                                             onChange={(e) => {
                                                 e.target.value.trim() === ""
@@ -645,16 +544,12 @@ const EditPost = () => {
                                         />
                                     )}
                                 />
-                                {errors.videoUrl && (
-                                    <p className="text-[0.8rem] text-red-500">
-                                        {errors.videoUrl?.message}
-                                    </p>
-                                )}
-                                <p className="mt-4">
+                                <p>
                                     <span className="font-bold">Lưu ý:</span>{" "}
                                     Bạn có thể chọn video từ Youtube để hiển thị
                                     trên bài viết của mình.
                                 </p>
+
                                 {videoUrl && videoUrl.includes("youtube") && (
                                     <div className="aspect-video w-full">
                                         <ReactPlayer
@@ -666,7 +561,11 @@ const EditPost = () => {
                                     </div>
                                 )}
                             </div>
-
+                            {errors.videoUrl && (
+                                <p className="text-[0.8rem] text-red-500">
+                                    Vui lòng chọn đúng định dạng url
+                                </p>
+                            )}
                             <p className="my-6 text-[0.7rem]">Hoặc</p>
                             {/* Video File */}
                             <Controller
@@ -674,11 +573,6 @@ const EditPost = () => {
                                 control={control}
                                 render={({ field }) => (
                                     <VideoUploader
-                                        defaultVideo={
-                                            post?.medias.filter((item) =>
-                                                item.type.includes("video/")
-                                            )[0]
-                                        }
                                         videoId={field.value ?? ""}
                                         setVideoId={field.onChange}
                                     />
@@ -690,23 +584,9 @@ const EditPost = () => {
                                 </p>
                             )}
                         </div>
-                        <div className="flex gap-4">
-                            <Button
-                                variant="solid"
-                                color="blue"
-                                htmlType="submit"
-                                loading={updateMutation.isPending}
-                            >
-                                Lưu thay đổi
-                            </Button>
-                            <Button
-                                variant="solid"
-                                color="orange"
-                                onClick={() => navigate(-1)}
-                            >
-                                Hủy
-                            </Button>
-                        </div>
+                        <Button variant="solid" color="blue" htmlType="submit">
+                            Tạo phòng
+                        </Button>
                     </form>
                 </div>
             </div>
@@ -714,4 +594,4 @@ const EditPost = () => {
     );
 };
 
-export default EditPost;
+export default CreateAccommodationPost;

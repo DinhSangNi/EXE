@@ -6,6 +6,7 @@ import { logout } from "@/stores/userSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
+import { logo } from "@/assets/images";
 
 type Props = {
     className?: string;
@@ -58,9 +59,11 @@ const DashboardHeader = ({ className }: Props) => {
     return (
         <>
             <div
-                className={`fixed left-0 right-0 top-0 z-50 flex h-14 items-center justify-between bg-white shadow-lg ${className}`}
+                className={`fixed left-0 right-0 top-0 z-50 flex h-14 items-center justify-between bg-[#fbf6f0] shadow-lg ${className}`}
             >
-                <div>Logo</div>
+                <div className="cursor-pointer" onClick={() => navigate("/")}>
+                    <img src={logo} alt="Logo" className="w-12" />
+                </div>
                 <div>
                     <Dropdown menu={{ items }} trigger={["click"]}>
                         <button className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200 hover:bg-gray-300">

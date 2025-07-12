@@ -61,8 +61,8 @@ const LeftSideBar = ({ className }: Props) => {
                     icon: <FaHome />,
                 },
                 {
-                    key: "posts/create",
-                    label: "Tạo bài đăng mới",
+                    key: "posts/create-accomodation",
+                    label: "Tạo chỗ ở mới",
                     icon: <BsHouseAddFill />,
                 },
             ];

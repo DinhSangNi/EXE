@@ -6,10 +6,12 @@ import { BiMessageRoundedDetail } from "react-icons/bi";
 import { useEffect, useState } from "react";
 import { PostServices } from "@/services/post";
 import type { Post } from "@/stores/type";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
     useEffect(() => {
         setLoading(true);
         PostServices.getAll({})
@@ -35,6 +37,14 @@ const Home = () => {
                         data={loading ? Array(6).fill(null) : posts}
                         loading={loading}
                     />
+                    <div className="mt-4 w-full text-center">
+                        <button
+                            className="rounded-md bg-gray-200 px-4 py-2 text-[0.9rem] font-semibold hover:bg-gray-300"
+                            onClick={() => navigate("/posts")}
+                        >
+                            Xem thêm
+                        </button>
+                    </div>
                 </div>
                 <div className="mx-auto mt-14 w-[90%]">
                     <div className="w-full px-6 py-4 shadow-2xl md:flex">

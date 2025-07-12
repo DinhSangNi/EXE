@@ -3,24 +3,15 @@ import { FaHome, FaMapMarkerAlt } from "react-icons/fa";
 import type { Post } from "@/stores/type";
 import { formatPostDate, resolveAddress } from "@/utils/format";
 import { BsCalendarDateFill } from "react-icons/bs";
+import { IoIosPricetags } from "react-icons/io";
 
 type Props = {
     className?: string;
-    imageSrc?: string;
-    title?: string;
-    price?: number;
-    loading?: boolean;
     data?: Post;
+    loading?: boolean;
 };
 
-const PostCard = ({
-    className,
-    imageSrc,
-    title,
-    price,
-    loading,
-    data,
-}: Props) => {
+const PostCard = ({ className, data, loading }: Props) => {
     if (loading) {
         return (
             <div className="relative animate-pulse cursor-pointer">
@@ -33,12 +24,12 @@ const PostCard = ({
 
     return (
         <div
-            className={`cursor-pointer overflow-hidden rounded-md ${className}`}
+            className={`h-[400px] cursor-pointer overflow-hidden rounded-md bg-white shadow-md ${className} `}
         >
-            <div className="flex h-1/2 gap-1 rounded-xl">
+            <div className="flex h-1/2 gap-1">
                 <div className="h-full w-3/5">
                     <img
-                        src={imageSrc}
+                        src={data?.medias[0].url}
                         alt=""
                         className="h-full w-full object-cover"
                     />
@@ -63,22 +54,21 @@ const PostCard = ({
 
             <div className="flex h-1/2 flex-col justify-between px-4 pt-2">
                 <div>
-                    <h1 className="font-bold">
-                        {title || "Phòng Trọ Tại Quy Nhơn"}
-                    </h1>
+                    <h1 className="py-2 font-bold">{data?.title}</h1>
                     <div className="flex items-center gap-4">
-                        <p className="text-[0.8rem]">
-                            {price
-                                ? `${price.toLocaleString("vn-VN")} VNG`
+                        <p className="flex items-center gap-1 text-[0.9rem]">
+                            <IoIosPricetags />
+                            {data?.price
+                                ? `${data?.price.toLocaleString("vn-VN")} VNG`
                                 : `${new Number(2400000).toLocaleString("vn-VN")} VNG`}
                         </p>
 
-                        <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1 text-[0.9rem]">
                             <FaHome />
                             {data?.square}m²
                         </div>
                     </div>
-                    <p className="flex items-center gap-1 text-[0.8rem]">
+                    <p className="flex items-center gap-1 text-[0.9rem]">
                         <FaMapMarkerAlt />
                         {resolveAddress(
                             data?.city ?? "",

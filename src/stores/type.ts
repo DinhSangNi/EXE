@@ -91,7 +91,9 @@ export type PaginationType = {
     limit: number;
 };
 
-export type postFilter = {
+export type PostFilter = {
+    page?: number;
+    limit?: number;
     minPrice?: number;
     maxPrice?: number;
     minSquare?: number;

@@ -39,7 +39,7 @@ const Header = () => {
                     height: headerHeight,
                 }}
                 animate={controls}
-                className="fixed z-30 w-full bg-gray-100 p-4"
+                className="fixed z-30 w-full bg-[#fbf6f0] p-4 shadow-lg"
             >
                 <NavBar isTop={isTop} />
                 <Searchbar isTop={isTop} />

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { AreaUnit, PriceUnit } from "@/pages/CreatePost";
+import type { AreaUnit, PriceUnit } from "@/pages/CreateAccommodationPost";
 import { CategoryServices } from "@/services/category";
 import { useQuery } from "@tanstack/react-query";
 import { Select } from "antd";
@@ -114,7 +114,6 @@ const CategorySelector = ({
                 <Select
                     className="w-full"
                     value={selected}
-                    defaultValue={""}
                     options={options}
                     placeholder="--Chọn loại chuyên mục--"
                     onChange={handleChange}

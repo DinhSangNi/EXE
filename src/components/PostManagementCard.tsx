@@ -1,5 +1,5 @@
 import type { Post } from "@/stores/type";
-import { formatCurrency, resolveAddress } from "@/utils/format";
+import { formatCurrency, formatPostDate, resolveAddress } from "@/utils/format";
 import { FaHome, FaMapMarkerAlt } from "react-icons/fa";
 import { IoIosPricetags } from "react-icons/io";
 import { BsCalendarDateFill, BsThreeDotsVertical } from "react-icons/bs";
@@ -16,7 +16,7 @@ const PostManagementCard = ({ className, data }: Props) => {
     const navigate = useNavigate();
 
     const handleEdit = () => {
-        navigate(`/posts/edit/${data?.id}`);
+        navigate(`/user/posts/edit-accomodation/${data?.id}`);
     };
 
     const items: MenuProps["items"] = [
@@ -101,7 +101,13 @@ const PostManagementCard = ({ className, data }: Props) => {
                             {/* Expired Date */}
                             <div className="flex items-center gap-2">
                                 <BsCalendarDateFill />
-                                <p>29/7/2025</p>
+                                <p>
+                                    {data?.expiredAt
+                                        ? formatPostDate(
+                                              data?.expiredAt as string
+                                          )
+                                        : "29/7/2025"}
+                                </p>
                             </div>
                         </div>
                         {/* Amenity */}

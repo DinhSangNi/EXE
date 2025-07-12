@@ -1,8 +1,8 @@
 import { PostServices } from "@/services/post";
-import type { PaginationResponse, Post, postFilter } from "@/stores/type";
+import type { PaginationResponse, Post, PostFilter } from "@/stores/type";
 import { useQuery } from "@tanstack/react-query";
 
-const usePosts = (filters: postFilter) => {
+const usePosts = (filters: PostFilter) => {
     return useQuery({
         queryKey: ["posts", filters],
         queryFn: async () => {

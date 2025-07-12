@@ -4,12 +4,12 @@ import { Select } from "antd";
 import { useEffect, useState } from "react";
 
 type Props = {
-    value?: string | null;
+    value?: string | null | undefined;
     onChange?: (value: string) => void;
     type: "province" | "district" | "ward";
     mode?: "default" | "filter";
-    provinceCode?: string | null;
-    districtCode?: string | null;
+    provinceCode?: string | null | undefined;
+    districtCode?: string | null | undefined;
     className?: string;
 };
 

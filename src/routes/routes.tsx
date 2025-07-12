@@ -1,4 +1,3 @@
-import CreatePost from "@/pages/CreatePost";
 import DashboardLayout from "@/components/DashboardLayout";
 import MainLayout from "@/components/MainLayout";
 import Home from "@/pages/Home";
@@ -8,9 +7,10 @@ import PostDetail from "@/pages/PostDetail";
 import Register from "@/pages/Register";
 import { Outlet } from "react-router-dom";
 import PostsManagement from "@/pages/PostsManagement";
-import EditPost from "@/pages/EditPost";
 import AdminOverview from "@/pages/AdminOverview";
 import Posts from "@/pages/Posts";
+import CreateAccommodationPost from "@/pages/CreateAccommodationPost";
+import EditAccomodationPost from "@/pages/EditAccomodationPost";
 
 export const routes = [
     {
@@ -44,12 +44,12 @@ export const routes = [
                         element: <Outlet />,
                         children: [
                             {
-                                path: "edit/:id",
-                                element: <EditPost />,
+                                path: "edit-accomodation/:id",
+                                element: <EditAccomodationPost />,
                             },
                             {
-                                path: "create",
-                                element: <CreatePost />,
+                                path: "create-accomodation",
+                                element: <CreateAccommodationPost />,
                             },
                             {
                                 path: "",
@@ -68,12 +68,12 @@ export const routes = [
                         element: <Outlet />,
                         children: [
                             {
-                                path: "edit/:id",
-                                element: <EditPost />,
+                                path: "edit-accomodation/:id",
+                                element: <EditAccomodationPost />,
                             },
                             {
-                                path: "create",
-                                element: <CreatePost />,
+                                path: "create-accomodation",
+                                element: <CreateAccommodationPost />,
                             },
                             {
                                 path: "",

@@ -5,6 +5,7 @@ import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
 import { useNavigate } from "react-router-dom";
+import type { Post } from "@/stores/type";
 
 type Props = {
     title?: string;
@@ -25,8 +26,6 @@ const PostCarousel = ({ title, data = [], loading = false }: Props) => {
         if (!swiperRef.current) return;
         swiperRef.current?.slidePrev();
     };
-
-    console.log("data: ", data);
 
     return (
         <>
@@ -67,7 +66,7 @@ const PostCarousel = ({ title, data = [], loading = false }: Props) => {
                         },
                     }}
                 >
-                    {data?.data?.map((post: any, idx: number) => (
+                    {data?.data?.map((post: Post, idx: number) => (
                         <SwiperSlide key={post?.id || idx}>
                             <div
                                 onClick={() =>
@@ -76,12 +75,7 @@ const PostCarousel = ({ title, data = [], loading = false }: Props) => {
                                     navigate(`/posts/${post.id}`)
                                 }
                             >
-                                <PostCard
-                                    imageSrc={post?.medias?.[0]?.url}
-                                    title={post?.title}
-                                    price={post?.price}
-                                    loading={loading || !post}
-                                />
+                                <PostCard data={post} loading={loading} />
                             </div>
                         </SwiperSlide>
                     ))}

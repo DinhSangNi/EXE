@@ -1,4 +1,3 @@
-// import { useNavigate } from "react-router-dom";
 import { IoHome } from "react-icons/io5";
 import { FaConciergeBell } from "react-icons/fa";
 import { FaBars } from "react-icons/fa6";
@@ -11,6 +10,7 @@ import { AuthServices } from "@/services/auth";
 import { logout } from "@/stores/userSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { logo } from "@/assets/images";
 
 type Props = {
     isTop: boolean;
@@ -187,12 +187,12 @@ const NavBar = ({ isTop }: Props) => {
                 <div className="relative mx-auto flex w-[95%] pb-6">
                     {/* Logo */}
                     <div className="w-1/5">
-                        {/* <img
-                            src={logo}
+                        <img
+                            src={logo ?? ""}
                             alt="logo"
-                            className="h-auto w-[60px] cursor-pointer object-cover"
+                            className="h-auto w-10 cursor-pointer object-cover"
                             onClick={() => navigate("/")}
-                        /> */}
+                        />
                     </div>
 
                     {/* CenterSide */}
@@ -271,7 +271,13 @@ const NavBar = ({ isTop }: Props) => {
                         <div>
                             <button
                                 className={`rounded-lg bg-gray-200 px-6 py-2 text-white ${selectedHostOption && "bg-gray-800"}`}
-                                onClick={() => navigate("")}
+                                onClick={() =>
+                                    navigate(
+                                        selectedHostOption === "accomodation"
+                                            ? "/user/posts/create-accomodation"
+                                            : ""
+                                    )
+                                }
                             >
                                 Tiếp tục
                             </button>
