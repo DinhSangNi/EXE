@@ -10,7 +10,7 @@ import { Outlet } from "react-router-dom";
 import PostsManagement from "@/pages/PostsManagement";
 import EditPost from "@/pages/EditPost";
 import AdminOverview from "@/pages/AdminOverview";
-import Posts from "@/pages/posts";
+import Posts from "@/pages/Posts";
 
 export const routes = [
     {
