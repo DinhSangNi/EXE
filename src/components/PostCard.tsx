@@ -6,17 +6,23 @@ import { BsCalendarDateFill } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
-    className?: string;
-    data: Post;
+    imageSrc?: string;
+    title?: string;
+    price?: number;
+    loading?: boolean;
 };
 
-const PostCard = ({ className, data }: Props) => {
-    const navigate = useNavigate();
+const PostCard = ({ imageSrc, title, price, loading }: Props) => {
+    if (loading) {
+        return (
+            <div className="relative animate-pulse cursor-pointer">
+                <div className="aspect-square w-full rounded-3xl bg-gray-200" />
+                <div className="mt-2 h-4 w-2/3 rounded bg-gray-200" />
+                <div className="mt-1 h-3 w-1/3 rounded bg-gray-200" />
+            </div>
+        );
+    }
 
-    const handleOnclick = () => {
-        if (!data.id) return;
-        navigate(`/posts/${data.id}`);
-    };
     return (
         <div
             className={`cursor-pointer overflow-hidden rounded-md ${className}`}
@@ -50,17 +56,16 @@ const PostCard = ({ className, data }: Props) => {
 
             <div className="flex h-1/2 flex-col justify-between px-4 pt-2">
                 <div>
-                    <h1 className="line-clamp-2 h-14 text-lg font-bold">
-                        {data?.title}
+                    <h1 className="font-bold">
+                        {title || "Phòng Trọ Tại Quy Nhơn"}
                     </h1>
-                    <p className="mt-2 line-clamp-2 text-[0.9rem]">
-                        {data?.description}
-                    </p>
-                    <div className="mt-1 flex justify-between">
-                        <div className="flex items-center gap-1 font-bold">
-                            <IoIosPricetags />
-                            {(data?.price).toLocaleString("vi-VN")} đồng/tháng
-                        </div>
+                    <div className="flex items-center gap-4">
+                        <p className="text-[0.8rem]">
+                            {price
+                                ? `${price.toLocaleString("vn-VN")} VNG`
+                                : `${new Number(2400000).toLocaleString("vn-VN")} VNG`}
+                        </p>
+
                         <div className="flex items-center gap-1">
                             <FaHome />
                             {data?.square}m²
