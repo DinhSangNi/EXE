@@ -1,15 +1,16 @@
 /* eslint-disable */
 import CustomButton from "@/components/CustomButton";
 import { Divider } from "antd";
-// import type { CarouselRef } from "antd/es/carousel";
 import { useRef, useState, useEffect } from "react";
-import { FaPhoneAlt } from "react-icons/fa";
-import { BiMessageRoundedDetail } from "react-icons/bi";
+import { FaPhoneAlt, FaCalendarAlt } from "react-icons/fa";
 import {
     IoWarningOutline,
     IoHeartOutline,
     IoShareSocialOutline,
 } from "react-icons/io5";
+import { Modal, DatePicker } from "antd";
+import type { DatePickerProps } from "antd";
+import dayjs from "dayjs";
 import { useParams } from "react-router-dom";
 import { PostServices } from "@/services/post";
 
@@ -21,6 +22,36 @@ const PostDetail = () => {
     const { id } = useParams();
     const modalRef = useRef<HTMLDivElement>(null);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+    const showModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleOk = () => {
+        // Handle the selected date here
+        console.log("Selected date:", selectedDate);
+        setIsModalOpen(false);
+    };
+
+    const handleCancel = () => {
+        setIsModalOpen(false);
+    };
+
+    // Function to disable past dates
+    const disabledDate = (current: any) => {
+        // Can not select days before today
+        return current && current < dayjs().startOf("day");
+    };
+
+    const onChange: DatePickerProps["onChange"] = (_, dateString) => {
+        if (Array.isArray(dateString)) {
+            setSelectedDate(dateString[0] || null);
+        } else {
+            setSelectedDate(dateString || null);
+        }
+    };
 
     useEffect(() => {
         if (id) {
@@ -140,7 +171,7 @@ const PostDetail = () => {
                         </>
                     ) : (
                         <>
-                            <h1 className="mb-4 text-2xl font-bold">
+                            <h1 className="mb-6 text-3xl font-extrabold text-gray-900 sm:text-4xl">
                                 {post?.title || "Tiêu đề bài đăng"}
                             </h1>
                             <div className="flex h-[400px] w-full justify-center gap-4">
@@ -225,68 +256,123 @@ const PostDetail = () => {
                                 </div>
                             ) : (
                                 <>
-                                    <div className="my-4 flex w-full justify-between">
-                                        <h2 className="text-[1.1rem] font-bold underline">
-                                            <span>
-                                                {post
-                                                    ? formatPrice(post.price)
-                                                    : "1.2 triệu/tháng"}
+                                    {/* Price and Area Section */}
+                                    <div className="mb-6 rounded-lg border border-blue-100 bg-blue-50 p-4">
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <span className="text-2xl font-bold text-blue-600">
+                                                    {post
+                                                        ? formatPrice(
+                                                              post.price
+                                                          )
+                                                        : "1.2 triệu/tháng"}
+                                                </span>
+                                                <span className="mx-2 text-gray-500">
+                                                    •
+                                                </span>
+                                                <span className="text-lg font-semibold text-gray-700">
+                                                    {post?.square
+                                                        ? `${post.square} m²`
+                                                        : "100 m²"}
+                                                </span>
+                                            </div>
+                                            <span className="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800">
+                                                Cập nhật: 2 giờ trước
                                             </span>
-                                            <span> · </span>
-                                            <span>
-                                                {post?.square
-                                                    ? `${post.square} m²`
-                                                    : "100 m²"}
-                                            </span>
-                                        </h2>
-                                        <p className="text-[0.9rem]">
-                                            Cập nhật: 2 giờ trước
-                                        </p>
-                                    </div>
-                                    <div className="flex gap-10 text-[0.8rem]">
-                                        <div className="flex flex-col gap-2">
-                                            <p>Quận huyện:</p>
-                                            <p>Tỉnh thành:</p>
-                                            <p>Địa chỉ:</p>
-                                            <p>Mã tin:</p>
-                                            <p>Ngày đăng:</p>
-                                            <p>Ngày hết hạn:</p>
                                         </div>
-                                        <div className="flex flex-col gap-2">
-                                            <p>
-                                                {post?.district?.split(
-                                                    "|"
-                                                )[1] || "Quận ..."}
-                                            </p>
-                                            <p>
-                                                {post?.city?.split("|")[1] ||
-                                                    "Tỉnh ..."}
-                                            </p>
-                                            <p>
-                                                {post?.street},{" "}
-                                                {post?.ward?.split("|")[1]},{" "}
-                                                {post?.district?.split("|")[1]},{" "}
-                                                {post?.city?.split("|")[1]}
-                                            </p>
-                                            <p>
-                                                #
-                                                {post?.id?.slice(0, 6) ||
-                                                    "Mã tin"}
-                                            </p>
-                                            <p>
-                                                {post?.createdAt
-                                                    ? new Date(
-                                                          post.createdAt
-                                                      ).toLocaleString()
-                                                    : "Ngày đăng"}
-                                            </p>
-                                            <p>
-                                                {post?.expiredAt
-                                                    ? new Date(
-                                                          post.expiredAt
-                                                      ).toLocaleString()
-                                                    : "Ngày hết hạn"}
-                                            </p>
+                                    </div>
+
+                                    {/* Property Details */}
+                                    <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+                                        <div className="space-y-3 rounded-lg border p-4">
+                                            <h3 className="text-md mb-2 font-semibold text-blue-700">
+                                                Thông tin cơ bản
+                                            </h3>
+                                            <div className="space-y-2 text-sm">
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">
+                                                        Mã tin:
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        #
+                                                        {post?.id?.slice(
+                                                            0,
+                                                            6
+                                                        ) || "N/A"}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">
+                                                        Ngày đăng:
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        {post?.createdAt
+                                                            ? new Date(
+                                                                  post.createdAt
+                                                              ).toLocaleDateString()
+                                                            : "N/A"}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">
+                                                        Hết hạn:
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        {post?.expiredAt
+                                                            ? new Date(
+                                                                  post.expiredAt
+                                                              ).toLocaleDateString()
+                                                            : "N/A"}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3 rounded-lg border p-4">
+                                            <h3 className="text-md mb-2 font-semibold text-blue-700">
+                                                Địa chỉ
+                                            </h3>
+                                            <div className="space-y-2 text-sm">
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">
+                                                        Địa chỉ:
+                                                    </span>
+                                                    <span className="text-right font-medium">
+                                                        {post?.street ||
+                                                            "Đang cập nhật"}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">
+                                                        Phường/Xã:
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        {post?.ward?.split(
+                                                            "|"
+                                                        )[1] || "N/A"}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">
+                                                        Quận/Huyện:
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        {post?.district?.split(
+                                                            "|"
+                                                        )[1] || "N/A"}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">
+                                                        Tỉnh/Thành:
+                                                    </span>
+                                                    <span className="font-medium">
+                                                        {post?.city?.split(
+                                                            "|"
+                                                        )[1] || "N/A"}
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </>
@@ -294,8 +380,8 @@ const PostDetail = () => {
                         </div>
                         <Divider />
                         {/* Description */}
-                        <div className="w-full">
-                            <h2 className="my-2 text-[1.1rem] font-bold">
+                        <div className="w-full rounded-lg border border-blue-100 p-6 shadow-sm">
+                            <h2 className="mb-4 text-xl font-bold text-blue-700">
                                 Thông tin mô tả
                             </h2>
                             {loading ? (
@@ -306,21 +392,53 @@ const PostDetail = () => {
                                     <div className="h-4 w-1/2 rounded bg-gray-200" />
                                 </div>
                             ) : (
-                                <div className="flex flex-col gap-2 text-[0.8rem]">
-                                    <p>{post?.description}</p>
+                                <div className="space-y-6">
+                                    <div className="prose max-w-none text-gray-700">
+                                        {post?.description
+                                            ?.split("\n")
+                                            .map(
+                                                (
+                                                    paragraph: string,
+                                                    index: number
+                                                ) => (
+                                                    <p
+                                                        key={index}
+                                                        className="mb-4 leading-relaxed"
+                                                    >
+                                                        {paragraph || <br />}
+                                                    </p>
+                                                )
+                                            )}
+                                    </div>
+
                                     {/* Tiện ích */}
                                     {post?.postAmenities?.length > 0 && (
-                                        <div>
-                                            <b>Tiện ích:</b>
-                                            <ul className="list-disc pl-5">
+                                        <div className="mt-6">
+                                            <h3 className="mb-3 text-lg font-semibold text-blue-700">
+                                                Tiện ích có sẵn
+                                            </h3>
+                                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
                                                 {post.postAmenities.map(
                                                     (item: any) => (
-                                                        <li key={item.id}>
-                                                            {item.amenity?.name}
-                                                        </li>
+                                                        <div
+                                                            key={item.id}
+                                                            className="flex items-center rounded-lg border border-blue-100 bg-white p-3 shadow-sm transition-colors hover:border-blue-300"
+                                                        >
+                                                            <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full border border-blue-100 bg-blue-50 text-blue-600">
+                                                                <span className="text-lg">
+                                                                    ✓
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-sm font-medium text-gray-700">
+                                                                {
+                                                                    item.amenity
+                                                                        ?.name
+                                                                }
+                                                            </span>
+                                                        </div>
                                                     )
                                                 )}
-                                            </ul>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -340,7 +458,7 @@ const PostDetail = () => {
                             </div>
                         ) : (
                             <div className="flex flex-col items-center rounded-xl bg-white p-4 shadow-xl">
-                                <div className="flex aspect-square w-[6rem] items-center justify-center overflow-hidden rounded-full bg-blue-200 text-3xl font-bold text-white">
+                                <div className="flex aspect-square w-[6rem] items-center justify-center overflow-hidden rounded-full border-2 border-blue-200 bg-blue-100 text-3xl font-bold text-blue-600">
                                     {post?.owner?.name?.[0] || "S"}
                                 </div>
                                 <h1 className="my-2 font-bold">
@@ -353,16 +471,47 @@ const PostDetail = () => {
                                 </p>
                                 <div className="mt-2 flex w-full flex-col items-center gap-2">
                                     <CustomButton
-                                        title={post?.owner?.phone || "SĐT"}
-                                        icon={<FaPhoneAlt />}
-                                        className="w-full bg-red-500 text-white md:text-[0.8rem] lg:text-[0.9rem]"
+                                        title="Đặt lịch xem nhà"
+                                        icon={<FaCalendarAlt />}
+                                        className="w-full bg-blue-600 text-white hover:bg-blue-700 md:text-[0.9rem] lg:text-[1rem]"
+                                        onClick={showModal}
                                     />
                                     <CustomButton
-                                        title={post?.owner?.phone || "SĐT"}
-                                        icon={<BiMessageRoundedDetail />}
-                                        className="w-full bg-blue-500 text-white md:text-[0.8rem] lg:text-[0.9rem]"
+                                        title={post?.owner?.phone || "Liên hệ"}
+                                        icon={<FaPhoneAlt />}
+                                        className="w-full border border-blue-600 bg-white text-blue-600 hover:bg-blue-50 md:text-[0.9rem] lg:text-[1rem]"
                                     />
                                 </div>
+                                <Modal
+                                    title="Chọn ngày xem nhà"
+                                    open={isModalOpen}
+                                    onOk={handleOk}
+                                    onCancel={handleCancel}
+                                    okText="Xác nhận"
+                                    cancelText="Hủy"
+                                >
+                                    <div className="flex flex-col items-center py-4">
+                                        <DatePicker
+                                            onChange={onChange}
+                                            className="w-full text-center"
+                                            placeholder="Chọn ngày xem nhà"
+                                            format="DD/MM/YYYY"
+                                            disabledDate={disabledDate}
+                                            showToday
+                                            allowClear={false}
+                                            minDate={dayjs()}
+                                            inputReadOnly
+                                        />
+                                        {selectedDate && (
+                                            <p className="mt-4 text-gray-600">
+                                                Bạn đã chọn ngày:{" "}
+                                                <span className="font-semibold">
+                                                    {selectedDate}
+                                                </span>
+                                            </p>
+                                        )}
+                                    </div>
+                                </Modal>
                                 <div className="mt-4 flex w-full justify-between text-[0.7rem] lg:text-[0.8rem]">
                                     <button className="item flex items-center gap-1 px-2 py-1 hover:bg-gray-200">
                                         <IoHeartOutline />
