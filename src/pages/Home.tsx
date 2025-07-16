@@ -1,4 +1,5 @@
 /* eslint-disable */
+import HeroCarousel from "@/components/HeroCarousel";
 import PostCarousel from "@/components/PostCarousel";
 import { PiHeadphonesFill } from "react-icons/pi";
 import { FaPhoneAlt } from "react-icons/fa";
@@ -24,7 +25,8 @@ const Home = () => {
     return (
         <>
             <div className="w-full">
-                <div className="mx-auto mt-14 w-[90%]">
+                <HeroCarousel />
+                <div className="mx-auto w-[90%] mt-14">
                     <PostCarousel
                         title="Chỗ ở đề xuất"
                         data={loading ? Array(6).fill(null) : posts}
