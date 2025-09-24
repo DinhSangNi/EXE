@@ -66,20 +66,36 @@ const PostCarousel = ({ title, data = [], loading = false }: Props) => {
                         },
                     }}
                 >
-                    {data?.data?.map((post: Post, idx: number) => (
-                        <SwiperSlide key={post?.id || idx}>
-                            <div
-                                onClick={() =>
-                                    post &&
-                                    post.id &&
-                                    navigate(`/posts/${post.id}`)
-                                }
-                            >
-                                <PostCard data={post} loading={loading} />
-                            </div>
-                        </SwiperSlide>
-                    ))}
+                    {data && data.length > 0 ? (
+                        data?.map((post: Post, idx: number) => (
+                            <SwiperSlide key={post?.id || idx}>
+                                <div
+                                    onClick={() =>
+                                        post &&
+                                        post.id &&
+                                        navigate(`/posts/${post.id}`)
+                                    }
+                                >
+                                    <PostCard data={post} loading={loading} />
+                                </div>
+                            </SwiperSlide>
+                        ))
+                    ) : (
+                        <p className="w-full text-center">
+                            Không có bài viết nào
+                        </p>
+                    )}
                 </Swiper>
+                {data && data.length > 6 && (
+                    <div className="mt-4 w-full text-center">
+                        <button
+                            className="rounded-md bg-gray-200 px-4 py-2 text-[0.9rem] font-semibold hover:bg-gray-300"
+                            onClick={() => navigate("/posts")}
+                        >
+                            Xem thêm
+                        </button>
+                    </div>
+                )}
             </div>
         </>
     );

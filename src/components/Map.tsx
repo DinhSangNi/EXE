@@ -1,5 +1,6 @@
 /* eslint-disable */
-import { getLatLngFromAddress } from "@/utils/googleMap";
+import { resolveAddress } from "@/utils/format";
+import { getAddressFromLatLng, getLatLngFromAddress } from "@/utils/googleMap";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -77,24 +78,45 @@ const Map = ({ address, onChange, lat, lng, coordinates }: Props) => {
         quyNhonCoordinates;
 
     return (
-        <GoogleMap
-            mapContainerStyle={{ width: "100%", height: "100%" }}
-            center={center}
-            zoom={12}
-            onLoad={onLoad}
-        >
-            {coordinates?.map((c, i) => (
-                <Marker key={`${c.lat}-${c.lng}-${i}`} position={c} />
-            ))}
+        <div className="relative h-full w-full">
+            <GoogleMap
+                mapContainerStyle={{ width: "100%", height: "100%" }}
+                center={center}
+                zoom={12}
+                onLoad={onLoad}
+            >
+                {/* Nếu có nhiều tọa độ, hiển thị tất cả */}
+                {coordinates?.map((c, i) => (
+                    <Marker key={`${c.lat}-${c.lng}-${i}`} position={c} />
+                ))}
 
-            {!coordinates?.length && lat && lng && (
-                <Marker position={{ lat, lng }} />
-            )}
+                {!coordinates?.length && lat && lng && (
+                    <Marker position={{ lat, lng }} />
+                )}
 
-            {!coordinates?.length && !lat && !lng && addressLocation && (
-                <Marker position={addressLocation} />
+                {!coordinates?.length && !lat && !lng && addressLocation && (
+                    <Marker position={addressLocation} />
+                )}
+            </GoogleMap>
+
+            {address && (
+                <div className="absolute left-[11px] top-[10px] w-1/3 bg-white p-2">
+                    <h3 className="line-clamp-1 text-sm font-bold">
+                        {address}
+                    </h3>
+                    <p className="mt-1 text-[10px]">{address}</p>
+                    <button className="text-[11px] text-blue-500 hover:underline">
+                        <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                address
+                            )}`}
+                        >
+                            View larger map
+                        </a>
+                    </button>
+                </div>
             )}
-        </GoogleMap>
+        </div>
     );
 };
 

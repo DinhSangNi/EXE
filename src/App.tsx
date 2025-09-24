@@ -4,6 +4,7 @@ import { ToastContainer } from "react-toastify";
 import AppRouter from "./routes/AppRouter";
 import { Provider as ReduxProvider } from "react-redux";
 import { store } from "./stores/store";
+import SocketProvider from "./components/SocketProvider";
 
 const queryClient = new QueryClient();
 
@@ -12,8 +13,10 @@ function App() {
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
                 <ReduxProvider store={store}>
-                    <AppRouter />
-                    <ToastContainer />
+                    <SocketProvider>
+                        <AppRouter />
+                        <ToastContainer />
+                    </SocketProvider>
                 </ReduxProvider>
             </BrowserRouter>
         </QueryClientProvider>

@@ -3,7 +3,13 @@ import { useSelector } from "react-redux";
 
 import type { MenuProps } from "antd";
 import { Menu } from "antd";
-import { FaTachometerAlt, FaHome, FaUser } from "react-icons/fa";
+import {
+    FaTachometerAlt,
+    FaHome,
+    FaUser,
+    FaCalendarAlt,
+    FaBell,
+} from "react-icons/fa";
 import { BsHouseAddFill } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -21,7 +27,7 @@ const LeftSideBar = ({ className }: Props) => {
     const rolePrefix = `/${user.role}/`;
     const currentPath = pathname.replace(rolePrefix, "");
 
-    // 👉 Lấy openKey từ path để mở SubMenu (nếu có)
+    // Lấy openKey từ path để mở SubMenu (nếu có)
     const getOpenKey = (key: string) => {
         const segments = key.split("/");
         if (segments.length > 1) {
@@ -65,6 +71,16 @@ const LeftSideBar = ({ className }: Props) => {
                     label: "Tạo chỗ ở mới",
                     icon: <BsHouseAddFill />,
                 },
+                {
+                    key: "appointment",
+                    label: <p>Lịch hẹn</p>,
+                    icon: <FaCalendarAlt />,
+                },
+                {
+                    key: "notification",
+                    label: <p>Thông báo</p>,
+                    icon: <FaBell />,
+                },
             ];
             break;
         case "admin":
@@ -98,6 +114,16 @@ const LeftSideBar = ({ className }: Props) => {
                     key: "posts",
                     label: "Quản lí bài đăng",
                     icon: <FaHome />,
+                },
+                {
+                    key: "appointment",
+                    label: <p>Lịch hẹn</p>,
+                    icon: <FaCalendarAlt />,
+                },
+                {
+                    key: "notification",
+                    label: <p>Thông báo</p>,
+                    icon: <FaBell />,
                 },
             ];
             break;

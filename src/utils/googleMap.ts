@@ -57,3 +57,23 @@ export async function getLatLngFromAddress(
         return null;
     }
 }
+
+export async function getAddressFromLatLng(
+    lat: number,
+    lng: number
+): Promise<string | null> {
+    try {
+        const res = await fetch(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`
+        );
+        const data = await res.json();
+        if (data.status === "OK") {
+            return data.results[0].formatted_address;
+        } else {
+            throw new Error(`Geocoding failed: ${data.status}`);
+        }
+    } catch (error) {
+        console.error("Geocoding error:", error);
+        return null;
+    }
+}

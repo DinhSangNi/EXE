@@ -1,3 +1,4 @@
+/* eslint-disable */
 import AddressSelector from "@/components/AddressSelector";
 import AmenityCheckBox from "@/components/AmenityCheckBox";
 import CategorySelector from "@/components/CategorySelector";
@@ -15,37 +16,60 @@ import { IoIosPricetags } from "react-icons/io";
 import { useSearchParams } from "react-router-dom";
 
 const Posts = () => {
-    const [searchParams] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
 
     const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
     const [filterData, setFilterData] = useState<PostFilter>({
         page: 1,
         limit: 9,
         category: undefined,
-        province: searchParams.get("province") as string,
-        district: searchParams.get("district") as string,
-        ward: undefined,
-        minPrice: undefined,
-        maxPrice: undefined,
-        minSquare: undefined,
-        maxSquare: undefined,
-        amenities: [],
+        province: (searchParams.get("province") as string) || undefined,
+        district: (searchParams.get("district") as string) || undefined,
+        ward: (searchParams.get("ward") as string) || undefined,
+        minPrice: Number(searchParams.get("minPrice") as string) || undefined,
+        maxPrice: Number(searchParams.get("maxPrice") as string) || undefined,
+        minSquare: Number(searchParams.get("minSquare") as string) || undefined,
+        maxSquare: Number(searchParams.get("maxSquare") as string) || undefined,
+        amenities: searchParams.getAll("amenities") || [],
     });
-    const [appliedFilterData, setAppliedFilterData] = useState<
-        Partial<PostFilter>
-    >({
-        province: searchParams.get("province") as string,
-        district: searchParams.get("district") as string,
-    });
+    const appliedFilterData: Partial<PostFilter> = {
+        page: searchParams.get("page") ? Number(searchParams.get("page")) : 1,
+        limit: searchParams.get("limit")
+            ? Number(searchParams.get("limit"))
+            : 9,
+        category: searchParams.get("category") || undefined,
+        province: searchParams.get("province") || undefined,
+        district: searchParams.get("district") || undefined,
+        ward: searchParams.get("ward") || undefined,
+        minPrice: searchParams.get("minPrice")
+            ? Number(searchParams.get("minPrice"))
+            : undefined,
+        maxPrice: searchParams.get("maxPrice")
+            ? Number(searchParams.get("maxPrice"))
+            : undefined,
+        minSquare: searchParams.get("minSquare")
+            ? Number(searchParams.get("minSquare"))
+            : undefined,
+        maxSquare: searchParams.get("maxSquare")
+            ? Number(searchParams.get("maxSquare"))
+            : undefined,
+        amenities: searchParams.getAll("amenities") || [],
+    };
 
-    const { data, isLoading } = usePosts(appliedFilterData);
+    const { data, isLoading } = usePosts(appliedFilterData, "admin");
 
     const handleApplyFilter = () => {
-        setAppliedFilterData({
-            ...filterData,
-            page: 1,
-            limit: 9,
+        const cleanedFilterData = { ...filterData };
+        // remove empty fields
+        Object.keys(cleanedFilterData).forEach((key) => {
+            if (!cleanedFilterData[key as keyof PostFilter]) {
+                delete cleanedFilterData[key as keyof PostFilter];
+            }
         });
+        setSearchParams({
+            ...cleanedFilterData,
+        } as any);
+        setIsFilterModalOpen(false);
     };
 
     const handlePaginationChange = (page: number, pageSize: number) => {
@@ -54,6 +78,7 @@ const Posts = () => {
             page,
             limit: pageSize,
         }));
+        setSearchParams((prev) => ({ ...prev, page: page.toString() }) as any);
     };
 
     return (
@@ -64,24 +89,24 @@ const Posts = () => {
                 >
                     {/* searched posts */}
                     <div className="w-full pt-6">
+                        <div className="flex items-center justify-between pb-6">
+                            <div className="text-[0.9rem] font-bold">
+                                <h1>
+                                    {data?.totalItems ?? 0} bài đăng tại{" "}
+                                    {appliedFilterData.province &&
+                                        `${appliedFilterData.district ? `${appliedFilterData.district.split("|")[1]}, ` : ""} ${appliedFilterData.province.split("|")[1]}`}
+                                </h1>
+                            </div>
+                            <button
+                                className="flex items-center gap-1 p-1 text-[0.9rem] transition-colors duration-100 hover:bg-gray-300"
+                                onClick={() => setIsFilterModalOpen(true)}
+                            >
+                                <FaFilter />
+                                <p>Bộ lọc</p>
+                            </button>
+                        </div>
                         {!isLoading && data?.data && data?.data.length > 0 ? (
                             <>
-                                <div className="flex items-center justify-between pb-6">
-                                    <h1 className="text-[0.9rem] font-bold">
-                                        {data?.totalItems} bài đăng
-                                        {appliedFilterData.province &&
-                                            ` tại ${appliedFilterData.district ? `${appliedFilterData.district.split("|")[1]}, ` : ""} ${appliedFilterData.province.split("|")[1]}`}
-                                    </h1>
-                                    <button
-                                        className="flex items-center gap-1 p-1 text-[0.9rem] transition-colors duration-100 hover:bg-gray-300"
-                                        onClick={() =>
-                                            setIsFilterModalOpen(true)
-                                        }
-                                    >
-                                        <FaFilter />
-                                        <p>Bộ lọc</p>
-                                    </button>
-                                </div>
                                 <div
                                     className={`grid min-h-[500px] grid-cols-3 gap-4`}
                                 >
@@ -144,7 +169,7 @@ const Posts = () => {
                                 />
                             </>
                         ) : (
-                            ""
+                            "Không tìm thấy bài đăng nào"
                         )}
                     </div>
                     {/* maps */}

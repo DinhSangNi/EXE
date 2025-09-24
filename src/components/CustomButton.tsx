@@ -1,9 +1,9 @@
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-type Props = { 
-    className?: string; 
-    title: string; 
-    icon: ReactNode;
+type Props = {
+    className?: string;
+    title: string;
+    icon?: ReactNode;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const CustomButton = ({ className, title, icon, ...props }: Props) => {

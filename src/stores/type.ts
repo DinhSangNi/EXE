@@ -3,6 +3,7 @@ export type Media = {
     public_id: string;
     url: string;
     type: string;
+    purpose: "avatar" | "post" | "other";
 };
 
 export type User = {
@@ -27,18 +28,18 @@ export type Catagory = {
 };
 
 export type CreateRoomDto = {
-    title: string;
-    city: string; // ví dụ: "1|Thành phố Hà Nội"
-    district: string; // ví dụ: "1|Quận Ba Đình"
-    ward: string; // ví dụ: "1|Phường Phúc Xá"
+    title?: string;
+    city?: string; // ví dụ: "1|Thành phố Hà Nội"
+    district?: string; // ví dụ: "1|Quận Ba Đình"
+    ward?: string; // ví dụ: "1|Phường Phúc Xá"
     street?: string;
-    latitude: number;
-    longitude: number;
-    square: number;
-    categoryId: string;
-    description: string;
-    price: number;
-    mediaIds: string[]; // UUIDs
+    latitude?: number;
+    longitude?: number;
+    square?: number;
+    categoryId?: string;
+    description?: string;
+    price?: number;
+    mediaIds?: string[]; // UUIDs
     amenitiesId?: string[]; // UUIDs
 };
 
@@ -59,7 +60,7 @@ export type Post = {
     latitude: number;
     longitude: number;
     medias: Media[];
-    postAmenities: PostAmenities[];
+    postAmenities?: PostAmenities[];
     price: number;
     square: number;
     street: string;
@@ -103,4 +104,70 @@ export type PostFilter = {
     ward?: string;
     category?: string;
     amenities?: string[];
+    status?: "pending" | "approved" | "rejected" | "expired";
+};
+
+export type UpdatePostDto = CreateRoomDto & {
+    status?: "pending" | "approved" | "rejected" | "expired";
+};
+
+export type Appointment = {
+    id: string;
+    appointmentDateTime: string;
+    user: User;
+    host: User;
+    appointmentPosts: {
+        id: string;
+        createdAt: string;
+        post: Post;
+    }[];
+    status: "pending" | "confirmed" | "rejected" | "cancelled";
+};
+
+export type CreateAppointmentDto = {
+    appointmentDateTime: string;
+    hostId: string;
+    postId: string;
+};
+
+export type updateAppointmentDto = {
+    appointmentDateTime?: string;
+    note?: string;
+    status?: "pending" | "confirmed" | "rejected" | "cancelled";
+};
+
+export type AppointmentFilter = {
+    page?: number;
+    limit?: number;
+    userId?: string;
+    hostId?: string;
+    appointmentDateTime?: string;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
+    status?: "pending" | "confirmed" | "rejected" | "cancelled";
+};
+
+export type UserNotification = {
+    id: string;
+    isRead: boolean;
+    createdAt: string;
+    user: User;
+};
+
+export type Notification = {
+    id: string;
+    title: string;
+    message: string;
+    type: "appointment" | "system" | "message";
+    userNotifications: UserNotification[];
+    createdAt: string;
+};
+
+export type NotificationFilter = {
+    keyword?: string;
+    type?: "appointment" | "system" | "message";
+    page?: number;
+    limit?: number;
+    sortBy?: string;
+    sortOrder?: "asc" | "desc";
 };

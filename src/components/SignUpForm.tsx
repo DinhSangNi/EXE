@@ -96,6 +96,7 @@ const SignUpForm = ({
                         <label>Password:</label>
                         <input
                             className="rounded-lg border border-gray-400 p-2 shadow-md"
+                            type="password"
                             {...register("password")}
                         />
                         {errors.password && (

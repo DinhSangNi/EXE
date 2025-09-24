@@ -1,4 +1,9 @@
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import dayjs from "dayjs";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const resolveAddress = (
     city: string,
@@ -40,5 +45,17 @@ export const formatPostDate = (postDateStr: string) => {
         return "Hôm qua";
     }
 
-    return postDate.format("DD/MM/YYYY");
+    return postDate.tz("Asia/Ho_Chi_Minh").format("DD/MM/YYYY");
+};
+
+// Capitalize the first letter of a string
+export const capitalizeFirstLetter = (str: string) => {
+    return str.charAt(0).toLocaleUpperCase() + str.slice(1);
+};
+
+export const formatToVietnamTime = (
+    utcDate: string | Date,
+    formatStr: string = "dddd, DD/MM/YYYY HH:mm"
+): string => {
+    return dayjs(utcDate).tz("Asia/Ho_Chi_Minh").format(formatStr);
 };

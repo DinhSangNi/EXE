@@ -11,12 +11,14 @@ import { logout } from "@/stores/userSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { logo } from "@/assets/images";
+import { capitalizeFirstLetter } from "@/utils/format";
+import NotificationBell from "./NotificationBell";
 
 type Props = {
     isTop: boolean;
 };
 
-const hostOptions = [
+const postTypes = [
     {
         title: "accomodation",
     },
@@ -63,11 +65,7 @@ const NavBar = ({ isTop }: Props) => {
                             className="w-[200px]"
                             onClick={() => setOpenHostModal(true)}
                         >
-                            <p className="font-bold">Trở thành Host</p>
-                            <p className="text-[0.8rem] text-gray-600">
-                                Bắt đầu cho thuê và kiếm thêm thu nhập thật dễ
-                                dàng
-                            </p>
+                            <p className="font-bold">Đăng tin</p>
                         </div>
                     ),
                     key: "0",
@@ -79,6 +77,17 @@ const NavBar = ({ isTop }: Props) => {
                         </div>
                     ),
                     key: "1",
+                },
+                {
+                    label: (
+                        <div
+                            className="w-[200px]"
+                            onClick={() => navigate("/user/posts")}
+                        >
+                            <p className="font-bold">Quản lý tin đã đăng</p>
+                        </div>
+                    ),
+                    key: "2",
                 },
                 {
                     type: "divider",
@@ -96,7 +105,7 @@ const NavBar = ({ isTop }: Props) => {
                             <p>Đăng nhập hoặc Đăng ký</p>
                         </div>
                     ),
-                    key: "2",
+                    key: "3",
                 },
             ];
             break;
@@ -210,7 +219,7 @@ const NavBar = ({ isTop }: Props) => {
                             <p
                                 className={`font-bold ${selectedOption === "accomodation" ? "text-black" : "text-gray-500"}`}
                             >
-                                {"accomodation"}
+                                {capitalizeFirstLetter("accomodation")}
                             </p>
                             <span
                                 className={`absolute bottom-0 h-[2px] w-full origin-left scale-x-0 bg-black transition-transform duration-300 group-hover:scale-x-100 ${selectedOption === "accomodation" && "scale-x-100"}`}
@@ -224,7 +233,7 @@ const NavBar = ({ isTop }: Props) => {
                             <p
                                 className={`font-bold ${selectedOption === "service" ? "text-black" : "text-gray-500"}`}
                             >
-                                {"service"}
+                                {capitalizeFirstLetter("service")}
                             </p>
                             <span
                                 className={`absolute bottom-0 h-[2px] w-full origin-left scale-x-0 bg-black transition-transform duration-300 group-hover:scale-x-100 ${selectedOption === "service" && "scale-x-100"}`}
@@ -244,6 +253,7 @@ const NavBar = ({ isTop }: Props) => {
                                 </p>
                             </button>
                         )}
+                        <NotificationBell />
                         <Dropdown menu={{ items }} trigger={["click"]}>
                             <button className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200 hover:bg-gray-300">
                                 {storedUser.id ? (
@@ -260,7 +270,7 @@ const NavBar = ({ isTop }: Props) => {
                     </div>
                 </div>
 
-                {/* Become a host modal */}
+                {/* Chọn loại đăng tin */}
                 <Modal
                     open={openHostModal}
                     onCancel={() => {
@@ -289,7 +299,7 @@ const NavBar = ({ isTop }: Props) => {
                             Bạn muốn cung cấp gì?
                         </h1>
                         <div className="mt-6 flex justify-between gap-4">
-                            {hostOptions.map((opt: { title: string }) => {
+                            {postTypes.map((opt: { title: string }) => {
                                 return (
                                     <div
                                         key={opt.title}
@@ -310,7 +320,8 @@ const NavBar = ({ isTop }: Props) => {
                                             )}
                                         </div>
                                         <p className="mt-[220px] w-full text-center text-[1rem] font-bold">
-                                            {opt.title}
+                                            {opt.title.charAt(0).toUpperCase() +
+                                                opt.title.slice(1)}
                                         </p>
                                     </div>
                                 );

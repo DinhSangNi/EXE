@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
 import { logo } from "@/assets/images";
+import NotificationBell from "./NotificationBell";
 
 type Props = {
     className?: string;
@@ -64,7 +65,8 @@ const DashboardHeader = ({ className }: Props) => {
                 <div className="cursor-pointer" onClick={() => navigate("/")}>
                     <img src={logo} alt="Logo" className="w-12" />
                 </div>
-                <div>
+                <div className="flex items-center gap-4">
+                    <NotificationBell />
                     <Dropdown menu={{ items }} trigger={["click"]}>
                         <button className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200 hover:bg-gray-300">
                             {storedUser.id ? (

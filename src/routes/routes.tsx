@@ -11,6 +11,8 @@ import AdminOverview from "@/pages/AdminOverview";
 import Posts from "@/pages/Posts";
 import CreateAccommodationPost from "@/pages/CreateAccommodationPost";
 import EditAccomodationPost from "@/pages/EditAccomodationPost";
+import AppointmentManagement from "@/pages/AppointmentManagement";
+import NotificationManagement from "@/pages/NotificationManagement";
 
 export const routes = [
     {
@@ -65,6 +67,26 @@ export const routes = [
                             },
                         ],
                     },
+                    {
+                        path: "appointment",
+                        element: <Outlet />,
+                        children: [
+                            {
+                                path: "",
+                                element: <AppointmentManagement />,
+                            },
+                        ],
+                    },
+                    {
+                        path: "notification",
+                        element: <Outlet />,
+                        children: [
+                            {
+                                path: "",
+                                element: <NotificationManagement />,
+                            },
+                        ],
+                    },
                 ],
             },
             {
@@ -92,6 +114,26 @@ export const routes = [
                     {
                         path: "overview",
                         element: <AdminOverview />,
+                    },
+                    {
+                        path: "appointment",
+                        element: <Outlet />,
+                        children: [
+                            {
+                                path: "",
+                                element: <AppointmentManagement />,
+                            },
+                        ],
+                    },
+                    {
+                        path: "notification",
+                        element: <Outlet />,
+                        children: [
+                            {
+                                path: "",
+                                element: <NotificationManagement />,
+                            },
+                        ],
                     },
                 ],
             },

@@ -1,8 +1,8 @@
 /* eslint-disable */
 import CustomButton from "@/components/CustomButton";
-import { Divider } from "antd";
+import { ConfigProvider, Divider, Popconfirm } from "antd";
 import { useRef, useState, useEffect } from "react";
-import { FaPhoneAlt, FaCalendarAlt } from "react-icons/fa";
+import { FaCalendarAlt } from "react-icons/fa";
 import {
     IoWarningOutline,
     IoHeartOutline,
@@ -10,33 +10,87 @@ import {
 } from "react-icons/io5";
 import { Modal, DatePicker } from "antd";
 import type { DatePickerProps } from "antd";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useParams } from "react-router-dom";
-import { PostServices } from "@/services/post";
+import { usePostById } from "@/hooks/posts/usePostById";
+import {
+    formatPostDate,
+    formatToVietnamTime,
+    resolveAddress,
+} from "@/utils/format";
+import type { Media, PostAmenities } from "@/stores/type";
+import Map from "@/components/Map";
+import "dayjs/locale/vi";
+import enUS from "antd/locale/en_US";
+import type { Locale } from "antd/es/locale";
+import useCreateAppointment from "@/hooks/appointment/useCreateAppointment";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/stores/store";
+import useAppointmentByPostId from "@/hooks/appointment/useAppointmentByPostId";
+import useUpdateAppointment from "@/hooks/appointment/useUpdateAppointment";
+
+dayjs.locale("vi");
+
+const viVN = {
+    ...enUS,
+    DatePicker: {
+        ...enUS.DatePicker,
+        lang: {
+            ...enUS.DatePicker?.lang,
+            locale: "vi",
+            rangePlaceholder: ["Ngày bắt đầu", "Ngày kết thúc"],
+            today: "Hôm nay",
+            now: "Bây giờ",
+            ok: "OK",
+            clear: "Xóa",
+            month: "Tháng",
+            year: "Năm",
+        },
+    },
+};
 
 const PostDetail = () => {
-    const [post, setPost] = useState<any>(null);
+    const storedUser = useSelector((state: RootState) => state.user);
+
     const [showGallery, setShowGallery] = useState(false);
     const [galleryIndex, setGalleryIndex] = useState(0);
     // const carouselRef = useRef<CarouselRef>(null);
     const { id } = useParams();
+    const { data: post, isLoading } = usePostById(id as string);
+    const { data: appointment } = useAppointmentByPostId(id as string);
+    const { mutate: createAppointment } = useCreateAppointment();
+    const { mutate: updateAppointment } = useUpdateAppointment();
     const modalRef = useRef<HTMLDivElement>(null);
-    const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedDate, setSelectedDate] = useState<string | null>(null);
+    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
 
     const showModal = () => {
         setIsModalOpen(true);
     };
 
     const handleOk = () => {
-        // Handle the selected date here
-        console.log("Selected date:", selectedDate);
+        if (selectedDate) {
+            createAppointment({
+                appointmentDateTime: selectedDate.toISOString(),
+                hostId: post?.owner?.id as string,
+                postId: post?.id as string,
+            });
+        }
         setIsModalOpen(false);
     };
 
     const handleCancel = () => {
         setIsModalOpen(false);
+    };
+
+    const handleCancelAppointment = () => {
+        if (!appointment) return;
+        updateAppointment({
+            id: appointment.id,
+            updateAppointmentDto: {
+                status: "cancelled",
+            },
+        });
     };
 
     // Function to disable past dates
@@ -45,24 +99,9 @@ const PostDetail = () => {
         return current && current < dayjs().startOf("day");
     };
 
-    const onChange: DatePickerProps["onChange"] = (_, dateString) => {
-        if (Array.isArray(dateString)) {
-            setSelectedDate(dateString[0] || null);
-        } else {
-            setSelectedDate(dateString || null);
-        }
+    const onChange: DatePickerProps["onChange"] = (date) => {
+        setSelectedDate(date || null);
     };
-
-    useEffect(() => {
-        if (id) {
-            setLoading(true);
-            PostServices.getById(id as string)
-                .then((res) => {
-                    setPost(res.data.metadata);
-                })
-                .finally(() => setLoading(false));
-        }
-    }, [id]);
 
     // Đóng modal khi nhấn phím Esc
     useEffect(() => {
@@ -73,11 +112,6 @@ const PostDetail = () => {
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [showGallery]);
-
-    // const goToSlide = (slideIndex: number) => {
-    //     if (!carouselRef.current) return;
-    //     carouselRef.current.goTo(slideIndex);
-    // };
 
     // Helper: format price
     const formatPrice = (price: number) => {
@@ -106,6 +140,11 @@ const PostDetail = () => {
     //     },
     //     { videos: [], images: [] }
     // );
+
+    // Get avatar
+    const avatar =
+        post?.owner?.medias?.find((media: Media) => media.purpose === "avatar")
+            ?.url || undefined;
 
     // Gallery images
     const galleryImages = post?.medias || [];
@@ -156,7 +195,7 @@ const PostDetail = () => {
             )}
             <div className="w-full">
                 <div className="mx-auto mt-10 w-full max-w-7xl px-4">
-                    {loading ? (
+                    {isLoading ? (
                         <>
                             <div className="animate-pulse">
                                 <div className="mb-4 h-8 w-1/2 rounded bg-gray-200" />
@@ -245,7 +284,7 @@ const PostDetail = () => {
                     <div className="w-3/5">
                         {/* Thông tin giá, diện tích, địa chỉ, mô tả... */}
                         <div className="mt-6 w-full">
-                            {loading ? (
+                            {isLoading ? (
                                 <div className="animate-pulse space-y-4">
                                     <div className="h-6 w-1/3 rounded bg-gray-200" />
                                     <div className="h-4 w-1/4 rounded bg-gray-200" />
@@ -265,7 +304,7 @@ const PostDetail = () => {
                                                         ? formatPrice(
                                                               post.price
                                                           )
-                                                        : "1.2 triệu/tháng"}
+                                                        : "N/A"}
                                                 </span>
                                                 <span className="mx-2 text-gray-500">
                                                     •
@@ -273,18 +312,20 @@ const PostDetail = () => {
                                                 <span className="text-lg font-semibold text-gray-700">
                                                     {post?.square
                                                         ? `${post.square} m²`
-                                                        : "100 m²"}
+                                                        : "N/A"}
                                                 </span>
                                             </div>
                                             <span className="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800">
-                                                Cập nhật: 2 giờ trước
+                                                {formatPostDate(
+                                                    post?.expiredAt || ""
+                                                )}
                                             </span>
                                         </div>
                                     </div>
 
                                     {/* Property Details */}
                                     <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-                                        <div className="space-y-3 rounded-lg border p-4">
+                                        <div className="space-y-3 rounded-lg border bg-white p-4 shadow-md">
                                             <h3 className="text-md mb-2 font-semibold text-blue-700">
                                                 Thông tin cơ bản
                                             </h3>
@@ -328,7 +369,7 @@ const PostDetail = () => {
                                             </div>
                                         </div>
 
-                                        <div className="space-y-3 rounded-lg border p-4">
+                                        <div className="space-y-3 rounded-lg border bg-white p-4 shadow-md">
                                             <h3 className="text-md mb-2 font-semibold text-blue-700">
                                                 Địa chỉ
                                             </h3>
@@ -380,11 +421,11 @@ const PostDetail = () => {
                         </div>
                         <Divider />
                         {/* Description */}
-                        <div className="w-full rounded-lg border border-blue-100 p-6 shadow-sm">
+                        <div className="w-full rounded-lg border border-blue-100 bg-white p-6 shadow-md">
                             <h2 className="mb-4 text-xl font-bold text-blue-700">
                                 Thông tin mô tả
                             </h2>
-                            {loading ? (
+                            {isLoading ? (
                                 <div className="animate-pulse space-y-3">
                                     <div className="h-4 w-2/3 rounded bg-gray-200" />
                                     <div className="h-4 w-1/2 rounded bg-gray-200" />
@@ -412,20 +453,20 @@ const PostDetail = () => {
                                     </div>
 
                                     {/* Tiện ích */}
-                                    {post?.postAmenities?.length > 0 && (
+                                    {post?.postAmenities && (
                                         <div className="mt-6">
                                             <h3 className="mb-3 text-lg font-semibold text-blue-700">
                                                 Tiện ích có sẵn
                                             </h3>
                                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
                                                 {post.postAmenities.map(
-                                                    (item: any) => (
+                                                    (item: PostAmenities) => (
                                                         <div
                                                             key={item.id}
-                                                            className="flex items-center rounded-lg border border-blue-100 bg-white p-3 shadow-sm transition-colors hover:border-blue-300"
+                                                            className="flex items-center rounded-lg border border-blue-100 bg-white p-2 shadow-sm transition-colors hover:border-blue-300"
                                                         >
                                                             <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full border border-blue-100 bg-blue-50 text-blue-600">
-                                                                <span className="text-lg">
+                                                                <span className="text-md">
                                                                     ✓
                                                                 </span>
                                                             </div>
@@ -444,10 +485,29 @@ const PostDetail = () => {
                                 </div>
                             )}
                         </div>
+
+                        {/* Map */}
+                        <div className="mt-6 w-full rounded-lg border border-blue-100 bg-white p-6 shadow-md">
+                            <h3 className="mb-3 text-lg font-semibold text-blue-700">
+                                Vị trí và bản đồ
+                            </h3>
+                            <div className="mt-4 h-72 w-full">
+                                <Map
+                                    lat={post?.latitude}
+                                    lng={post?.longitude}
+                                    address={resolveAddress(
+                                        post?.city || "",
+                                        post?.district || "",
+                                        post?.ward || "",
+                                        post?.street || ""
+                                    )}
+                                />
+                            </div>
+                        </div>
                     </div>
-                    {/* Right: Thông tin chủ trọ */}
+                    {/* Right: Thông tin chủ bài đăng */}
                     <div className="w-2/5">
-                        {loading ? (
+                        {isLoading ? (
                             <div className="flex animate-pulse flex-col items-center space-y-4 rounded-xl bg-white p-4 shadow-xl">
                                 <div className="aspect-square w-[6rem] rounded-full bg-gray-200" />
                                 <div className="h-4 w-1/2 rounded bg-gray-200" />
@@ -458,32 +518,87 @@ const PostDetail = () => {
                             </div>
                         ) : (
                             <div className="flex flex-col items-center rounded-xl bg-white p-4 shadow-xl">
-                                <div className="flex aspect-square w-[6rem] items-center justify-center overflow-hidden rounded-full border-2 border-blue-200 bg-blue-100 text-3xl font-bold text-blue-600">
-                                    {post?.owner?.name?.[0] || "S"}
+                                {/* Avatar của chủ bài đăng */}
+                                <div className="flex aspect-square w-[6rem] overflow-hidden rounded-full">
+                                    {avatar ? (
+                                        <img
+                                            className="h-full w-full object-cover"
+                                            src={avatar}
+                                            alt="User's Avatar"
+                                        />
+                                    ) : (
+                                        <p className="flex h-full w-full items-center justify-center bg-blue-100 text-3xl font-bold text-blue-600">
+                                            {post?.owner?.name?.[0]}
+                                        </p>
+                                    )}
                                 </div>
+                                {/* Tên chủ bài đăng */}
                                 <h1 className="my-2 font-bold">
-                                    {post?.owner?.name || "Tên chủ bài đăng"}
+                                    {post?.owner?.name}
                                 </h1>
                                 <p className="text-[0.8rem]">
                                     <span>4 tin đăng</span>
                                     <span> · </span>
-                                    <span>Tham gia từ: 05/03/2025</span>
+                                    <span>
+                                        Tham gia từ:{" "}
+                                        {post?.createdAt
+                                            ? formatPostDate(post?.createdAt)
+                                            : "N/A"}
+                                    </span>
                                 </p>
-                                <div className="mt-2 flex w-full flex-col items-center gap-2">
-                                    <CustomButton
-                                        title="Đặt lịch xem nhà"
-                                        icon={<FaCalendarAlt />}
-                                        className="w-full bg-blue-600 text-white hover:bg-blue-700 md:text-[0.9rem] lg:text-[1rem]"
-                                        onClick={showModal}
-                                    />
-                                    <CustomButton
-                                        title={post?.owner?.phone || "Liên hệ"}
-                                        icon={<FaPhoneAlt />}
-                                        className="w-full border border-blue-600 bg-white text-blue-600 hover:bg-blue-50 md:text-[0.9rem] lg:text-[1rem]"
-                                    />
-                                </div>
+                                {post?.owner?.id !== storedUser.id && (
+                                    <div className="mt-2 flex w-full flex-col items-center gap-2">
+                                        {!appointment ? (
+                                            <CustomButton
+                                                title="Đặt lịch xem nhà"
+                                                icon={<FaCalendarAlt />}
+                                                className="w-full bg-blue-600 text-white hover:bg-blue-700 md:text-[0.9rem] lg:text-[1rem]"
+                                                onClick={showModal}
+                                            />
+                                        ) : appointment.status ===
+                                          "confirmed" ? (
+                                            <p>
+                                                Đã hẹn lúc{" "}
+                                                {formatToVietnamTime(
+                                                    appointment.appointmentDateTime
+                                                )}
+                                            </p>
+                                        ) : appointment.status === "pending" ? (
+                                            <div>
+                                                <p className="mb-4 font-bold text-yellow-500">
+                                                    Lịch hẹn lúc{" "}
+                                                    {formatToVietnamTime(
+                                                        appointment.appointmentDateTime
+                                                    )}{" "}
+                                                    đang chờ duyệt
+                                                </p>
+                                                <Popconfirm
+                                                    title="Hủy lịch hẹn"
+                                                    description="Bạn chắc chắn hủy lịch hẹn?"
+                                                    okText="Hủy"
+                                                    cancelText="Không"
+                                                    onConfirm={
+                                                        handleCancelAppointment
+                                                    }
+                                                >
+                                                    <CustomButton
+                                                        title="Hủy lịch hẹn"
+                                                        className="w-full bg-yellow-600 text-white hover:bg-yellow-800 md:text-[0.9rem] lg:text-[1rem]"
+                                                    />
+                                                </Popconfirm>
+                                            </div>
+                                        ) : (
+                                            <CustomButton
+                                                title="Đặt lịch xem nhà"
+                                                icon={<FaCalendarAlt />}
+                                                className="w-full bg-blue-600 text-white hover:bg-blue-700 md:text-[0.9rem] lg:text-[1rem]"
+                                                onClick={showModal}
+                                            />
+                                        )}
+                                    </div>
+                                )}
                                 <Modal
-                                    title="Chọn ngày xem nhà"
+                                    title="Đăt lịch xem nhà"
                                     open={isModalOpen}
                                     onOk={handleOk}
                                     onCancel={handleCancel}
@@ -491,22 +606,26 @@ const PostDetail = () => {
                                     cancelText="Hủy"
                                 >
                                     <div className="flex flex-col items-center py-4">
-                                        <DatePicker
-                                            onChange={onChange}
-                                            className="w-full text-center"
-                                            placeholder="Chọn ngày xem nhà"
-                                            format="DD/MM/YYYY"
-                                            disabledDate={disabledDate}
-                                            showToday
-                                            allowClear={false}
-                                            minDate={dayjs()}
-                                            inputReadOnly
-                                        />
+                                        <ConfigProvider locale={viVN as Locale}>
+                                            <DatePicker
+                                                className="w-full border border-gray-500"
+                                                onChange={onChange}
+                                                placeholder="Chọn ngày xem nhà"
+                                                format="DD/MM/YYYY HH:mm"
+                                                disabledDate={disabledDate}
+                                                showTime={{ format: "HH:mm" }}
+                                                allowClear={true}
+                                                minDate={dayjs()}
+                                                inputReadOnly
+                                            />
+                                        </ConfigProvider>
                                         {selectedDate && (
                                             <p className="mt-4 text-gray-600">
                                                 Bạn đã chọn ngày:{" "}
                                                 <span className="font-semibold">
-                                                    {selectedDate}
+                                                    {selectedDate.format(
+                                                        "DD/MM/YYYY HH:mm"
+                                                    )}
                                                 </span>
                                             </p>
                                         )}

@@ -4,7 +4,7 @@ import useProvinces from "@/hooks/address/useProvinces";
 import { useAnimation, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { HiOutlineLocationMarker } from "react-icons/hi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
 
 const Searchbar = ({ isTop }: Props) => {
     //states
+    const [searchParams] = useSearchParams();
     const [open, setOpen] = useState<boolean>(false);
     const [address, setAddress] = useState<{
         province: {
@@ -25,12 +26,12 @@ const Searchbar = ({ isTop }: Props) => {
         };
     }>({
         province: {
-            name: "",
-            code: "",
+            name: searchParams.get("province")?.split("|")[1] || "",
+            code: searchParams.get("province")?.split("|")[0] || "",
         },
         district: {
-            name: "",
-            code: "",
+            name: searchParams.get("district")?.split("|")[1] || "",
+            code: searchParams.get("district")?.split("|")[0] || "",
         },
     });
 
@@ -64,6 +65,8 @@ const Searchbar = ({ isTop }: Props) => {
 
     const handleSelectDistrict = (district: { name: string; code: number }) => {
         const params = new URLSearchParams({
+            page: "1",
+            limit: "9",
             province: `${address.province.code}|${address.province.name}`,
             district: `${district.code}|${district.name}`,
         });
