@@ -4,15 +4,15 @@ import PostCarousel from "@/components/PostCarousel";
 import { PiHeadphonesFill } from "react-icons/pi";
 import { FaPhoneAlt } from "react-icons/fa";
 import { BiMessageRoundedDetail } from "react-icons/bi";
-import { useNavigate } from "react-router-dom";
 import usePosts from "@/hooks/posts/usePosts";
 
 const Home = () => {
-    const navigate = useNavigate();
-
-    const { data, isLoading } = usePosts({
-        status: "approved",
-    });
+    const { data, isLoading } = usePosts(
+        {
+            status: "approved",
+        },
+        "admin"
+    );
 
     return (
         <>

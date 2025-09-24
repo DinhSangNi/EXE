@@ -1,6 +1,5 @@
 /* eslint-disable */
-import { resolveAddress } from "@/utils/format";
-import { getAddressFromLatLng, getLatLngFromAddress } from "@/utils/googleMap";
+import { getLatLngFromAddress } from "@/utils/googleMap";
 import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 import { useCallback, useEffect, useRef, useState } from "react";
 

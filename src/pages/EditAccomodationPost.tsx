@@ -253,7 +253,9 @@ const EditAccomodationPost = () => {
                     post.medias.filter((item) =>
                         item.type.includes("video")
                     )?.[0]?.url ?? undefined,
-                amenityIds: post.postAmenities.map((item) => item.amenity.id),
+                amenityIds:
+                    post.postAmenities &&
+                    post.postAmenities.map((item) => item.amenity.id),
             });
             setLocation({
                 lat: post.latitude,
