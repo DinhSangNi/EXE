@@ -46,7 +46,7 @@ const Home = () => {
                 </div>
 
                 {/* Hỗ trợ khách hàng */}
-                <div className="mx-auto mt-14 w-[90%]">
+                <div className="mx-auto mt-14 w-[90%] bg-white">
                     <div className="w-full px-6 py-4 shadow-2xl md:flex">
                         <div className="md:w-1/2">
                             <img
@@ -69,11 +69,11 @@ const Home = () => {
                             <div className="mt-6 flex w-full justify-center gap-4 text-white">
                                 <button className="flex items-center gap-2 rounded-xl bg-red-500 px-4 py-2">
                                     <FaPhoneAlt className="text-[0.8rem] md:text-[1.2rem]" />
-                                    0909316890
+                                    0359069089
                                 </button>
                                 <button className="flex items-center gap-2 rounded-xl bg-blue-500 px-4 py-2">
                                     <BiMessageRoundedDetail className="text-[0.8rem] md:text-[1.2rem]" />
-                                    0909316890
+                                    0359069089
                                 </button>
                             </div>
                         </div>
