@@ -7,18 +7,34 @@ import NotificationBell from "./NotificationBell";
 import type { MenuProps } from "antd/lib";
 import { FaBars } from "react-icons/fa";
 import Searchbar from "./SearchBar";
+import { AuthServices } from "@/services/auth";
+import { logout } from "@/stores/userSlice";
+import { toast } from "react-toastify";
 
 const LeanHeader = () => {
     const storedUser = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
+    const handleLogout = async () => {
+        try {
+            await AuthServices.logout();
+            dispatch(logout());
+            toast.success("Đăng xuất thành công !", {
+                position: "top-center",
+            });
+            navigate("/login");
+        } catch (error) {
+            console.log("error: ", error);
+        }
+    };
+
     // Hàm get menu item theo stored user
     const getMenuItems = (): MenuProps["items"] => {
         const authItem = {
             label: storedUser.id ? (
-                <div className="font-bold">
-                    {/* onClick={handleLogout} */}Đăng xuất
+                <div className="font-bold" onClick={handleLogout}>
+                    Đăng xuất
                 </div>
             ) : (
                 <div className="font-bold" onClick={() => navigate("/login")}>
@@ -35,20 +51,31 @@ const LeanHeader = () => {
                     key: "post",
                 },
                 {
+                    label: (
+                        <div
+                            className="w-[200px]"
+                            onClick={() => navigate("/user/posts")}
+                        >
+                            <p className="font-bold">Bảng điều khiển</p>
+                        </div>
+                    ),
+                    key: "0",
+                },
+                {
                     label: <div className="font-bold">Tin đã lưu</div>,
                     key: "saved",
                 },
-                {
-                    label: (
-                        <div
-                            className="font-bold"
-                            onClick={() => navigate("/user/posts")}
-                        >
-                            Quản lý tin đã đăng
-                        </div>
-                    ),
-                    key: "manage",
-                },
+                // {
+                //     label: (
+                //         <div
+                //             className="font-bold"
+                //             onClick={() => navigate("/user/posts")}
+                //         >
+                //             Quản lý tin đã đăng
+                //         </div>
+                //     ),
+                //     key: "manage",
+                // },
                 { type: "divider" },
                 authItem,
             ];

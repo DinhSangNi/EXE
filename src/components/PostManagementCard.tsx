@@ -6,7 +6,7 @@ import { BsCalendarDateFill, BsThreeDotsVertical } from "react-icons/bs";
 import { FaRegEdit, FaRegTrashAlt, FaTimes } from "react-icons/fa";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import { Dropdown, Modal, type MenuProps } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import useUpdatePost from "@/hooks/posts/useUpdatePost";
 import useDeletePost from "@/hooks/posts/useDeletePost";
 import { useState } from "react";
@@ -136,11 +136,13 @@ const PostManagementCard = ({ className, data }: Props) => {
                     <div>
                         {/* Title */}
                         <div className="flex items-start justify-between gap-2">
-                            <h1 className="mb-2 line-clamp-2 text-[1.1rem] font-bold">
-                                {data?.title}
+                            <h1 className="mb-2 line-clamp-2 cursor-pointer text-[1.1rem] font-bold hover:text-primary hover:transition-colors hover:duration-200">
+                                <Link to={`/posts/${data?.id}`}>
+                                    {data?.title}
+                                </Link>
                             </h1>
                             <Dropdown menu={{ items }} trigger={["click"]}>
-                                <button>
+                                <button className="rounded-full p-1 hover:bg-primary hover:transition-colors hover:duration-200">
                                     <BsThreeDotsVertical className="text-[1.2rem]" />
                                 </button>
                             </Dropdown>

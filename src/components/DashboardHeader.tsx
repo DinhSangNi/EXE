@@ -34,6 +34,17 @@ const DashboardHeader = ({ className }: Props) => {
     const items: MenuProps["items"] = [
         {
             label: (
+                <div
+                    className="w-[200px]"
+                    onClick={() => navigate("/user/posts")}
+                >
+                    <p className="font-bold">Bảng điều khiển</p>
+                </div>
+            ),
+            key: "0",
+        },
+        {
+            label: (
                 <div className="w-[200px]">
                     <p className="font-bold">Tin đã lưu</p>
                 </div>

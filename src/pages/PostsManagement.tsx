@@ -2,22 +2,65 @@
 import PostManagementCard from "@/components/PostManagementCard";
 import Spinner from "@/components/Spinner";
 import type { Post, PostFilter } from "@/stores/type";
-import { Divider, Pagination } from "antd";
-import { FaFilter, FaHome, FaTimes } from "react-icons/fa";
+import { Divider, Pagination, Input, Select } from "antd";
+import { FaFilter, FaHome, FaTimes, FaSearch } from "react-icons/fa";
 import { IoMdTrendingUp } from "react-icons/io";
 import { MdPending, MdOutlineTimerOff } from "react-icons/md";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import usePosts from "@/hooks/posts/usePosts";
 import PostsFilterModal from "@/components/posts/PostsFilterModal";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/stores/store";
 
 type Props = {
     role?: "user" | "admin";
 };
 
+const { Option } = Select;
+
 const PostsManagement = ({ role = "user" }: Props) => {
+    const storedUser = useSelector((state: RootState) => state.user);
+
     const [searchParams, setSearchParams] = useSearchParams();
     const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+
+    // State riêng cho search input để debounce
+    const [keyword, setKeyword] = useState(
+        searchParams.get("keyword")
+            ? decodeURIComponent(searchParams.get("keyword")!)
+            : ""
+    );
+
+    // State riêng cho status select
+    const [statusFilter, setStatusFilter] = useState<
+        "pending" | "approved" | "rejected" | "expired" | undefined
+    >(searchParams.get("status") as any);
+
+    // Debounce update searchParams khi gõ
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            const newParams: Record<string, string> = {
+                ...Object.fromEntries(searchParams),
+            };
+            // keyword
+            if (keyword.trim() === "") {
+                delete newParams.keyword;
+            } else {
+                newParams.keyword = encodeURIComponent(keyword);
+            }
+            // status
+            if (!statusFilter) {
+                delete newParams.status;
+            } else {
+                newParams.status = statusFilter;
+            }
+
+            setSearchParams(newParams);
+        }, 500);
+
+        return () => clearTimeout(handler);
+    }, [keyword, statusFilter]);
 
     // appliedFilterData luôn sync từ URL
     const appliedFilterData: Partial<PostFilter> = {
@@ -42,12 +85,16 @@ const PostsManagement = ({ role = "user" }: Props) => {
             ? Number(searchParams.get("maxSquare"))
             : undefined,
         amenities: searchParams.getAll("amenities") || [],
-        status:
-            (searchParams.get("status") as
-                | "pending"
-                | "approved"
-                | "rejected"
-                | "expired") || undefined,
+        status: searchParams.get("status")
+            ? (searchParams.get("status") as
+                  | "pending"
+                  | "approved"
+                  | "rejected"
+                  | "expired")
+            : undefined,
+        keyword: searchParams.get("keyword")
+            ? decodeURIComponent(searchParams.get("keyword")!)
+            : undefined,
     };
 
     const { data, isLoading, isSuccess } = usePosts(appliedFilterData, role);
@@ -62,7 +109,6 @@ const PostsManagement = ({ role = "user" }: Props) => {
 
     const applyFilter = (newFilter: Partial<PostFilter>) => {
         const cleanedFilterData = { ...newFilter };
-
         Object.keys(cleanedFilterData).forEach((key) => {
             const value = cleanedFilterData[key as keyof PostFilter];
             if (
@@ -73,7 +119,6 @@ const PostsManagement = ({ role = "user" }: Props) => {
                 delete cleanedFilterData[key as keyof PostFilter];
             }
         });
-
         setSearchParams(cleanedFilterData as any);
         setIsFilterModalOpen(false);
     };
@@ -81,32 +126,21 @@ const PostsManagement = ({ role = "user" }: Props) => {
     const filterWithStatus = (
         status: "pending" | "approved" | "rejected" | "expired" | undefined
     ) => {
-        const newParams: Record<string, string> = {
-            ...Object.fromEntries(searchParams),
-        };
-
-        if (status === undefined) {
-            delete newParams.status;
-        } else {
-            newParams.status = status;
-        }
-
-        setSearchParams(newParams);
+        setStatusFilter(status);
     };
 
     return (
-        <>
-            <div className="w-full bg-gray-100">
-                <div className="mx-auto min-h-screen w-4/5 pt-4">
-                    <h1 className="text-[1.4rem] font-bold">
-                        Quản lí bài đăng
-                    </h1>
-                    <Divider />
-                    {/* Summary cards */}
+        <div className="w-full bg-gray-100">
+            <div className="mx-auto min-h-screen w-4/5 pt-4">
+                <h1 className="text-[1.4rem] font-bold">Quản lí bài đăng</h1>
+                <Divider />
+
+                {/* Summary cards */}
+                {storedUser.role === "admin" && (
                     <div className="mb-4 w-full">
                         <div className="grid grid-cols-5 gap-5">
                             <div
-                                className="flex items-center justify-between bg-white p-4 shadow-lg"
+                                className="flex cursor-pointer items-center justify-between bg-white p-4 shadow-lg"
                                 onClick={() => filterWithStatus(undefined)}
                             >
                                 <div>
@@ -118,7 +152,7 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 <FaHome className="text-[2rem] text-primary" />
                             </div>
                             <div
-                                className="flex items-center justify-between bg-white p-4 shadow-lg"
+                                className="flex cursor-pointer items-center justify-between bg-white p-4 shadow-lg"
                                 onClick={() => filterWithStatus("approved")}
                             >
                                 <div>
@@ -130,7 +164,7 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 <IoMdTrendingUp className="text-[2rem] text-green-400" />
                             </div>
                             <div
-                                className="flex items-center justify-between bg-white p-4 shadow-lg"
+                                className="flex cursor-pointer items-center justify-between bg-white p-4 shadow-lg"
                                 onClick={() => filterWithStatus("pending")}
                             >
                                 <div>
@@ -142,7 +176,7 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 <MdPending className="text-[2rem] text-yellow-400" />
                             </div>
                             <div
-                                className="flex items-center justify-between bg-white p-4 shadow-lg"
+                                className="flex cursor-pointer items-center justify-between bg-white p-4 shadow-lg"
                                 onClick={() => filterWithStatus("rejected")}
                             >
                                 <div>
@@ -154,7 +188,7 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 <FaTimes className="text-[2rem] text-red-500" />
                             </div>
                             <div
-                                className="flex items-center justify-between bg-white p-4 shadow-lg"
+                                className="flex cursor-pointer items-center justify-between bg-white p-4 shadow-lg"
                                 onClick={() => filterWithStatus("expired")}
                             >
                                 <div>
@@ -167,56 +201,88 @@ const PostsManagement = ({ role = "user" }: Props) => {
                             </div>
                         </div>
                     </div>
+                )}
 
-                    {/* Filter */}
-                    <div className="mb-2 flex w-full items-end justify-end gap-8">
-                        <button
-                            className="flex items-center gap-1 p-1 transition-colors duration-100 hover:bg-gray-300"
-                            onClick={() => setIsFilterModalOpen(true)}
-                        >
-                            <FaFilter />
-                            <p>Bộ lọc</p>
-                        </button>
-                        <PostsFilterModal
-                            open={isFilterModalOpen}
-                            onCancel={() => setIsFilterModalOpen(false)}
-                            initialFilterData={appliedFilterData}
-                            onApply={applyFilter}
-                        />
-                    </div>
+                {/* Search + Status + Filter */}
+                <div className="mb-6 flex w-full items-end gap-4">
+                    <Input
+                        placeholder="Tìm kiếm theo tên bài đăng..."
+                        value={keyword}
+                        onChange={(e) => setKeyword(e.target.value)}
+                        prefix={<FaSearch className="text-gray-400" />}
+                        className="w-1/3"
+                        allowClear
+                    />
 
-                    {/* List */}
-                    <div className="flex h-full flex-col gap-y-4">
-                        {isLoading ? (
-                            <div className="w-full text-center">
-                                <Spinner className="mt-16 h-[100px] w-[100px]" />
-                                <p>Đang tải dữ liệu...</p>
-                            </div>
-                        ) : isSuccess && data?.data.length > 0 ? (
-                            data?.data.map((post: Post) => (
-                                <div key={post.id}>
-                                    <PostManagementCard data={post} />
-                                </div>
-                            ))
-                        ) : (
-                            <div className="w-full text-center">
-                                <h1 className="text-[1.2rem]">
-                                    Chưa có bài đăng nào
-                                </h1>
-                            </div>
-                        )}
-                    </div>
-                    <Pagination
-                        onChange={handlePaginationChange}
-                        current={appliedFilterData.page}
-                        pageSize={appliedFilterData.limit}
-                        className="mt-4"
-                        align="end"
-                        total={data?.totalItems ?? 0}
+                    <Select
+                        placeholder="Trạng thái"
+                        value={statusFilter}
+                        onChange={(value) =>
+                            setStatusFilter(
+                                value as
+                                    | "pending"
+                                    | "approved"
+                                    | "rejected"
+                                    | "expired"
+                            )
+                        }
+                        allowClear
+                        className="w-1/4"
+                    >
+                        <Option value="pending">Đang chờ duyệt</Option>
+                        <Option value="approved">Đang hoạt động</Option>
+                        <Option value="rejected">Đã từ chối</Option>
+                        <Option value="expired">Đã hết hạn</Option>
+                    </Select>
+
+                    <button
+                        className="flex items-center gap-1 p-1 transition-colors duration-100 hover:bg-gray-300"
+                        onClick={() => setIsFilterModalOpen(true)}
+                    >
+                        <FaFilter />
+                        <p>Bộ lọc</p>
+                    </button>
+
+                    <PostsFilterModal
+                        open={isFilterModalOpen}
+                        onCancel={() => setIsFilterModalOpen(false)}
+                        initialFilterData={appliedFilterData}
+                        onApply={applyFilter}
                     />
                 </div>
+
+                {/* List */}
+                <div className="flex h-full flex-col gap-y-4">
+                    {isLoading ? (
+                        <div className="w-full text-center">
+                            <Spinner className="mt-16 h-[100px] w-[100px]" />
+                            <p>Đang tải dữ liệu...</p>
+                        </div>
+                    ) : isSuccess && data?.data.length > 0 ? (
+                        data?.data.map((post: Post) => (
+                            <div key={post.id}>
+                                <PostManagementCard data={post} />
+                            </div>
+                        ))
+                    ) : (
+                        <div className="w-full text-center">
+                            <h1 className="text-[1.2rem]">
+                                Chưa có bài đăng nào
+                            </h1>
+                        </div>
+                    )}
+                </div>
+
+                <Pagination
+                    onChange={handlePaginationChange}
+                    current={appliedFilterData.page}
+                    pageSize={appliedFilterData.limit}
+                    className="mt-4"
+                    align="end"
+                    total={data?.totalItems ?? 0}
+                />
             </div>
-        </>
+        </div>
     );
 };
 

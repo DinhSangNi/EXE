@@ -11,7 +11,10 @@ const useCreateAppointment = () => {
             return res.data.metadata;
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["appointments"] });
+            queryClient.invalidateQueries({
+                queryKey: ["appointments"],
+                exact: false,
+            });
         },
         onError: (error) => {
             console.error("Create appointment failed:", error);

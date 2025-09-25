@@ -15,6 +15,7 @@ import AppointmentManagement from "@/pages/AppointmentManagement";
 import NotificationManagement from "@/pages/NotificationManagement";
 import LeanLayout from "@/components/LeanLayout";
 import ProtectedRoute from "./ProtectedRoute";
+import AppointmentDetail from "@/pages/AppointmentDetail";
 
 const isAuthenticated = !!localStorage.getItem("accessToken");
 console.log("isAuthenticated: ", isAuthenticated);
@@ -84,6 +85,11 @@ export const routes = [
                             {
                                 path: "appointment",
                                 element: <AppointmentManagement />,
+                            },
+
+                            {
+                                path: "appointment/:id",
+                                element: <AppointmentDetail />,
                             },
                             {
                                 path: "notification",

@@ -18,7 +18,7 @@ const usePosts = (filters: PostFilter, role: "user" | "admin") => {
                 totalRejectedItems: number;
             };
         },
-        staleTime: 3 * 60 * 1000,
+        staleTime: 60 * 1000,
     });
 };
 

@@ -3,13 +3,7 @@ import { useSelector } from "react-redux";
 
 import type { MenuProps } from "antd";
 import { Menu } from "antd";
-import {
-    FaTachometerAlt,
-    FaHome,
-    FaUser,
-    FaCalendarAlt,
-    FaBell,
-} from "react-icons/fa";
+import { FaHome, FaUser, FaCalendarAlt, FaBell } from "react-icons/fa";
 import { BsHouseAddFill } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -41,11 +35,11 @@ const LeftSideBar = ({ className }: Props) => {
     switch (user.role) {
         case "user":
             menuItems = [
-                {
-                    key: "dashboard",
-                    label: <p>Tổng quan</p>,
-                    icon: <FaTachometerAlt />,
-                },
+                // {
+                //     key: "dashboard",
+                //     label: <p>Tổng quan</p>,
+                //     icon: <FaTachometerAlt />,
+                // },
                 {
                     key: "account",
                     label: <p>Tài khoản của tôi</p>,
@@ -85,11 +79,11 @@ const LeftSideBar = ({ className }: Props) => {
             break;
         case "admin":
             menuItems = [
-                {
-                    key: "dashboard",
-                    label: <p>Tổng quan</p>,
-                    icon: <FaTachometerAlt />,
-                },
+                // {
+                //     key: "dashboard",
+                //     label: <p>Tổng quan</p>,
+                //     icon: <FaTachometerAlt />,
+                // },
                 {
                     key: "account",
                     label: <p>Tài khoản của tôi</p>,

@@ -17,7 +17,7 @@ const NotificationBox = ({ items = [], totalAllItems = 0 }: Props) => {
             <div className="max-h-60 overflow-y-auto">
                 {items.length > 0 ? (
                     items.map((item) => (
-                        <NotificationCard key={item.id} data={item} />
+                        <NotificationCard key={item.id} notification={item} />
                     ))
                 ) : (
                     <p className="w-full py-4 text-center text-[16px]">

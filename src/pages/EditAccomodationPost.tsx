@@ -48,7 +48,7 @@ const createRoomFormSchema = z.object({
             message: "Nội dung miêu tả tối thiếu 50 kí tự",
         })
         .max(5000, {
-            message: "Nội dung miêu tả tối đa 50 kí tự",
+            message: "Nội dung miêu tả tối đa 5000 kí tự",
         }),
     price: z
         .number({
@@ -147,7 +147,6 @@ const EditAccomodationPost = () => {
             const res = await PostServices.getById(id as string);
             return res.data.metadata;
         },
-        // staleTime: 3 * 60 * 1000,
     });
     const updateMutation = useMutation({
         mutationFn: async (payload: Partial<CreateRoomForm>) => {
@@ -157,11 +156,11 @@ const EditAccomodationPost = () => {
             queryClient.invalidateQueries({
                 queryKey: ["posts"],
             });
-            toast.success("Đã tạo bài đăng thành công !");
+            toast.success("Đã lưu bài đăng thành công !");
             navigate("/user/posts");
         },
         onError: () => {
-            toast.error("Tạo bài đăng không thành công !");
+            toast.error("Lưu bài đăng thất bại !");
         },
     });
 
@@ -224,12 +223,6 @@ const EditAccomodationPost = () => {
 
     useEffect(() => {
         if (isSuccess && post) {
-            console.log("post: ", post);
-            console.log(
-                "url: ",
-                post.medias.filter((item) => item.type.includes("video"))?.[0]
-                    ?.url ?? undefined
-            );
             reset({
                 province: post.city,
                 district: post.district,
@@ -263,8 +256,6 @@ const EditAccomodationPost = () => {
             });
         }
     }, [isSuccess, post]);
-
-    console.log("videoUrl: ", videoUrl);
 
     // if (isLoading)
     //     return (
@@ -339,7 +330,6 @@ const EditAccomodationPost = () => {
                                                         value: string
                                                     ) => {
                                                         field.onChange(value);
-                                                        // setValue("ward", "");
                                                     }}
                                                     type="district"
                                                     className="w-1/4 text-[0.9rem]"
@@ -428,7 +418,6 @@ const EditAccomodationPost = () => {
                             <h1 className="mb-4 text-[1.2rem] font-bold">
                                 Chuyên mục
                             </h1>
-                            {/* Property type */}
                             <div className="mb-4">
                                 <Controller
                                     name="categoryId"
@@ -500,13 +489,17 @@ const EditAccomodationPost = () => {
                                         return (
                                             <Input
                                                 {...field}
+                                                type="number"
+                                                min={0}
                                                 placeholder="Diện tích..."
                                                 id="square"
                                                 onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    // Nếu rỗng thì set undefined, còn không set number
                                                     field.onChange(
-                                                        parseFloat(
-                                                            e.target.value
-                                                        )
+                                                        val === ""
+                                                            ? undefined
+                                                            : Number(val)
                                                     );
                                                 }}
                                                 addonAfter={
@@ -540,14 +533,18 @@ const EditAccomodationPost = () => {
                                     render={({ field }) => {
                                         return (
                                             <Input
-                                                value={field.value}
+                                                type="number"
+                                                min={0}
+                                                value={field.value ?? ""}
                                                 placeholder="Giá..."
                                                 id="price"
                                                 onChange={(e) => {
+                                                    const val = e.target.value;
+                                                    // Nếu rỗng thì set undefined, còn không set number
                                                     field.onChange(
-                                                        parseFloat(
-                                                            e.target.value
-                                                        )
+                                                        val === ""
+                                                            ? undefined
+                                                            : Number(val)
                                                     );
                                                 }}
                                                 addonAfter={priceUnit}
@@ -561,6 +558,7 @@ const EditAccomodationPost = () => {
                                     </p>
                                 )}
                             </div>
+                            {/* Description */}
                             <div className="mb-4">
                                 <label
                                     htmlFor="descriptions"
@@ -642,7 +640,6 @@ const EditAccomodationPost = () => {
                             <h1 className="mb-4 text-[1.2rem] font-bold">
                                 Video
                             </h1>
-                            {/* Video Url */}
                             <div className="text-[0.9rem]">
                                 <p className="mb-4">{`Video link (youtube/tiktok)`}</p>
                                 <Controller
@@ -685,7 +682,6 @@ const EditAccomodationPost = () => {
                             </div>
 
                             <p className="my-6 text-[0.7rem]">Hoặc</p>
-                            {/* Video File */}
                             <Controller
                                 name="videoId"
                                 control={control}
