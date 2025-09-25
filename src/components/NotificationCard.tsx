@@ -1,21 +1,44 @@
 import type { Notification } from "@/stores/type";
-import { Card, Badge } from "antd";
+import { Badge } from "antd";
+import { data, useNavigate } from "react-router-dom";
 
 interface Props {
     notification: Notification;
 }
 
 const NotificationCard = ({ notification }: Props) => {
+    const navigate = useNavigate();
+
     // Nếu là appointment thì lấy dữ liệu chi tiết
     const appointment =
         notification?.notificationAppointments?.[0]?.appointment;
     const post = appointment?.appointmentPosts?.[0]?.post;
 
+    // Hàm khi click notification
+    const handleClick = () => {
+        if (appointment) {
+            console.log(
+                "id: ",
+                notification.notificationAppointments[0].appointment.id
+            );
+            navigate(
+                `/user/appointment/${notification.notificationAppointments[0].appointment.id}`
+            );
+        } else if (post) {
+            navigate(`/posts/${post.id}`);
+        }
+    };
+
     return (
-        <Card className="p-3">
+        <div
+            className="cursor-pointer border p-2 hover:bg-gray-100"
+            onClick={handleClick}
+        >
+            {/* Tiêu đề & nội dung */}
             <h4 className="font-semibold">{notification?.title}</h4>
             <p className="text-sm text-gray-600">{notification?.message}</p>
 
+            {/* Thời gian & trạng thái */}
             {appointment && (
                 <div className="mt-2 text-sm">
                     <p>
@@ -40,23 +63,17 @@ const NotificationCard = ({ notification }: Props) => {
                 </div>
             )}
 
+            {/* Chỉ hiện tên bài đăng */}
             {post && (
-                <div className="mt-2 border-t pt-2 text-sm">
+                <div className="text-sm">
                     <p>
                         <span className="font-medium">Bài đăng:</span>{" "}
                         {post?.title}
                     </p>
-                    <p>
-                        <span className="font-medium">Giá:</span>{" "}
-                        {post?.price.toLocaleString("vi-VN")} VND/tháng
-                    </p>
-                    <p>
-                        <span className="font-medium">Địa chỉ:</span>{" "}
-                        {`${post?.street}, ${post?.ward}, ${post?.district}, ${post?.city}`}
-                    </p>
                 </div>
             )}
 
+            {/* Ngày tạo */}
             <div className="mt-2 text-xs text-gray-500">
                 {new Date(notification?.createdAt).toLocaleString("vi-VN", {
                     hour: "2-digit",
@@ -66,7 +83,7 @@ const NotificationCard = ({ notification }: Props) => {
                     year: "numeric",
                 })}
             </div>
-        </Card>
+        </div>
     );
 };
 

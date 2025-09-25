@@ -2,8 +2,10 @@
 import { useState, useMemo, useEffect } from "react";
 import useNotifications from "@/hooks/notification/useNotifications";
 import { formatPostDate } from "@/utils/format";
-import { Divider, Table, Select } from "antd";
+import { Divider, Table, Select, ConfigProvider } from "antd";
 import type { TableProps } from "antd/lib";
+import { useNavigate } from "react-router-dom";
+import type { Appointment } from "@/stores/type";
 
 const { Option } = Select;
 
@@ -12,6 +14,7 @@ interface DataType {
     title: string;
     message: string;
     createdAt: string;
+    appointment: Appointment;
 }
 
 const NotificationManagement = () => {
@@ -29,13 +32,14 @@ const NotificationManagement = () => {
         sortOrder,
     });
 
-    console.log("data: ", data);
+    const navigate = useNavigate();
 
     const columns: TableProps<DataType>["columns"] = [
         {
             title: "ID",
             dataIndex: "id",
             key: "id",
+            render: (text) => <p className="line-clamp-1">{text}</p>,
         },
         {
             title: "Title",
@@ -57,11 +61,13 @@ const NotificationManagement = () => {
     ];
 
     const resolvedData: DataType[] = useMemo(() => {
+        // console.log("data: ", data);
         return (
             data?.data.map((n) => ({
                 id: n.id,
                 title: n.title,
                 message: n.message,
+                appointment: n?.notificationAppointments?.[0]?.appointment,
                 createdAt: n.createdAt,
             })) || []
         );
@@ -100,24 +106,46 @@ const NotificationManagement = () => {
                     </Select>
                 </div>
 
-                <Table
-                    className="w-full"
-                    columns={columns}
-                    dataSource={resolvedData}
-                    rowKey="id"
-                    loading={isLoading}
-                    pagination={{
-                        current: pagination.current,
-                        pageSize: pagination.pageSize,
-                        total: data?.totalItems || 0,
-                        onChange: (page, pageSize) =>
-                            setPagination((prev) => ({
-                                ...prev,
-                                current: page,
-                                pageSize,
-                            })),
+                <ConfigProvider
+                    theme={{
+                        components: {
+                            Table: {
+                                rowHoverBg: "",
+                                headerBg: "",
+                            },
+                        },
                     }}
-                />
+                >
+                    <Table
+                        className="w-full"
+                        columns={columns}
+                        dataSource={resolvedData}
+                        rowKey="id"
+                        loading={isLoading}
+                        rowHoverable
+                        onRow={(record) => {
+                            return {
+                                onClick: () =>
+                                    navigate(
+                                        `/user/appointment/${record.appointment.id}`
+                                    ),
+                                className:
+                                    "cursor-pointer transition-colors duration-200 hover:bg-primary/30",
+                            };
+                        }}
+                        pagination={{
+                            current: pagination.current,
+                            pageSize: pagination.pageSize,
+                            total: data?.totalItems || 0,
+                            onChange: (page, pageSize) =>
+                                setPagination((prev) => ({
+                                    ...prev,
+                                    current: page,
+                                    pageSize,
+                                })),
+                        }}
+                    />
+                </ConfigProvider>
             </div>
         </div>
     );

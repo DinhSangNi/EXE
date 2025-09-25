@@ -4,6 +4,7 @@ import type { Post } from "@/stores/type";
 import { formatPostDate, resolveAddress } from "@/utils/format";
 import { BsCalendarDateFill } from "react-icons/bs";
 import { IoIosPricetags } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
     className?: string;
@@ -12,6 +13,8 @@ type Props = {
 };
 
 const PostCard = ({ className, data, loading }: Props) => {
+    const navigate = useNavigate();
+
     if (loading) {
         return (
             <div className="relative animate-pulse cursor-pointer">
@@ -25,6 +28,7 @@ const PostCard = ({ className, data, loading }: Props) => {
     return (
         <div
             className={`h-[400px] cursor-pointer overflow-hidden rounded-md bg-white shadow-md ${className} `}
+            onClick={() => navigate(`/posts/${data?.id}`)}
         >
             <div className="flex h-1/2 gap-1">
                 <div className="h-full w-3/5">

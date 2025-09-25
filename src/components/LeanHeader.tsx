@@ -35,20 +35,31 @@ const LeanHeader = () => {
                     key: "post",
                 },
                 {
+                    label: (
+                        <div
+                            className="w-[200px]"
+                            onClick={() => navigate("/user/posts")}
+                        >
+                            <p className="font-bold">Bảng điều khiển</p>
+                        </div>
+                    ),
+                    key: "0",
+                },
+                {
                     label: <div className="font-bold">Tin đã lưu</div>,
                     key: "saved",
                 },
-                {
-                    label: (
-                        <div
-                            className="font-bold"
-                            onClick={() => navigate("/user/posts")}
-                        >
-                            Quản lý tin đã đăng
-                        </div>
-                    ),
-                    key: "manage",
-                },
+                // {
+                //     label: (
+                //         <div
+                //             className="font-bold"
+                //             onClick={() => navigate("/user/posts")}
+                //         >
+                //             Quản lý tin đã đăng
+                //         </div>
+                //     ),
+                //     key: "manage",
+                // },
                 { type: "divider" },
                 authItem,
             ];

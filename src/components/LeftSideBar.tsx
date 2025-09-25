@@ -41,11 +41,11 @@ const LeftSideBar = ({ className }: Props) => {
     switch (user.role) {
         case "user":
             menuItems = [
-                {
-                    key: "dashboard",
-                    label: <p>Tổng quan</p>,
-                    icon: <FaTachometerAlt />,
-                },
+                // {
+                //     key: "dashboard",
+                //     label: <p>Tổng quan</p>,
+                //     icon: <FaTachometerAlt />,
+                // },
                 {
                     key: "account",
                     label: <p>Tài khoản của tôi</p>,
@@ -85,11 +85,11 @@ const LeftSideBar = ({ className }: Props) => {
             break;
         case "admin":
             menuItems = [
-                {
-                    key: "dashboard",
-                    label: <p>Tổng quan</p>,
-                    icon: <FaTachometerAlt />,
-                },
+                // {
+                //     key: "dashboard",
+                //     label: <p>Tổng quan</p>,
+                //     icon: <FaTachometerAlt />,
+                // },
                 {
                     key: "account",
                     label: <p>Tài khoản của tôi</p>,

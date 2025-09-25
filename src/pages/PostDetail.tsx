@@ -1,6 +1,6 @@
 /* eslint-disable */
 import CustomButton from "@/components/CustomButton";
-import { ConfigProvider, Divider, Popconfirm } from "antd";
+import { ConfigProvider, Divider, Popconfirm, Spin } from "antd";
 import { useRef, useState, useEffect } from "react";
 import { FaCalendarAlt } from "react-icons/fa";
 import {
@@ -58,8 +58,10 @@ const PostDetail = () => {
     const { id } = useParams();
     const { data: post, isLoading } = usePostById(id as string);
     const { data: appointment } = useAppointmentByPostId(id as string);
-    const { mutate: createAppointment } = useCreateAppointment();
-    const { mutate: updateAppointment } = useUpdateAppointment();
+    const { mutate: createAppointment, isPending: creating } =
+        useCreateAppointment();
+    const { mutate: updateAppointment, isPending: cancelling } =
+        useUpdateAppointment();
     const modalRef = useRef<HTMLDivElement>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
@@ -549,12 +551,15 @@ const PostDetail = () => {
                                 {post?.owner?.id !== storedUser.id && (
                                     <div className="mt-2 flex w-full flex-col items-center gap-2">
                                         {!appointment ? (
-                                            <CustomButton
-                                                title="Đặt lịch xem nhà"
-                                                icon={<FaCalendarAlt />}
-                                                className="w-full bg-blue-600 text-white hover:bg-blue-700 md:text-[0.9rem] lg:text-[1rem]"
-                                                onClick={showModal}
-                                            />
+                                            <Spin spinning={creating}>
+                                                <CustomButton
+                                                    title="Đặt lịch xem nhà"
+                                                    icon={<FaCalendarAlt />}
+                                                    className="w-full bg-blue-600 text-white hover:bg-blue-700 md:text-[0.9rem] lg:text-[1rem]"
+                                                    onClick={showModal}
+                                                    disabled={creating}
+                                                />
+                                            </Spin>
                                         ) : appointment.status ===
                                           "confirmed" ? (
                                             <p>
@@ -564,7 +569,7 @@ const PostDetail = () => {
                                                 )}
                                             </p>
                                         ) : appointment.status === "pending" ? (
-                                            <div>
+                                            <div className="w-full">
                                                 <p className="mb-4 font-bold text-yellow-500">
                                                     Lịch hẹn lúc{" "}
                                                     {formatToVietnamTime(
@@ -581,19 +586,24 @@ const PostDetail = () => {
                                                         handleCancelAppointment
                                                     }
                                                 >
-                                                    <CustomButton
-                                                        title="Hủy lịch hẹn"
-                                                        className="w-full bg-yellow-600 text-white hover:bg-yellow-800 md:text-[0.9rem] lg:text-[1rem]"
-                                                    />
+                                                    <Spin spinning={cancelling}>
+                                                        <CustomButton
+                                                            title="Hủy lịch hẹn"
+                                                            className="w-full bg-yellow-600 text-white hover:bg-yellow-800 md:text-[0.9rem] lg:text-[1rem]"
+                                                        />
+                                                    </Spin>
                                                 </Popconfirm>
                                             </div>
                                         ) : (
-                                            <CustomButton
-                                                title="Đặt lịch xem nhà"
-                                                icon={<FaCalendarAlt />}
-                                                className="w-full bg-blue-600 text-white hover:bg-blue-700 md:text-[0.9rem] lg:text-[1rem]"
-                                                onClick={showModal}
-                                            />
+                                            <Spin spinning={creating}>
+                                                <CustomButton
+                                                    title="Đặt lịch xem nhà"
+                                                    icon={<FaCalendarAlt />}
+                                                    className="w-full bg-blue-600 text-white hover:bg-blue-700 md:text-[0.9rem] lg:text-[1rem]"
+                                                    onClick={showModal}
+                                                    disabled={creating}
+                                                />
+                                            </Spin>
                                         )}
                                     </div>
                                 )}

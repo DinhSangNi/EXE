@@ -22,4 +22,7 @@ export const AppointmentServices = {
             },
         });
     },
+    getById: async (id: string) => {
+        return await api.get(`/appointment/${id}`);
+    },
 };

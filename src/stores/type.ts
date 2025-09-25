@@ -86,6 +86,7 @@ export type PaginationType = {
 };
 
 export type PostFilter = {
+    keyword?: string;
     page?: number;
     limit?: number;
     minPrice?: number;
@@ -133,6 +134,7 @@ export type updateAppointmentDto = {
 };
 
 export type AppointmentFilter = {
+    keyword?: string;
     page?: number;
     limit?: number;
     userId?: string;

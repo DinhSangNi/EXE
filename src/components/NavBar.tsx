@@ -72,23 +72,34 @@ const NavBar = ({ isTop }: Props) => {
                 },
                 {
                     label: (
+                        <div
+                            className="w-[200px]"
+                            onClick={() => navigate("/user/posts")}
+                        >
+                            <p className="font-bold">Bảng điều khiển</p>
+                        </div>
+                    ),
+                    key: "0",
+                },
+                {
+                    label: (
                         <div className="w-[200px]">
                             <p className="font-bold">Tin đã lưu</p>
                         </div>
                     ),
                     key: "1",
                 },
-                {
-                    label: (
-                        <div
-                            className="w-[200px]"
-                            onClick={() => navigate("/user/posts")}
-                        >
-                            <p className="font-bold">Quản lý tin đã đăng</p>
-                        </div>
-                    ),
-                    key: "2",
-                },
+                // {
+                //     label: (
+                //         <div
+                //             className="w-[200px]"
+                //             onClick={() => navigate("/user/posts")}
+                //         >
+                //             <p className="font-bold">Quản lý tin đã đăng</p>
+                //         </div>
+                //     ),
+                //     key: "2",
+                // },
                 {
                     type: "divider",
                 },
