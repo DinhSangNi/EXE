@@ -4,6 +4,7 @@ import type { Post } from "@/stores/type";
 import { formatPostDate, resolveAddress } from "@/utils/format";
 import { BsCalendarDateFill } from "react-icons/bs";
 import { IoIosPricetags } from "react-icons/io";
+import PostImageCarousel from "./PostImageCarousel";
 import { useNavigate } from "react-router-dom";
 
 type Props = {
@@ -30,31 +31,11 @@ const PostCard = ({ className, data, loading }: Props) => {
             className={`h-[400px] cursor-pointer overflow-hidden rounded-md bg-white shadow-md ${className} `}
             onClick={() => navigate(`/posts/${data?.id}`)}
         >
-            <div className="flex h-1/2 gap-1">
-                <div className="h-full w-3/5">
-                    <img
-                        src={data?.medias[0].url}
-                        alt=""
-                        className="h-full w-full object-cover"
-                    />
-                </div>
-                <div className="grid w-2/5 grid-rows-2 gap-1">
-                    {data?.medias?.[1] && (
-                        <img
-                            src={data.medias?.[1]?.url}
-                            alt=""
-                            className="h-full w-full object-cover"
-                        />
-                    )}
-                    {data?.medias?.[2] && (
-                        <img
-                            src={data.medias?.[2]?.url}
-                            alt=""
-                            className="h-full w-full object-cover"
-                        />
-                    )}
-                </div>
-            </div>
+            <PostImageCarousel
+                images={data?.medias || []}
+                height="h-48"
+                className="overflow-hidden rounded-t-md"
+            />
 
             <div className="flex h-1/2 flex-col justify-between px-4 pt-2">
                 <div>

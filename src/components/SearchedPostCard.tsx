@@ -3,6 +3,7 @@ import { resolveAddress } from "@/utils/format";
 import { FaHome, FaMapMarkerAlt } from "react-icons/fa";
 import { IoIosPricetags } from "react-icons/io";
 import { useNavigate } from "react-router-dom";
+import PostImageCarousel from "./PostImageCarousel";
 
 type Props = {
     post: Post;
@@ -18,10 +19,10 @@ const SearchedPostCard = ({ post }: Props) => {
                 key={post.id}
                 onClick={() => navigate(`/posts/${post.id}`)}
             >
-                <img
-                    src={post.medias[0].url}
-                    alt="cover-image"
-                    className="aspect-square w-full rounded-xl"
+                <PostImageCarousel
+                    images={post?.medias || []}
+                    height="aspect-square"
+                    className="w-full overflow-hidden rounded-xl"
                 />
                 <div className="p-2">
                     <h1 className="line-clamp-2 py-1 text-[1rem] font-semibold">
