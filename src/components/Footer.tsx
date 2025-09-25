@@ -2,7 +2,7 @@ const rentalCategory = [
     {
         title: "Phòng trọ, nhà trọ",
         category: [
-            "Phòng trọ phương Nhơn Bình",
+            "Phòng trọ phường Nhơn Bình",
             "Phòng trọ phường Đống Đa",
             "Phòng trọ phường Trần Phú",
             "Phòng trọ phường Trần Hưng Đạo",
@@ -11,7 +11,7 @@ const rentalCategory = [
     {
         title: "Thuê nhà nguyên căn",
         category: [
-            "Thuê nhà phương Nhơn Bình",
+            "Thuê nhà phường Nhơn Bình",
             "Thuê nhà phường Đống Đa",
             "Thuê nhà phường Trần Phú",
             "Thuê nhà phường Trần Hưng Đạo",
@@ -20,7 +20,7 @@ const rentalCategory = [
     {
         title: "Cho thuê căn hộ",
         category: [
-            "Thuê căn hộ phương Nhơn Bình",
+            "Thuê căn hộ phường Nhơn Bình",
             "Thuê căn hộ phường Đống Đa",
             "Thuê căn hộ phường Trần Phú",
             "Thuê căn hộ phường Trần Hưng Đạo",
@@ -29,7 +29,7 @@ const rentalCategory = [
     {
         title: "Cho thuê mặt bằng",
         category: [
-            "Thuê mặt bằng phương Nhơn Bình",
+            "Thuê mặt bằng phường Nhơn Bình",
             "Thuê mặt bằng phường Đống Đa",
             "Thuê mặt bằng phường Trần Phú",
             "Thuê mặt bằng phường Trần Hưng Đạo",

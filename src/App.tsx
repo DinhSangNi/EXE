@@ -5,6 +5,7 @@ import AppRouter from "./routes/AppRouter";
 import { Provider as ReduxProvider } from "react-redux";
 import { store } from "./stores/store";
 import SocketProvider from "./components/SocketProvider";
+import ScrollToTop from "./components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -12,6 +13,7 @@ function App() {
     return (
         <QueryClientProvider client={queryClient}>
             <BrowserRouter>
+                <ScrollToTop />
                 <ReduxProvider store={store}>
                     <SocketProvider>
                         <AppRouter />

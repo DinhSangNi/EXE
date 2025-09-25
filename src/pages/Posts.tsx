@@ -2,8 +2,10 @@
 import Map from "@/components/Map";
 import PostCard from "@/components/PostCard";
 import PostsFilterModal from "@/components/posts/PostsFilterModal";
+import PostsLoading from "@/components/PostsLoading";
 import SearchedPostCard from "@/components/SearchedPostCard";
 import usePosts from "@/hooks/posts/usePosts";
+import useScrollToTop from "@/hooks/useScrollToTop";
 import type { PostFilter } from "@/stores/type";
 import { Pagination } from "antd";
 import { useState } from "react";
@@ -41,6 +43,9 @@ const Posts = () => {
 
     const { data, isLoading } = usePosts(appliedFilterData, "admin");
 
+    // Scroll to top khi component mount
+    const { scrollToTop } = useScrollToTop();
+
     // Apply filter từ modal → set URL
     const handleApplyFilter = (newFilterData: Partial<PostFilter>) => {
         const cleanedFilterData = { ...newFilterData };
@@ -51,6 +56,8 @@ const Posts = () => {
         });
         setSearchParams(cleanedFilterData as any);
         setIsFilterModalOpen(false);
+        // Scroll to top khi apply filter
+        scrollToTop(true);
     };
 
     // Pagination thay đổi → set URL param
@@ -60,7 +67,14 @@ const Posts = () => {
             page: page.toString(),
             limit: pageSize.toString(),
         }));
+        // Scroll to top khi chuyển trang
+        scrollToTop(true);
     };
+
+    // Hiển thị loading screen khi đang tải dữ liệu
+    if (isLoading) {
+        return <PostsLoading showMap={!!appliedFilterData.province} />;
+    }
 
     return (
         <div className="mx-auto w-full bg-white px-14">
@@ -104,7 +118,7 @@ const Posts = () => {
                     </div>
 
                     {/* Các post card */}
-                    {!isLoading && data?.data && data?.data.length > 0 ? (
+                    {data?.data && data?.data.length > 0 ? (
                         <>
                             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                                 {data?.data?.map((post) =>
@@ -128,7 +142,16 @@ const Posts = () => {
                             />
                         </>
                     ) : (
-                        "Không tìm thấy bài đăng nào"
+                        <div className="flex flex-col items-center justify-center py-16 text-gray-500">
+                            <div className="mb-4 text-6xl">📋</div>
+                            <h3 className="mb-2 text-xl font-semibold">
+                                Không tìm thấy bài đăng nào
+                            </h3>
+                            <p>
+                                Hãy thử thay đổi bộ lọc hoặc tìm kiếm với từ
+                                khóa khác
+                            </p>
+                        </div>
                     )}
                 </div>
 
@@ -136,7 +159,7 @@ const Posts = () => {
                 {appliedFilterData.province && (
                     <div className="sticky right-0 top-[calc(var(--lean-header-height)+32px)] col-span-3 my-8 h-[calc(100vh-var(--lean-header-height)-64px)] overflow-hidden rounded-3xl">
                         <Map
-                            coordinates={data?.data.map((post) => ({
+                            coordinates={data?.data?.map((post) => ({
                                 lat: post.latitude,
                                 lng: post.longitude,
                             }))}
