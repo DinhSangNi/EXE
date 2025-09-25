@@ -167,9 +167,6 @@ const NavBar = ({ isTop }: Props) => {
                     key: "0",
                 },
                 {
-                    type: "divider",
-                },
-                {
                     label: storedUser.id ? (
                         <div className="font-bold" onClick={handleLogout}>
                             <p>Đăng xuất</p>

@@ -54,7 +54,7 @@ const Register = () => {
                             accessToken: metadata.accessToken,
                         })
                     );
-                    toast.success("Sign up succesfully!", {
+                    toast.success("Đăng ký thành công!", {
                         position: "top-center",
                     });
                     navigate("/");

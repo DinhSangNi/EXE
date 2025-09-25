@@ -132,6 +132,7 @@ const Login: React.FC = () => {
                             <div className="mb-5 flex flex-col">
                                 <label>Password:</label>
                                 <input
+                                    type="password"
                                     className="rounded-lg border border-gray-400 p-2 shadow-md focus-within:outline focus-within:outline-black"
                                     {...register("password")}
                                 />
