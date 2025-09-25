@@ -3,6 +3,7 @@ import type { PaginationResponse, Post, PostFilter } from "@/stores/type";
 import { useQuery } from "@tanstack/react-query";
 
 const usePosts = (filters: PostFilter, role: "user" | "admin") => {
+    console.log("role:", role);
     return useQuery({
         queryKey: ["posts", filters],
         queryFn: async () => {

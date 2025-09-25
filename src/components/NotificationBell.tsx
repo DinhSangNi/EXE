@@ -1,13 +1,35 @@
 import { Popover } from "antd";
-import { useState } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { FaBell } from "react-icons/fa";
 import NotificationBox from "./NotificationBox";
 import useNotifications from "@/hooks/notification/useNotifications";
 
 const NotificationBell = () => {
-    const [openNotificationBox, setOpenNotificationBox] =
-        useState<boolean>(false);
-    const { data } = useNotifications({});
+    const [openNotificationBox, setOpenNotificationBox] = useState(false);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // callback khi có noti mới
+    const handleNewNotification = useCallback(() => {
+        setOpenNotificationBox(true);
+
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+        }
+
+        timeoutRef.current = setTimeout(() => {
+            setOpenNotificationBox(false);
+        }, 2000);
+    }, []);
+
+    useEffect(() => {
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
+    const { data } = useNotifications({}, handleNewNotification);
 
     return (
         <div>

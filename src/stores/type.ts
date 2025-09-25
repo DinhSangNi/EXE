@@ -71,13 +71,6 @@ export type Post = {
     owner?: User;
 };
 
-// export type CurrencyByCategory = {
-//     "Nhà trọ": "đồng/phòng",
-//     "Nhà Nguyên Căn": "đồng/căn",
-//     "Chung cư/Căn Hộ": "đồng/căn",
-//     "Mặt bằng/Văn phòng": ""
-// }
-
 export interface PaginationResponse<T> {
     page?: number;
     limit?: number;
@@ -111,16 +104,19 @@ export type UpdatePostDto = CreateRoomDto & {
     status?: "pending" | "approved" | "rejected" | "expired";
 };
 
+export interface AppointmentPost {
+    id: string;
+    createdAt: string;
+    updatedAt: string;
+    post: Post;
+}
+
 export type Appointment = {
     id: string;
     appointmentDateTime: string;
     user: User;
     host: User;
-    appointmentPosts: {
-        id: string;
-        createdAt: string;
-        post: Post;
-    }[];
+    appointmentPosts: AppointmentPost[];
     status: "pending" | "confirmed" | "rejected" | "cancelled";
 };
 
@@ -154,12 +150,19 @@ export type UserNotification = {
     user: User;
 };
 
+export interface NotificationAppointment {
+    id: string;
+    createdAt: string;
+    appointment: Appointment;
+}
+
 export type Notification = {
     id: string;
     title: string;
     message: string;
     type: "appointment" | "system" | "message";
     userNotifications: UserNotification[];
+    notificationAppointments: NotificationAppointment[];
     createdAt: string;
 };
 

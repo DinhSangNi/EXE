@@ -77,8 +77,25 @@ const Searchbar = ({ isTop }: Props) => {
                 code: district.code.toString(),
             },
         }));
+        setOpen(false);
         navigate(`/posts/?${params.toString()}`);
     };
+
+    useEffect(() => {
+        const provinceParam = searchParams.get("province");
+        const districtParam = searchParams.get("district");
+
+        setAddress({
+            province: {
+                name: provinceParam ? provinceParam.split("|")[1] : "",
+                code: provinceParam ? provinceParam.split("|")[0] : "",
+            },
+            district: {
+                name: districtParam ? districtParam.split("|")[1] : "",
+                code: districtParam ? districtParam.split("|")[0] : "",
+            },
+        });
+    }, [searchParams]);
 
     useEffect(() => {
         if (!isTop) {
@@ -114,7 +131,7 @@ const Searchbar = ({ isTop }: Props) => {
                 ref={containerRef}
                 initial={{ opacity: 1 }}
                 animate={controls}
-                className="relative mx-auto w-[90%] lg:w-[60%]"
+                className="relative mx-auto w-[90%] xl:w-[60%]"
             >
                 <div className="flex rounded-full border border-gray-200 bg-white px-2 py-2 shadow-lg">
                     <div
@@ -122,7 +139,7 @@ const Searchbar = ({ isTop }: Props) => {
                         onClick={handleClick}
                     >
                         <HiOutlineLocationMarker className="text-[1.3rem]" />
-                        <p>
+                        <p className="line-clamp-1">
                             {address.province.name
                                 ? `${address?.district?.name}, ${address?.province?.name}`
                                 : "Tìm kiếm theo khu vực"}

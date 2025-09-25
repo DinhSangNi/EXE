@@ -76,9 +76,7 @@ const NotificationManagement = () => {
     return (
         <div className="w-full bg-gray-100">
             <div className="mx-auto min-h-screen w-4/5 pt-4">
-                <h1 className="text-[1.4rem] font-bold">
-                    Notification Management
-                </h1>
+                <h1 className="text-[1.4rem] font-bold">Thông báo</h1>
                 <Divider />
 
                 {/* Sort */}

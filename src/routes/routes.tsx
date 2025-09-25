@@ -13,6 +13,11 @@ import CreateAccommodationPost from "@/pages/CreateAccommodationPost";
 import EditAccomodationPost from "@/pages/EditAccomodationPost";
 import AppointmentManagement from "@/pages/AppointmentManagement";
 import NotificationManagement from "@/pages/NotificationManagement";
+import LeanLayout from "@/components/LeanLayout";
+import ProtectedRoute from "./ProtectedRoute";
+
+const isAuthenticated = !!localStorage.getItem("accessToken");
+console.log("isAuthenticated: ", isAuthenticated);
 
 export const routes = [
     {
@@ -32,10 +37,6 @@ export const routes = [
                 element: <Home />,
             },
             {
-                path: "/posts",
-                element: <Posts />,
-            },
-            {
                 path: "/posts/:id",
                 element: <PostDetail />,
             },
@@ -43,94 +44,87 @@ export const routes = [
     },
     {
         path: "/",
-        element: <DashboardLayout />,
+        element: <LeanLayout />,
         children: [
             {
-                path: "user",
-                element: <Outlet />,
+                path: "/posts",
+                element: <Posts />,
+            },
+        ],
+    },
+    {
+        element: <ProtectedRoute isAuthenticated={isAuthenticated} />,
+        children: [
+            {
+                path: "/",
+                element: <DashboardLayout />,
                 children: [
                     {
-                        path: "posts",
+                        path: "user",
                         element: <Outlet />,
                         children: [
                             {
-                                path: "edit-accomodation/:id",
-                                element: <EditAccomodationPost />,
+                                path: "posts",
+                                element: <Outlet />,
+                                children: [
+                                    {
+                                        path: "edit-accomodation/:id",
+                                        element: <EditAccomodationPost />,
+                                    },
+                                    {
+                                        path: "create-accomodation",
+                                        element: <CreateAccommodationPost />,
+                                    },
+                                    {
+                                        path: "",
+                                        element: <PostsManagement />,
+                                    },
+                                ],
                             },
                             {
-                                path: "create-accomodation",
-                                element: <CreateAccommodationPost />,
-                            },
-                            {
-                                path: "",
-                                element: <PostsManagement />,
-                            },
-                        ],
-                    },
-                    {
-                        path: "appointment",
-                        element: <Outlet />,
-                        children: [
-                            {
-                                path: "",
+                                path: "appointment",
                                 element: <AppointmentManagement />,
                             },
-                        ],
-                    },
-                    {
-                        path: "notification",
-                        element: <Outlet />,
-                        children: [
                             {
-                                path: "",
+                                path: "notification",
                                 element: <NotificationManagement />,
                             },
                         ],
                     },
-                ],
-            },
-            {
-                path: "admin",
-                element: <Outlet />,
-                children: [
                     {
-                        path: "posts",
+                        path: "admin",
                         element: <Outlet />,
                         children: [
                             {
-                                path: "edit-accomodation/:id",
-                                element: <EditAccomodationPost />,
+                                path: "posts",
+                                element: <Outlet />,
+                                children: [
+                                    {
+                                        path: "edit-accomodation/:id",
+                                        element: <EditAccomodationPost />,
+                                    },
+                                    {
+                                        path: "create-accomodation",
+                                        element: <CreateAccommodationPost />,
+                                    },
+                                    {
+                                        path: "",
+                                        element: (
+                                            <PostsManagement role="admin" />
+                                        ),
+                                    },
+                                ],
                             },
                             {
-                                path: "create-accomodation",
-                                element: <CreateAccommodationPost />,
+                                path: "overview",
+                                element: <AdminOverview />,
                             },
                             {
-                                path: "",
-                                element: <PostsManagement role="admin" />,
-                            },
-                        ],
-                    },
-                    {
-                        path: "overview",
-                        element: <AdminOverview />,
-                    },
-                    {
-                        path: "appointment",
-                        element: <Outlet />,
-                        children: [
-                            {
-                                path: "",
+                                path: "appointment",
                                 element: <AppointmentManagement />,
                             },
-                        ],
-                    },
-                    {
-                        path: "notification",
-                        element: <Outlet />,
-                        children: [
                             {
-                                path: "",
+                                path: "notification",
                                 element: <NotificationManagement />,
                             },
                         ],

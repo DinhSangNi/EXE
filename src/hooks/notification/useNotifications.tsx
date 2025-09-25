@@ -8,7 +8,10 @@ import type {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-const useNotifications = (filter: NotificationFilter) => {
+const useNotifications = (
+    filter: NotificationFilter,
+    onNewNotification?: (notification: Notification) => void
+) => {
     const queryClient = useQueryClient();
 
     useEffect(() => {
@@ -27,12 +30,11 @@ const useNotifications = (filter: NotificationFilter) => {
                         } as PaginationResponse<Notification[]>;
                     }
                     return {
+                        ...old,
                         data: [payload, ...old.data],
-                        totalAllItems: old.totalAllItems
-                            ? old.totalAllItems + 1
-                            : 1,
-                        totalItems: old.totalItems ? old.totalItems + 1 : 1,
-                    } as PaginationResponse<Notification[]>;
+                        totalAllItems: (old.totalAllItems ?? 0) + 1,
+                        totalItems: (old.totalItems ?? 0) + 1,
+                    };
                 }
             );
 
@@ -41,19 +43,19 @@ const useNotifications = (filter: NotificationFilter) => {
                     queryKey: ["notifications", filter],
                 });
             }
-        };
 
-        socket.on("joined", (payload) => {
-            console.log("New joined:", payload);
-        });
+            // Gọi callback để báo cho component bên ngoài
+            if (onNewNotification) {
+                onNewNotification(payload);
+            }
+        };
 
         socket.on("notification", handleNewNotification);
 
         return () => {
-            socket.off("joined");
             socket.off("notification", handleNewNotification);
         };
-    }, [filter, queryClient]);
+    }, [filter, queryClient, onNewNotification]);
 
     return useQuery({
         queryKey: ["notifications", filter],

@@ -11,6 +11,8 @@ import useUpdatePost from "@/hooks/posts/useUpdatePost";
 import useDeletePost from "@/hooks/posts/useDeletePost";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/stores/store";
 
 type Props = {
     className?: string;
@@ -18,6 +20,8 @@ type Props = {
 };
 
 const PostManagementCard = ({ className, data }: Props) => {
+    const storedUser = useSelector((state: RootState) => state.user);
+
     const { mutate: updatePost } = useUpdatePost();
     const { mutate: deletePost } = useDeletePost();
     const [openDeleteModal, setOpenDeleteModal] = useState<boolean>(false);
@@ -69,30 +73,35 @@ const PostManagementCard = ({ className, data }: Props) => {
             key: "0",
         },
 
-        {
-            label: (
-                <div
-                    className="flex items-center gap-3 text-green-500"
-                    onClick={() => handleChangeStatus("approved")}
-                >
-                    <IoCheckmarkSharp className="text-[1rem]" />
-                    <p className="text-[0.8rem]">Duyệt bài viết</p>
-                </div>
-            ),
-            key: "1",
-        },
-        {
-            label: (
-                <div
-                    className="flex items-center gap-3 text-red-500"
-                    onClick={() => handleChangeStatus("rejected")}
-                >
-                    <FaTimes className="text-[1rem]" />
-                    <p className="text-[0.8rem]">Từ chối bài viết</p>
-                </div>
-            ),
-            key: "2",
-        },
+        ...(storedUser.role === "admin"
+            ? [
+                  {
+                      label: (
+                          <div
+                              className="flex items-center gap-3 text-green-500"
+                              onClick={() => handleChangeStatus("approved")}
+                          >
+                              <IoCheckmarkSharp className="text-[1rem]" />
+                              <p className="text-[0.8rem]">Duyệt bài viết</p>
+                          </div>
+                      ),
+                      key: "1",
+                  },
+                  {
+                      label: (
+                          <div
+                              className="flex items-center gap-3 text-red-500"
+                              onClick={() => handleChangeStatus("rejected")}
+                          >
+                              <FaTimes className="text-[1rem]" />
+                              <p className="text-[0.8rem]">Từ chối bài viết</p>
+                          </div>
+                      ),
+                      key: "2",
+                  },
+              ]
+            : []),
+
         {
             label: (
                 <div

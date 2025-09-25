@@ -2,40 +2,24 @@
 import PostManagementCard from "@/components/PostManagementCard";
 import Spinner from "@/components/Spinner";
 import type { Post, PostFilter } from "@/stores/type";
-import { Divider, Modal, Pagination } from "antd";
+import { Divider, Pagination } from "antd";
 import { FaFilter, FaHome, FaTimes } from "react-icons/fa";
 import { IoMdTrendingUp } from "react-icons/io";
 import { MdPending, MdOutlineTimerOff } from "react-icons/md";
 import { useState } from "react";
-import CategorySelector from "@/components/CategorySelector";
-import AddressSelector from "@/components/AddressSelector";
 import { useSearchParams } from "react-router-dom";
 import usePosts from "@/hooks/posts/usePosts";
-import AmenityCheckBox from "@/components/AmenityCheckBox";
-import SquareSelector from "@/components/SquareSelector";
-import PriceSelector from "@/components/PriceSelector";
+import PostsFilterModal from "@/components/posts/PostsFilterModal";
+
 type Props = {
     role?: "user" | "admin";
 };
 
 const PostsManagement = ({ role = "user" }: Props) => {
     const [searchParams, setSearchParams] = useSearchParams();
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-    const [isFilterModalOpen, setIsFilterModalOpen] = useState<boolean>(false);
-    const [filterData, setFilterData] = useState<PostFilter>({
-        page: 1,
-        limit: 2,
-        category: undefined,
-        province: (searchParams.get("province") as string) || undefined,
-        district: (searchParams.get("district") as string) || undefined,
-        ward: (searchParams.get("ward") as string) || undefined,
-        minPrice: Number(searchParams.get("minPrice") as string) || undefined,
-        maxPrice: Number(searchParams.get("maxPrice") as string) || undefined,
-        minSquare: Number(searchParams.get("minSquare") as string) || undefined,
-        maxSquare: Number(searchParams.get("maxSquare") as string) || undefined,
-        amenities: searchParams.getAll("amenities") || [],
-        status: undefined,
-    });
+    // appliedFilterData luôn sync từ URL
     const appliedFilterData: Partial<PostFilter> = {
         page: searchParams.get("page") ? Number(searchParams.get("page")) : 1,
         limit: searchParams.get("limit")
@@ -68,51 +52,47 @@ const PostsManagement = ({ role = "user" }: Props) => {
 
     const { data, isLoading, isSuccess } = usePosts(appliedFilterData, role);
 
-    const handleApplyFilter = () => {
-        const cleanedFilterData = { ...filterData };
-        // Remove empty fields
+    const handlePaginationChange = (page: number, pageSize: number) => {
+        setSearchParams((prev) => ({
+            ...Object.fromEntries(prev),
+            page: page.toString(),
+            limit: pageSize.toString(),
+        }));
+    };
+
+    const applyFilter = (newFilter: Partial<PostFilter>) => {
+        const cleanedFilterData = { ...newFilter };
+
         Object.keys(cleanedFilterData).forEach((key) => {
-            if (!cleanedFilterData[key as keyof PostFilter]) {
+            const value = cleanedFilterData[key as keyof PostFilter];
+            if (
+                value === undefined ||
+                value === "" ||
+                (Array.isArray(value) && value.length === 0)
+            ) {
                 delete cleanedFilterData[key as keyof PostFilter];
             }
         });
-        setSearchParams({
-            ...cleanedFilterData,
-        } as any);
-        setIsFilterModalOpen(false);
-    };
 
-    const handlePaginationChange = (page: number, pageSize: number) => {
-        console.log(page, pageSize);
-        setFilterData((prev) => ({
-            ...prev,
-            page,
-            limit: pageSize,
-        }));
-        setSearchParams((prev) => ({ ...prev, page: page.toString() }) as any);
+        setSearchParams(cleanedFilterData as any);
+        setIsFilterModalOpen(false);
     };
 
     const filterWithStatus = (
         status: "pending" | "approved" | "rejected" | "expired" | undefined
     ) => {
-        setFilterData((prev) => ({
-            ...prev,
-            status,
-        }));
-        setSearchParams((prev) => {
-            const newParams: Record<string, any> = { ...prev };
+        const newParams: Record<string, string> = {
+            ...Object.fromEntries(searchParams),
+        };
 
-            if (status === undefined) {
-                delete newParams.status;
-            } else {
-                newParams.status = status;
-            }
+        if (status === undefined) {
+            delete newParams.status;
+        } else {
+            newParams.status = status;
+        }
 
-            return newParams;
-        });
+        setSearchParams(newParams);
     };
-
-    console.log(filterData);
 
     return (
         <>
@@ -122,9 +102,9 @@ const PostsManagement = ({ role = "user" }: Props) => {
                         Quản lí bài đăng
                     </h1>
                     <Divider />
+                    {/* Summary cards */}
                     <div className="mb-4 w-full">
                         <div className="grid grid-cols-5 gap-5">
-                            {/* Total Posts */}
                             <div
                                 className="flex items-center justify-between bg-white p-4 shadow-lg"
                                 onClick={() => filterWithStatus(undefined)}
@@ -137,7 +117,6 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 </div>
                                 <FaHome className="text-[2rem] text-primary" />
                             </div>
-                            {/* Approved Posts */}
                             <div
                                 className="flex items-center justify-between bg-white p-4 shadow-lg"
                                 onClick={() => filterWithStatus("approved")}
@@ -150,7 +129,6 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 </div>
                                 <IoMdTrendingUp className="text-[2rem] text-green-400" />
                             </div>
-                            {/* Pending Posts */}
                             <div
                                 className="flex items-center justify-between bg-white p-4 shadow-lg"
                                 onClick={() => filterWithStatus("pending")}
@@ -163,7 +141,6 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 </div>
                                 <MdPending className="text-[2rem] text-yellow-400" />
                             </div>
-                            {/* Rejected Posts */}
                             <div
                                 className="flex items-center justify-between bg-white p-4 shadow-lg"
                                 onClick={() => filterWithStatus("rejected")}
@@ -176,7 +153,6 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 </div>
                                 <FaTimes className="text-[2rem] text-red-500" />
                             </div>
-                            {/* Expired Posts */}
                             <div
                                 className="flex items-center justify-between bg-white p-4 shadow-lg"
                                 onClick={() => filterWithStatus("expired")}
@@ -201,6 +177,12 @@ const PostsManagement = ({ role = "user" }: Props) => {
                             <FaFilter />
                             <p>Bộ lọc</p>
                         </button>
+                        <PostsFilterModal
+                            open={isFilterModalOpen}
+                            onCancel={() => setIsFilterModalOpen(false)}
+                            initialFilterData={appliedFilterData}
+                            onApply={applyFilter}
+                        />
                     </div>
 
                     {/* List */}
@@ -211,13 +193,11 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 <p>Đang tải dữ liệu...</p>
                             </div>
                         ) : isSuccess && data?.data.length > 0 ? (
-                            data?.data.map((post: Post) => {
-                                return (
-                                    <div key={post.id}>
-                                        <PostManagementCard data={post} />
-                                    </div>
-                                );
-                            })
+                            data?.data.map((post: Post) => (
+                                <div key={post.id}>
+                                    <PostManagementCard data={post} />
+                                </div>
+                            ))
                         ) : (
                             <div className="w-full text-center">
                                 <h1 className="text-[1.2rem]">
@@ -228,137 +208,14 @@ const PostsManagement = ({ role = "user" }: Props) => {
                     </div>
                     <Pagination
                         onChange={handlePaginationChange}
-                        current={filterData.page}
-                        pageSize={filterData.limit}
+                        current={appliedFilterData.page}
+                        pageSize={appliedFilterData.limit}
                         className="mt-4"
                         align="end"
                         total={data?.totalItems ?? 0}
                     />
                 </div>
             </div>
-
-            {/* Filter Modal */}
-            {isFilterModalOpen && (
-                <Modal
-                    open={isFilterModalOpen}
-                    onCancel={() => setIsFilterModalOpen(false)}
-                    title={<h1 className="text-[1.2rem]">Bộ lọc</h1>}
-                    footer={
-                        <button
-                            className="w-full rounded-md bg-primary p-2 text-white"
-                            onClick={handleApplyFilter}
-                        >
-                            Áp dụng bộ lọc
-                        </button>
-                    }
-                    width={700}
-                >
-                    <div>
-                        <CategorySelector
-                            title={
-                                <p className="mb-2 font-bold">
-                                    Danh mục cho thuê
-                                </p>
-                            }
-                            value={filterData.category}
-                            mode="filter"
-                            onChange={(value) => {
-                                setFilterData((prev) => ({
-                                    ...prev,
-                                    category: value,
-                                }));
-                            }}
-                        />
-                        <div>
-                            <p className="mb-2 font-bold">Địa chỉ</p>
-                            <div className="flex justify-between gap-2">
-                                <AddressSelector
-                                    type="province"
-                                    mode="filter"
-                                    value={filterData?.province}
-                                    onChange={(value) => {
-                                        setFilterData((prev) => ({
-                                            ...prev,
-                                            province: value,
-                                        }));
-                                    }}
-                                />
-                                <AddressSelector
-                                    type="district"
-                                    provinceCode={
-                                        filterData?.province?.split("|")[0]
-                                    }
-                                    value={filterData?.district}
-                                    onChange={(value) => {
-                                        setFilterData((prev) => ({
-                                            ...prev,
-                                            district: value,
-                                        }));
-                                    }}
-                                />
-                                <AddressSelector
-                                    type="ward"
-                                    districtCode={
-                                        filterData?.district?.split("|")[0]
-                                    }
-                                    value={filterData?.ward}
-                                    onChange={(value) => {
-                                        setFilterData((prev) => ({
-                                            ...prev,
-                                            ward: value,
-                                        }));
-                                    }}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex justify-between gap-4">
-                            <div className="flex-1">
-                                <p className="mb-2 font-bold">Khoảng giá</p>
-                                <PriceSelector
-                                    mode="filter"
-                                    className="w-full"
-                                    onChange={(value) => {
-                                        setFilterData((prev) => ({
-                                            ...prev,
-                                            minPrice: value.min ?? undefined,
-                                            maxPrice: value.max ?? undefined,
-                                        }));
-                                    }}
-                                />
-                            </div>
-                            <div className="flex-1">
-                                <p className="mb-2 font-bold">
-                                    Khoảng diện tích
-                                </p>
-                                <SquareSelector
-                                    className="w-full"
-                                    mode="filter"
-                                    onChange={(value) => {
-                                        setFilterData((prev) => ({
-                                            ...prev,
-                                            minSquare: value.min ?? undefined,
-                                            maxPrice: value.max ?? undefined,
-                                        }));
-                                    }}
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <AmenityCheckBox
-                                amentites={filterData?.amenities ?? []}
-                                setAmenities={(amenities: string[]) => {
-                                    setFilterData((prev) => ({
-                                        ...prev,
-                                        amenities: amenities,
-                                    }));
-                                }}
-                            />
-                        </div>
-                    </div>
-                </Modal>
-            )}
         </>
     );
 };

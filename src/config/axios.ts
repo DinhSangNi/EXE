@@ -6,6 +6,7 @@ import axios, {
     type InternalAxiosRequestConfig,
 } from "axios";
 import { AuthServices } from "@/services/auth";
+import { privateRoutes } from "@/routes/routesConfig";
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_BASE_URL || "http://localhost:3000",
@@ -89,7 +90,12 @@ api.interceptors.response.use(
             } catch (error) {
                 processRequestToRefreshQueue(error, null);
                 await AuthServices.logout();
-                window.location.href = "/login";
+                const currentPath = window.location.pathname;
+                if (
+                    privateRoutes.some((route) => currentPath.startsWith(route))
+                ) {
+                    window.location.href = "/login";
+                }
                 return Promise.reject(error);
             } finally {
                 isRefreshing = false;
