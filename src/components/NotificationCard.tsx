@@ -1,6 +1,6 @@
 import type { Notification } from "@/stores/type";
 import { Badge } from "antd";
-import { data, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface Props {
     notification: Notification;

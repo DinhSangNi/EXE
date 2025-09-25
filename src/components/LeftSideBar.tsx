@@ -3,13 +3,7 @@ import { useSelector } from "react-redux";
 
 import type { MenuProps } from "antd";
 import { Menu } from "antd";
-import {
-    FaTachometerAlt,
-    FaHome,
-    FaUser,
-    FaCalendarAlt,
-    FaBell,
-} from "react-icons/fa";
+import { FaHome, FaUser, FaCalendarAlt, FaBell } from "react-icons/fa";
 import { BsHouseAddFill } from "react-icons/bs";
 import { useLocation, useNavigate } from "react-router-dom";
 
