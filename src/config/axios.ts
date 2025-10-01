@@ -93,7 +93,10 @@ api.interceptors.response.use(
 
                 const currentPath = window.location.pathname;
                 if (
-                    privateRoutes.some((route) => currentPath.startsWith(route))
+                    privateRoutes.some((route) =>
+                        currentPath.startsWith(route)
+                    ) ||
+                    currentPath.startsWith("/posts")
                 ) {
                     window.location.href = "/login";
                 }
