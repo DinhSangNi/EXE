@@ -1,26 +1,25 @@
 import DashboardLayout from "@/components/DashboardLayout";
 import MainLayout from "@/components/MainLayout";
+import LeanLayout from "@/components/LeanLayout";
+import ProtectedRoute from "./ProtectedRoute";
+import { Outlet } from "react-router-dom";
+
 import Home from "@/pages/Home";
 import Login from "@/pages/Login";
+import Register from "@/pages/Register";
 import NotFound from "@/pages/NotFound";
 import PostDetail from "@/pages/PostDetail";
-import Register from "@/pages/Register";
-import { Outlet } from "react-router-dom";
-import PostsManagement from "@/pages/PostsManagement";
-import AdminOverview from "@/pages/AdminOverview";
 import Posts from "@/pages/Posts";
+import PostsManagement from "@/pages/PostsManagement";
 import CreateAccommodationPost from "@/pages/CreateAccommodationPost";
 import EditAccomodationPost from "@/pages/EditAccomodationPost";
 import AppointmentManagement from "@/pages/AppointmentManagement";
-import NotificationManagement from "@/pages/NotificationManagement";
-import LeanLayout from "@/components/LeanLayout";
-import ProtectedRoute from "./ProtectedRoute";
 import AppointmentDetail from "@/pages/AppointmentDetail";
-
-const isAuthenticated = !!localStorage.getItem("accessToken");
-console.log("isAuthenticated: ", isAuthenticated);
+import NotificationManagement from "@/pages/NotificationManagement";
+import AdminOverview from "@/pages/AdminOverview";
 
 export const routes = [
+    // Public routes
     {
         path: "/login",
         element: <Login />,
@@ -37,10 +36,6 @@ export const routes = [
                 path: "/",
                 element: <Home />,
             },
-            {
-                path: "/posts/:id",
-                element: <PostDetail />,
-            },
         ],
     },
     {
@@ -51,15 +46,22 @@ export const routes = [
                 path: "/posts",
                 element: <Posts />,
             },
+            {
+                path: "/posts/:id",
+                element: <PostDetail />,
+            },
         ],
     },
+
+    // Private routes
     {
-        element: <ProtectedRoute isAuthenticated={isAuthenticated} />,
+        element: <ProtectedRoute />,
         children: [
             {
                 path: "/",
                 element: <DashboardLayout />,
                 children: [
+                    // User routes
                     {
                         path: "user",
                         element: <Outlet />,
@@ -86,7 +88,6 @@ export const routes = [
                                 path: "appointment",
                                 element: <AppointmentManagement />,
                             },
-
                             {
                                 path: "appointment/:id",
                                 element: <AppointmentDetail />,
@@ -97,6 +98,8 @@ export const routes = [
                             },
                         ],
                     },
+
+                    // Admin routes
                     {
                         path: "admin",
                         element: <Outlet />,
@@ -140,6 +143,7 @@ export const routes = [
         ],
     },
 
+    // 404 route
     {
         path: "*",
         element: <NotFound />,

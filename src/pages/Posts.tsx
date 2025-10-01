@@ -41,7 +41,10 @@ const Posts = () => {
         amenities: searchParams.getAll("amenities") || [],
     };
 
-    const { data, isLoading } = usePosts(appliedFilterData, "admin");
+    const { data, isLoading } = usePosts(
+        { ...appliedFilterData, status: "approved" },
+        "admin"
+    );
 
     // Scroll to top khi component mount
     const { scrollToTop } = useScrollToTop();
@@ -158,12 +161,7 @@ const Posts = () => {
                 {/* Map */}
                 {appliedFilterData.province && (
                     <div className="sticky right-0 top-[calc(var(--lean-header-height)+32px)] col-span-3 my-8 h-[calc(100vh-var(--lean-header-height)-64px)] overflow-hidden rounded-3xl">
-                        <Map
-                            coordinates={data?.data?.map((post) => ({
-                                lat: post.latitude,
-                                lng: post.longitude,
-                            }))}
-                        />
+                        <Map posts={data?.data} />
                     </div>
                 )}
             </div>

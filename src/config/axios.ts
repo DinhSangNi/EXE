@@ -16,25 +16,14 @@ const api = axios.create({
     withCredentials: true,
 });
 
+// === Refresh token queue state ===
 let isRefreshing = false;
 let requestToRefreshQueue: {
-    resolve: (token: string | null) => any;
-    reject: (err: any) => any;
+    resolve: (token: string | null) => void;
+    reject: (err: any) => void;
 }[] = [];
 
-api.interceptors.request.use(
-    (config) => {
-        const accessToken = localStorage.getItem("accessToken");
-        if (accessToken) {
-            config.headers.Authorization = `Bearer ${accessToken}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
-
+/** Giải quyết các request chờ refresh */
 const processRequestToRefreshQueue = (err: any, token: string | null) => {
     requestToRefreshQueue.forEach((promise) => {
         if (err) {
@@ -43,41 +32,51 @@ const processRequestToRefreshQueue = (err: any, token: string | null) => {
             promise.resolve(token);
         }
     });
-
     requestToRefreshQueue = [];
 };
 
+// === Request interceptor: tự động gắn accessToken ===
+api.interceptors.request.use(
+    (config) => {
+        const accessToken = localStorage.getItem("accessToken");
+        if (accessToken) {
+            config.headers.Authorization = `Bearer ${accessToken}`;
+        }
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
+// === Response interceptor: refresh token khi 401 ===
 api.interceptors.response.use(
     (response: AxiosResponse) => response,
     async (error: AxiosError) => {
-        const originalRequest: InternalAxiosRequestConfig | undefined =
-            error.config;
-
+        const originalRequest = error.config as
+            | InternalAxiosRequestConfig
+            | undefined;
         if (!originalRequest) return Promise.reject(error);
 
-        if (
-            error.response?.status === 401 &&
-            originalRequest.url !== "/auth/refresh" &&
-            originalRequest.url !== "/auth/verify-otp"
-        ) {
+        const isAuthEndpoint =
+            originalRequest.url === "/auth/refresh" ||
+            originalRequest.url === "/auth/verify-otp";
+
+        if (error.response?.status === 401 && !isAuthEndpoint) {
+            // Nếu đang refresh => chờ token mới
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     requestToRefreshQueue.push({ resolve, reject });
                 })
                     .then((token) => {
                         if (originalRequest) {
-                            originalRequest.headers["Authorization"] =
-                                "Bearer " + token;
+                            originalRequest.headers.Authorization = `Bearer ${token}`;
                             return api(originalRequest);
                         }
                     })
-                    .catch((err) => {
-                        Promise.reject(err);
-                    });
+                    .catch((err) => Promise.reject(err));
             }
 
+            // Lần đầu refresh
             isRefreshing = true;
-
             try {
                 const res = await AuthServices.refreshToken();
                 if (res.status === 200) {
@@ -87,16 +86,18 @@ api.interceptors.response.use(
                     processRequestToRefreshQueue(null, newAccessToken);
                     return api(originalRequest);
                 }
-            } catch (error) {
-                processRequestToRefreshQueue(error, null);
+            } catch (err) {
+                // Refresh thất bại
+                processRequestToRefreshQueue(err, null);
                 await AuthServices.logout();
+
                 const currentPath = window.location.pathname;
                 if (
                     privateRoutes.some((route) => currentPath.startsWith(route))
                 ) {
                     window.location.href = "/login";
                 }
-                return Promise.reject(error);
+                return Promise.reject(err);
             } finally {
                 isRefreshing = false;
             }

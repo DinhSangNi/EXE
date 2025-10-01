@@ -56,6 +56,7 @@ const Login: React.FC = () => {
                 );
                 toast.success("Đăng nhập thành công", {
                     position: "top-center",
+                    delay: 1500,
                 });
                 navigate("/");
             }
@@ -94,6 +95,7 @@ const Login: React.FC = () => {
             );
             toast.success("Đăng nhập thành công", {
                 position: "top-center",
+                delay: 1500,
             });
             navigate("/");
         };

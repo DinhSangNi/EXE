@@ -5,7 +5,8 @@ import { formatPostDate } from "@/utils/format";
 import { Divider, Table, Select, ConfigProvider } from "antd";
 import type { TableProps } from "antd/lib";
 import { useNavigate } from "react-router-dom";
-import type { Appointment } from "@/stores/type";
+import type { Appointment, UserNotification } from "@/stores/type";
+import useMarkNotificationRead from "@/hooks/notification/useMarkNotificationRead";
 
 const { Option } = Select;
 
@@ -15,6 +16,8 @@ interface DataType {
     message: string;
     createdAt: string;
     appointment: Appointment;
+    isRead: boolean;
+    userNotificationId: string;
 }
 
 const NotificationManagement = () => {
@@ -32,6 +35,7 @@ const NotificationManagement = () => {
         sortOrder,
     });
 
+    const { mutate: markRead } = useMarkNotificationRead();
     const navigate = useNavigate();
 
     const columns: TableProps<DataType>["columns"] = [
@@ -69,6 +73,8 @@ const NotificationManagement = () => {
                 message: n.message,
                 appointment: n?.notificationAppointments?.[0]?.appointment,
                 createdAt: n.createdAt,
+                isRead: n.userNotifications?.[0]?.isRead,
+                userNotificationId: n.userNotifications?.[0]?.id,
             })) || []
         );
     }, [data]);
@@ -125,12 +131,18 @@ const NotificationManagement = () => {
                         rowHoverable
                         onRow={(record) => {
                             return {
-                                onClick: () =>
+                                onClick: () => {
+                                    if (
+                                        !record.isRead &&
+                                        record.userNotificationId
+                                    ) {
+                                        markRead(record.userNotificationId);
+                                    }
                                     navigate(
                                         `/user/appointment/${record.appointment.id}`
-                                    ),
-                                className:
-                                    "cursor-pointer transition-colors duration-200 hover:bg-primary/30",
+                                    );
+                                },
+                                className: `${record.isRead ? "bg-white" : "bg-gray-100"} cursor-pointer transition-colors duration-200 hover:bg-primary/30`,
                             };
                         }}
                         pagination={{

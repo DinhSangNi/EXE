@@ -175,4 +175,5 @@ export type NotificationFilter = {
     limit?: number;
     sortBy?: string;
     sortOrder?: "asc" | "desc";
+    isRead?: boolean;
 };

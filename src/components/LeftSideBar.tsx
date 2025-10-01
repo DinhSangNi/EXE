@@ -19,7 +19,10 @@ const LeftSideBar = ({ className }: Props) => {
     const { pathname } = useLocation();
 
     const rolePrefix = `/${user.role}/`;
+    // ví dụ: /user/appointment/83be39...  -> "appointment/83be39..."
     const currentPath = pathname.replace(rolePrefix, "");
+    // lấy phần đầu tiên để match key menu
+    const selectedKey = currentPath.split("/")[0]; // appointment
 
     // Lấy openKey từ path để mở SubMenu (nếu có)
     const getOpenKey = (key: string) => {
@@ -35,11 +38,6 @@ const LeftSideBar = ({ className }: Props) => {
     switch (user.role) {
         case "user":
             menuItems = [
-                // {
-                //     key: "dashboard",
-                //     label: <p>Tổng quan</p>,
-                //     icon: <FaTachometerAlt />,
-                // },
                 {
                     key: "account",
                     label: <p>Tài khoản của tôi</p>,
@@ -79,11 +77,6 @@ const LeftSideBar = ({ className }: Props) => {
             break;
         case "admin":
             menuItems = [
-                // {
-                //     key: "dashboard",
-                //     label: <p>Tổng quan</p>,
-                //     icon: <FaTachometerAlt />,
-                // },
                 {
                     key: "account",
                     label: <p>Tài khoản của tôi</p>,
@@ -134,7 +127,8 @@ const LeftSideBar = ({ className }: Props) => {
             <Menu
                 className="h-full w-full !border-none"
                 mode="inline"
-                selectedKeys={[currentPath]}
+                // highlight đúng item
+                selectedKeys={[selectedKey]}
                 defaultOpenKeys={getOpenKey(currentPath)}
                 onClick={onClick}
                 items={menuItems}

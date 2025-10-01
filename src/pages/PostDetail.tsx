@@ -1,16 +1,12 @@
 /* eslint-disable */
 import CustomButton from "@/components/CustomButton";
-import { ConfigProvider, Divider, Popconfirm, Spin } from "antd";
+import { Divider, Popconfirm, Spin } from "antd";
 import { useRef, useState, useEffect } from "react";
-import { FaCalendarAlt } from "react-icons/fa";
 import {
     IoWarningOutline,
     IoHeartOutline,
     IoShareSocialOutline,
 } from "react-icons/io5";
-import { Modal, DatePicker } from "antd";
-import type { DatePickerProps } from "antd";
-import dayjs, { Dayjs } from "dayjs";
 import { useParams } from "react-router-dom";
 import { usePostById } from "@/hooks/posts/usePostById";
 import {
@@ -21,33 +17,12 @@ import {
 import type { Media, PostAmenities } from "@/stores/type";
 import Map from "@/components/Map";
 import "dayjs/locale/vi";
-import enUS from "antd/locale/en_US";
-import type { Locale } from "antd/es/locale";
 import useCreateAppointment from "@/hooks/appointment/useCreateAppointment";
 import { useSelector } from "react-redux";
 import type { RootState } from "@/stores/store";
 import useAppointmentByPostId from "@/hooks/appointment/useAppointmentByPostId";
 import useUpdateAppointment from "@/hooks/appointment/useUpdateAppointment";
-
-dayjs.locale("vi");
-
-const viVN = {
-    ...enUS,
-    DatePicker: {
-        ...enUS.DatePicker,
-        lang: {
-            ...enUS.DatePicker?.lang,
-            locale: "vi",
-            rangePlaceholder: ["Ngày bắt đầu", "Ngày kết thúc"],
-            today: "Hôm nay",
-            now: "Bây giờ",
-            ok: "OK",
-            clear: "Xóa",
-            month: "Tháng",
-            year: "Năm",
-        },
-    },
-};
+import AppointmentButton from "@/components/posts/AppointmentButton";
 
 const PostDetail = () => {
     const storedUser = useSelector((state: RootState) => state.user);
@@ -63,27 +38,6 @@ const PostDetail = () => {
     const { mutate: updateAppointment, isPending: cancelling } =
         useUpdateAppointment();
     const modalRef = useRef<HTMLDivElement>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
-
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleOk = () => {
-        if (selectedDate) {
-            createAppointment({
-                appointmentDateTime: selectedDate.toISOString(),
-                hostId: post?.owner?.id as string,
-                postId: post?.id as string,
-            });
-        }
-        setIsModalOpen(false);
-    };
-
-    const handleCancel = () => {
-        setIsModalOpen(false);
-    };
 
     const handleCancelAppointment = () => {
         if (!appointment) return;
@@ -93,16 +47,6 @@ const PostDetail = () => {
                 status: "cancelled",
             },
         });
-    };
-
-    // Function to disable past dates
-    const disabledDate = (current: any) => {
-        // Can not select days before today
-        return current && current < dayjs().startOf("day");
-    };
-
-    const onChange: DatePickerProps["onChange"] = (date) => {
-        setSelectedDate(date || null);
     };
 
     // Đóng modal khi nhấn phím Esc
@@ -119,29 +63,6 @@ const PostDetail = () => {
     const formatPrice = (price: number) => {
         return price?.toLocaleString("vi-VN") + " VND";
     };
-
-    // Helper: get owner avatar
-    // const getOwnerAvatar = () => {
-    //     if (!post?.owner?.medias?.length) return undefined;
-    //     // Ưu tiên ảnh có purpose là avatar, nếu không lấy ảnh đầu tiên
-    //     const avatar = post.owner.medias.find(
-    //         (m: any) => m.purpose === "avatar"
-    //     );
-    //     return avatar?.url || post.owner.medias[0]?.url;
-    // };
-
-    // Sắp xếp medias: video trước, ảnh sau
-    // const sortedMedias = (post?.medias || []).reduce(
-    //     (acc: { videos: any[]; images: any[] }, media: any) => {
-    //         if (media.type?.startsWith("video")) {
-    //             acc.videos.push(media);
-    //         } else if (media.type?.startsWith("image")) {
-    //             acc.images.push(media);
-    //         }
-    //         return acc;
-    //     },
-    //     { videos: [], images: [] }
-    // );
 
     // Get avatar
     const avatar =
@@ -509,154 +430,129 @@ const PostDetail = () => {
                     </div>
                     {/* Right: Thông tin chủ bài đăng */}
                     <div className="w-2/5">
-                        {isLoading ? (
-                            <div className="flex animate-pulse flex-col items-center space-y-4 rounded-xl bg-white p-4 shadow-xl">
-                                <div className="aspect-square w-[6rem] rounded-full bg-gray-200" />
-                                <div className="h-4 w-1/2 rounded bg-gray-200" />
-                                <div className="h-3 w-1/3 rounded bg-gray-200" />
-                                <div className="h-8 w-full rounded bg-gray-200" />
-                                <div className="h-8 w-full rounded bg-gray-200" />
-                                <div className="h-4 w-1/2 rounded bg-gray-200" />
-                            </div>
-                        ) : (
-                            <div className="flex flex-col items-center rounded-xl bg-white p-4 shadow-xl">
-                                {/* Avatar của chủ bài đăng */}
-                                <div className="flex aspect-square w-[6rem] overflow-hidden rounded-full">
-                                    {avatar ? (
-                                        <img
-                                            className="h-full w-full object-cover"
-                                            src={avatar}
-                                            alt="User's Avatar"
-                                        />
-                                    ) : (
-                                        <p className="flex h-full w-full items-center justify-center bg-blue-100 text-3xl font-bold text-blue-600">
-                                            {post?.owner?.name?.[0]}
-                                        </p>
-                                    )}
+                        <div className="sticky top-24">
+                            {isLoading ? (
+                                <div className="flex animate-pulse flex-col items-center space-y-4 rounded-xl bg-white p-4 shadow-xl">
+                                    <div className="aspect-square w-[6rem] rounded-full bg-gray-200" />
+                                    <div className="h-4 w-1/2 rounded bg-gray-200" />
+                                    <div className="h-3 w-1/3 rounded bg-gray-200" />
+                                    <div className="h-8 w-full rounded bg-gray-200" />
+                                    <div className="h-8 w-full rounded bg-gray-200" />
+                                    <div className="h-4 w-1/2 rounded bg-gray-200" />
                                 </div>
-                                {/* Tên chủ bài đăng */}
-                                <h1 className="my-2 font-bold">
-                                    {post?.owner?.name}
-                                </h1>
-                                <p className="text-[0.8rem]">
-                                    <span>4 tin đăng</span>
-                                    <span> · </span>
-                                    <span>
-                                        Tham gia từ:{" "}
-                                        {post?.createdAt
-                                            ? formatPostDate(post?.createdAt)
-                                            : "N/A"}
-                                    </span>
-                                </p>
-                                {post?.owner?.id !== storedUser.id && (
-                                    <div className="mt-2 flex w-full flex-col items-center gap-2">
-                                        {!appointment ? (
-                                            <Spin spinning={creating}>
-                                                <CustomButton
-                                                    title="Đặt lịch xem nhà"
-                                                    icon={<FaCalendarAlt />}
-                                                    className="w-full bg-blue-600 text-white hover:bg-blue-700 md:text-[0.9rem] lg:text-[1rem]"
-                                                    onClick={showModal}
-                                                    disabled={creating}
-                                                />
-                                            </Spin>
-                                        ) : appointment.status ===
-                                          "confirmed" ? (
-                                            <p>
-                                                Đã hẹn lúc{" "}
-                                                {formatToVietnamTime(
-                                                    appointment.appointmentDateTime
-                                                )}
+                            ) : (
+                                <div className="flex flex-col items-center rounded-xl bg-white p-4 shadow-xl">
+                                    {/* Avatar của chủ bài đăng */}
+                                    <div className="flex aspect-square w-[6rem] overflow-hidden rounded-full">
+                                        {avatar ? (
+                                            <img
+                                                className="h-full w-full object-cover"
+                                                src={avatar}
+                                                alt="User's Avatar"
+                                            />
+                                        ) : (
+                                            <p className="flex h-full w-full items-center justify-center bg-blue-100 text-3xl font-bold text-blue-600">
+                                                {post?.owner?.name?.[0]}
                                             </p>
-                                        ) : appointment.status === "pending" ? (
-                                            <div className="w-full">
-                                                <p className="mb-4 font-bold text-yellow-500">
-                                                    Lịch hẹn lúc{" "}
+                                        )}
+                                    </div>
+                                    {/* Tên chủ bài đăng */}
+                                    <h1 className="my-2 font-bold">
+                                        {post?.owner?.name}
+                                    </h1>
+                                    <p className="text-[0.8rem]">
+                                        <span>4 tin đăng</span>
+                                        <span> · </span>
+                                        <span>
+                                            Tham gia từ:{" "}
+                                            {post?.createdAt
+                                                ? formatPostDate(
+                                                      post?.createdAt
+                                                  )
+                                                : "N/A"}
+                                        </span>
+                                    </p>
+                                    {post?.owner?.id !== storedUser.id && (
+                                        <div className="mt-2 flex w-full flex-col items-center gap-2">
+                                            {!appointment ||
+                                            appointment.status ===
+                                                "cancelled" ? (
+                                                <Spin
+                                                    wrapperClassName="w-full"
+                                                    spinning={creating}
+                                                >
+                                                    <AppointmentButton
+                                                        onSelect={(isoDate) => {
+                                                            createAppointment({
+                                                                appointmentDateTime:
+                                                                    isoDate,
+                                                                hostId: post
+                                                                    ?.owner
+                                                                    ?.id as string,
+                                                                postId: post?.id as string,
+                                                            });
+                                                        }}
+                                                    />
+                                                </Spin>
+                                            ) : appointment.status ===
+                                              "confirmed" ? (
+                                                <p>
+                                                    Đã hẹn lúc{" "}
                                                     {formatToVietnamTime(
                                                         appointment.appointmentDateTime
-                                                    )}{" "}
-                                                    đang chờ duyệt
-                                                </p>
-                                                <Popconfirm
-                                                    title="Hủy lịch hẹn"
-                                                    description="Bạn chắc chắn hủy lịch hẹn?"
-                                                    okText="Hủy"
-                                                    cancelText="Không"
-                                                    onConfirm={
-                                                        handleCancelAppointment
-                                                    }
-                                                >
-                                                    <Spin spinning={cancelling}>
-                                                        <CustomButton
-                                                            title="Hủy lịch hẹn"
-                                                            className="w-full bg-yellow-600 text-white hover:bg-yellow-800 md:text-[0.9rem] lg:text-[1rem]"
-                                                        />
-                                                    </Spin>
-                                                </Popconfirm>
-                                            </div>
-                                        ) : (
-                                            <Spin spinning={creating}>
-                                                <CustomButton
-                                                    title="Đặt lịch xem nhà"
-                                                    icon={<FaCalendarAlt />}
-                                                    className="w-full bg-blue-600 text-white hover:bg-blue-700 md:text-[0.9rem] lg:text-[1rem]"
-                                                    onClick={showModal}
-                                                    disabled={creating}
-                                                />
-                                            </Spin>
-                                        )}
-                                    </div>
-                                )}
-                                <Modal
-                                    title="Đăt lịch xem nhà"
-                                    open={isModalOpen}
-                                    onOk={handleOk}
-                                    onCancel={handleCancel}
-                                    okText="Xác nhận"
-                                    cancelText="Hủy"
-                                >
-                                    <div className="flex flex-col items-center py-4">
-                                        <ConfigProvider locale={viVN as Locale}>
-                                            <DatePicker
-                                                className="w-full border border-gray-500"
-                                                onChange={onChange}
-                                                placeholder="Chọn ngày xem nhà"
-                                                format="DD/MM/YYYY HH:mm"
-                                                disabledDate={disabledDate}
-                                                showTime={{ format: "HH:mm" }}
-                                                allowClear={true}
-                                                minDate={dayjs()}
-                                                inputReadOnly
-                                            />
-                                        </ConfigProvider>
-                                        {selectedDate && (
-                                            <p className="mt-4 text-gray-600">
-                                                Bạn đã chọn ngày:{" "}
-                                                <span className="font-semibold">
-                                                    {selectedDate.format(
-                                                        "DD/MM/YYYY HH:mm"
                                                     )}
-                                                </span>
-                                            </p>
-                                        )}
+                                                </p>
+                                            ) : appointment.status ===
+                                              "pending" ? (
+                                                <div className="w-full">
+                                                    <p className="mb-4 font-bold text-yellow-500">
+                                                        Lịch hẹn lúc{" "}
+                                                        {formatToVietnamTime(
+                                                            appointment.appointmentDateTime
+                                                        )}{" "}
+                                                        đang chờ duyệt
+                                                    </p>
+                                                    <Popconfirm
+                                                        title="Hủy lịch hẹn"
+                                                        description="Bạn chắc chắn hủy lịch hẹn?"
+                                                        okText="Hủy"
+                                                        cancelText="Không"
+                                                        onConfirm={
+                                                            handleCancelAppointment
+                                                        }
+                                                    >
+                                                        <Spin
+                                                            spinning={
+                                                                cancelling
+                                                            }
+                                                        >
+                                                            <CustomButton
+                                                                title="Hủy lịch hẹn"
+                                                                className="w-full bg-yellow-600 text-white hover:bg-yellow-800 md:text-[0.9rem] lg:text-[1rem]"
+                                                            />
+                                                        </Spin>
+                                                    </Popconfirm>
+                                                </div>
+                                            ) : null}
+                                        </div>
+                                    )}
+                                    <div className="mt-4 flex w-full justify-between text-[0.7rem] lg:text-[0.8rem]">
+                                        <button className="item flex items-center gap-1 px-2 py-1 hover:bg-gray-200">
+                                            <IoHeartOutline />
+                                            Lưu tin
+                                        </button>
+                                        <button className="item flex items-center gap-1 px-2 py-1 hover:bg-gray-200">
+                                            <IoShareSocialOutline />
+                                            Chia sẻ
+                                        </button>
+                                        <button className="item flex items-center gap-1 px-2 py-1 hover:bg-gray-200">
+                                            <IoWarningOutline />
+                                            Báo xấu
+                                        </button>
                                     </div>
-                                </Modal>
-                                <div className="mt-4 flex w-full justify-between text-[0.7rem] lg:text-[0.8rem]">
-                                    <button className="item flex items-center gap-1 px-2 py-1 hover:bg-gray-200">
-                                        <IoHeartOutline />
-                                        Lưu tin
-                                    </button>
-                                    <button className="item flex items-center gap-1 px-2 py-1 hover:bg-gray-200">
-                                        <IoShareSocialOutline />
-                                        Chia sẻ
-                                    </button>
-                                    <button className="item flex items-center gap-1 px-2 py-1 hover:bg-gray-200">
-                                        <IoWarningOutline />
-                                        Báo xấu
-                                    </button>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

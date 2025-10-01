@@ -7,7 +7,7 @@ const LeanLayout = () => {
         <>
             <div className="h-full w-full">
                 <LeanHeader />
-                <main className="w-full bg-gray-100 pb-10 pt-[var(lean--header-height)]">
+                <main className="w-full bg-gray-100 pb-10 pt-[var(--lean-header-height)]">
                     <Outlet />
                 </main>
                 <Footer />

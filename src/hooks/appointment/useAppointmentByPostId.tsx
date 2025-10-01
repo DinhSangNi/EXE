@@ -9,7 +9,7 @@ const useAppointmentByPostId = (postId: string) => {
             const res = await AppointmentServices.getByPostIdAndUserId(postId);
             return res.data.metadata as Appointment;
         },
-        staleTime: 3 * 60 * 1000,
+        staleTime: 0,
     });
 };
 

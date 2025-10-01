@@ -1,8 +1,22 @@
-export const publicRoutes = ["/", "/about", "/posts", "/posts/:id", "/login"];
+export const publicRoutes = [
+    "/",
+    "/login",
+    "/register",
+    "/posts",
+    "/posts/:id",
+];
+
 export const privateRoutes = [
-    "/profile",
-    "/dashboard",
-    "/settings",
-    "/appointment",
-    "/admin",
+    "/user/posts",
+    "/user/posts/create-accomodation",
+    "/user/posts/edit-accomodation/:id",
+    "/user/appointment",
+    "/user/appointment/:id",
+    "/user/notification",
+    "/admin/posts",
+    "/admin/posts/create-accomodation",
+    "/admin/posts/edit-accomodation/:id",
+    "/admin/overview",
+    "/admin/appointment",
+    "/admin/notification",
 ];

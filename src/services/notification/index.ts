@@ -5,4 +5,7 @@ export const NotificationServices = {
     getAll: async (notificationFilter: NotificationFilter) => {
         return await api.get(`/notification`, { params: notificationFilter });
     },
+    markRead: async (userNotificationId: string) => {
+        return await api.patch(`/notification/${userNotificationId}/read`);
+    },
 };

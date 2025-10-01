@@ -1,17 +1,19 @@
 /* eslint-disable */
 import { AddressServices } from "@/services/address";
 import { Select } from "antd";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 type Props = {
-    value?: string | null | undefined;
+    value?: string | null;
     onChange?: (value: string) => void;
     type: "province" | "district" | "ward";
     mode?: "default" | "filter";
-    provinceCode?: string | null | undefined;
-    districtCode?: string | null | undefined;
+    provinceCode?: string | null;
+    districtCode?: string | null;
     className?: string;
 };
+
+type Option = { value: string; label: string };
 
 const AddressSelector = ({
     value,
@@ -22,190 +24,144 @@ const AddressSelector = ({
     className,
     onChange,
 }: Props) => {
-    const [selected, setSelected] = useState<
-        | {
-              value: string;
-              label: string;
-          }
-        | undefined
-    >(
-        value
-            ? {
-                  value: value,
-                  label: value?.split("|")[1],
-              }
-            : undefined
-    );
-    const [query, setQuery] = useState<string>("");
-    const [options, setOptions] = useState<{ value: string; label: string }[]>(
-        []
-    );
+    const [selected, setSelected] = useState<Option>();
+    const [query, setQuery] = useState("");
+    const [options, setOptions] = useState<Option[]>([]);
 
-    useEffect(() => {
-        const fetchAddressData = async () => {
-            try {
-                let resolvedData: { value: string; label: string }[] = [];
+    /** fetch mặc định theo type */
+    const fetchOptions = useCallback(async () => {
+        try {
+            let data: Option[] = [];
 
-                switch (type) {
-                    case "province": {
-                        const resPro = await AddressServices.getProvinces();
-                        if (resPro.status === 200) {
-                            resolvedData = resPro.data.metadata.map(
-                                (province: { code: string; name: string }) => ({
-                                    value: `${province.code}|${province.name}`,
-                                    label: province.name,
-                                })
-                            );
-                            mode === "filter" &&
-                                type === "province" &&
-                                (resolvedData = [
-                                    { label: "Toàn quốc", value: "" },
-                                    ...resolvedData,
-                                ]);
-                        }
-                        break;
-                    }
-
-                    case "district": {
-                        if (!provinceCode) return;
-                        const resDis =
-                            await AddressServices.getDistrictsByProvince(
-                                provinceCode
-                            );
-                        if (resDis.status === 200) {
-                            resolvedData = resDis.data.metadata.districts.map(
-                                (district: { code: string; name: string }) => ({
-                                    value: `${district.code}|${district.name}`,
-                                    label: district.name,
-                                })
-                            );
-                        }
-                        break;
-                    }
-
-                    case "ward": {
-                        if (!districtCode) return;
-                        const resWar =
-                            await AddressServices.getWardsByDistrict(
-                                districtCode
-                            );
-                        if (resWar.status === 200) {
-                            resolvedData = resWar.data.metadata.wards.map(
-                                (ward: { code: string; name: string }) => ({
-                                    value: `${ward.code}|${ward.name}`,
-                                    label: ward.name,
-                                })
-                            );
-                        }
-                        break;
-                    }
-                }
-
-                setOptions(resolvedData);
-            } catch (error) {
-                console.error("fetchAddressData error:", error);
-            }
-        };
-
-        const search = async () => {
-            try {
-                let res;
-                switch (type) {
-                    case "province":
-                        res = await AddressServices.searchProvince(query);
-                        break;
-                    case "district":
-                        res = provinceCode
-                            ? await AddressServices.searchDistrict(
-                                  query,
-                                  provinceCode
-                              )
-                            : await AddressServices.searchDistrict(query);
-                        break;
-                }
-
-                if (res?.status === 200) {
-                    const resolvedData = res.data.metadata.map(
-                        (address: { code: string; name: string }) => ({
-                            value: `${address.code}|${address.name}`,
-                            label: address.name,
+            if (type === "province") {
+                const res = await AddressServices.getProvinces();
+                if (res.status === 200) {
+                    data = res.data.metadata.map(
+                        (p: { code: string; name: string }) => ({
+                            value: `${p.code}|${p.name}`,
+                            label: p.name,
                         })
                     );
-                    setOptions(resolvedData);
+                    if (mode === "filter") {
+                        data = [{ label: "Toàn quốc", value: "" }, ...data];
+                    }
                 }
-            } catch (error) {
-                console.error("search error:", error);
             }
-        };
 
-        if (query.length > 0) {
-            const debounce = setTimeout(search, 300);
-            return () => clearTimeout(debounce);
-        } else {
-            fetchAddressData();
+            if (type === "district" && provinceCode) {
+                const res =
+                    await AddressServices.getDistrictsByProvince(provinceCode);
+                if (res.status === 200) {
+                    data = res.data.metadata.districts.map(
+                        (d: { code: string; name: string }) => ({
+                            value: `${d.code}|${d.name}`,
+                            label: d.name,
+                        })
+                    );
+                }
+            }
+
+            if (type === "ward" && districtCode) {
+                const res =
+                    await AddressServices.getWardsByDistrict(districtCode);
+                if (res.status === 200) {
+                    data = res.data.metadata.wards.map(
+                        (w: { code: string; name: string }) => ({
+                            value: `${w.code}|${w.name}`,
+                            label: w.name,
+                        })
+                    );
+                }
+            }
+
+            setOptions(data);
+        } catch (err) {
+            console.error("fetchAddressData error:", err);
         }
-    }, [type, query, provinceCode, districtCode]);
+    }, [type, provinceCode, districtCode, mode]);
 
+    /** search theo query */
+    const searchOptions = useCallback(async () => {
+        try {
+            let res;
+            if (type === "province") {
+                res = await AddressServices.searchProvince(query);
+            } else if (type === "district") {
+                res = provinceCode
+                    ? await AddressServices.searchDistrict(query, provinceCode)
+                    : await AddressServices.searchDistrict(query);
+            }
+            if (res?.status === 200) {
+                const data: Option[] = res.data.metadata.map(
+                    (a: { code: string; name: string }) => ({
+                        value: `${a.code}|${a.name}`,
+                        label: a.name,
+                    })
+                );
+                setOptions(data);
+            }
+        } catch (err) {
+            console.error("search error:", err);
+        }
+    }, [query, type, provinceCode]);
+
+    /** fetch/search khi query/type đổi */
+    useEffect(() => {
+        if (query.length > 0) {
+            const debounce = setTimeout(searchOptions, 300);
+            return () => clearTimeout(debounce);
+        }
+        fetchOptions();
+    }, [query, fetchOptions, searchOptions]);
+
+    /** cập nhật selected khi value/options đổi */
     useEffect(() => {
         if (!value) {
             setSelected(undefined);
             return;
         }
-
         const match = options.find((item) => item.value === value);
-        if (match) {
-            setSelected(match);
-        } else {
-            // Nếu options chưa có thì fallback tạm
-            const label = value.split("|")[1] ?? value;
-            setSelected({ value, label });
-        }
+        setSelected(match); // chỉ set khi match
     }, [value, options]);
 
-    const handleSearch = (query: string) => {
-        setQuery(query);
-    };
-
-    const handleChange = (value: { value: string; label: string }) => {
-        setSelected(value);
-        onChange && onChange(value.value ?? "");
+    const handleChange = (val: Option) => {
+        setSelected(val);
+        onChange?.(val.value);
     };
 
     return (
-        <>
-            <div className={`min-w-[200px] ${className}`}>
-                <h1 className="mb-1">
-                    {type === "province"
-                        ? "Tỉnh/Thành phố"
+        <div className={`min-w-[200px] ${className}`}>
+            <h1 className="mb-1">
+                {type === "province"
+                    ? "Tỉnh/Thành phố"
+                    : type === "district"
+                      ? "Quận/Huyện"
+                      : "Phường/Xã"}
+            </h1>
+            <Select
+                labelInValue
+                value={selected}
+                defaultValue={
+                    mode === "filter" && type === "province"
+                        ? { label: "Tất cả", value: "" }
+                        : undefined
+                }
+                showSearch
+                filterOption={false}
+                placeholder={
+                    type === "province"
+                        ? "--chọn tỉnh/thành phố--"
                         : type === "district"
-                          ? "Quận/Huyện"
-                          : "Phường/Xã"}
-                </h1>
-                <Select
-                    labelInValue={true}
-                    value={selected}
-                    defaultValue={
-                        mode === "filter" && type === "province"
-                            ? { label: "Tất cả", value: "" }
-                            : undefined
-                    }
-                    showSearch
-                    filterOption={false}
-                    placeholder={
-                        type === "province"
-                            ? "--chọn tỉnh/thành phố--"
-                            : type === "district"
-                              ? "--chọn quận/huyện--"
-                              : "--chọn phường/xã--"
-                    }
-                    onChange={handleChange}
-                    onSearch={handleSearch}
-                    onSelect={() => setQuery("")}
-                    options={options}
-                    className="w-full"
-                />
-            </div>
-        </>
+                          ? "--chọn quận/huyện--"
+                          : "--chọn phường/xã--"
+                }
+                onChange={handleChange}
+                onSearch={setQuery}
+                onSelect={() => setQuery("")}
+                options={options}
+                className="w-full"
+            />
+        </div>
     );
 };
 

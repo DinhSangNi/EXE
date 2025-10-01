@@ -8,7 +8,8 @@ export type UserState = {
     role: string | null;
 };
 
-const loadUserFromStorage = () => {
+// hàm load từ localStorage
+const loadUserFromStorage = (): UserState => {
     const userData = localStorage.getItem("user");
     if (userData) {
         return JSON.parse(userData);
@@ -59,6 +60,9 @@ const userSlice = createSlice({
         },
     },
 });
+
+export const selectIsAuthenticated = (state: { user: UserState }) =>
+    Boolean(state.user.id);
 
 export const { login, logout } = userSlice.actions;
 export default userSlice.reducer;

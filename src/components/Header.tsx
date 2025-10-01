@@ -1,5 +1,5 @@
 import { useAnimation, motion } from "framer-motion";
-import NavBar from "./NavBar";
+import NavBar from "./Navbar/NavBar";
 import Searchbar from "./SearchBar";
 import { useEffect, useState } from "react";
 import { getCSSVarPx } from "@/utils/css";

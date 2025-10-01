@@ -3,11 +3,10 @@ import useAppointments from "@/hooks/appointment/useAppointments";
 import useUpdateAppointment from "@/hooks/appointment/useUpdateAppointment";
 import type { updateAppointmentDto } from "@/stores/type";
 import { formatToVietnamTime } from "@/utils/format";
-import { Divider, Dropdown, Table, Select, Input, ConfigProvider } from "antd";
+import { Divider, Table, Select, Input, ConfigProvider } from "antd";
 import type { TableProps } from "antd/lib";
-import { FaEllipsisH, FaTimes, FaSearch } from "react-icons/fa";
-import { IoMdCheckmark } from "react-icons/io";
-import { Link, useNavigate } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -96,9 +95,7 @@ const AppointmentManagement = () => {
                 title: "Tiêu đề bài đăng",
                 dataIndex: "postTitle",
                 key: "postTitle",
-                render: (text, record) => (
-                    <Link to={`/posts/${record.postId}`}>{text}</Link>
-                ),
+                render: (text) => <p>{text}</p>,
             },
             {
                 title: "Trạng thái",
@@ -130,95 +127,12 @@ const AppointmentManagement = () => {
                     return <p className={status.color}>{status.label}</p>;
                 },
             },
-            {
-                title: "Action",
-                key: "action",
-                render: (_, record) => (
-                    <Dropdown
-                        menu={{
-                            items: [
-                                {
-                                    label: (
-                                        <button
-                                            disabled={
-                                                record.status === "cancelled"
-                                            }
-                                            className="flex items-center gap-2 text-green-500"
-                                            onClick={(e) => {
-                                                e.stopPropagation(); // tránh row click
-                                                handleUpdateAppointment(
-                                                    record.id,
-                                                    { status: "confirmed" }
-                                                );
-                                            }}
-                                        >
-                                            <IoMdCheckmark />
-                                            Đồng ý
-                                        </button>
-                                    ),
-                                    key: "0",
-                                },
-                                {
-                                    label: (
-                                        <button
-                                            disabled={
-                                                record.status === "confirmed" ||
-                                                record.status === "cancelled"
-                                            }
-                                            className="flex items-center gap-2 text-red-500"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleUpdateAppointment(
-                                                    record.id,
-                                                    { status: "rejected" }
-                                                );
-                                            }}
-                                        >
-                                            <FaTimes />
-                                            Từ chối
-                                        </button>
-                                    ),
-                                    key: "1",
-                                },
-                                {
-                                    label: (
-                                        <button
-                                            disabled={
-                                                record.status === "cancelled"
-                                            }
-                                            className="flex items-center gap-2 text-yellow-500"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleUpdateAppointment(
-                                                    record.id,
-                                                    { status: "cancelled" }
-                                                );
-                                            }}
-                                        >
-                                            <FaTimes />
-                                            Hủy
-                                        </button>
-                                    ),
-                                    key: "2",
-                                },
-                            ],
-                        }}
-                        trigger={["click"]}
-                    >
-                        <div className="flex w-full items-center justify-center">
-                            <div className="cursor-pointer rounded-full bg-gray-100 p-1">
-                                <FaEllipsisH />
-                            </div>
-                        </div>
-                    </Dropdown>
-                ),
-            },
         ],
         [handleUpdateAppointment]
     );
 
     return (
-        <div className="w-full bg-gray-100">
+        <div className="w-full bg-white">
             <div className="mx-auto min-h-screen w-4/5 pt-4">
                 <h1 className="text-[1.4rem] font-bold">Lịch hẹn</h1>
                 <Divider />

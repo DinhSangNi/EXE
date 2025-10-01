@@ -1,8 +1,8 @@
-import type { Notification } from "@/stores/type";
+import type { NotificationItem } from "./NotificationBell";
 import NotificationCard from "./NotificationCard";
 
 type Props = {
-    items?: Notification[];
+    items?: NotificationItem[];
     totalAllItems?: number;
 };
 

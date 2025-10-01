@@ -103,7 +103,7 @@ const LeanHeader = () => {
     };
 
     return (
-        <div className="sticky top-0 z-30 flex h-[var(--lean-header-height)] w-full items-center border-b-[1px] border-gray-300 bg-white px-14 py-4">
+        <div className="fixed top-0 z-30 flex h-[var(--lean-header-height)] w-full items-center border-b-[1px] border-gray-300 bg-white px-14 py-4">
             <div className="mx-auto flex w-full items-center">
                 {/* Logo */}
                 <div className="w-1/5">
