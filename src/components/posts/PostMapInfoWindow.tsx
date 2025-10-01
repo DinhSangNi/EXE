@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { Button } from "antd";
 import PostImageCarousel from "../PostImageCarousel";
 import type { Post } from "@/stores/type";
 import { useNavigate } from "react-router-dom";

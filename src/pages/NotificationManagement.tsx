@@ -5,7 +5,7 @@ import { formatPostDate } from "@/utils/format";
 import { Divider, Table, Select, ConfigProvider } from "antd";
 import type { TableProps } from "antd/lib";
 import { useNavigate } from "react-router-dom";
-import type { Appointment, UserNotification } from "@/stores/type";
+import type { Appointment } from "@/stores/type";
 import useMarkNotificationRead from "@/hooks/notification/useMarkNotificationRead";
 
 const { Option } = Select;

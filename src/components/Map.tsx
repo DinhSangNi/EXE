@@ -124,10 +124,12 @@ const Map = ({ address, onChange, lat, lng, posts }: Props) => {
 
                 {selectedPost && (
                     <InfoBox
-                        position={{
-                            lat: selectedPost.latitude,
-                            lng: selectedPost.longitude,
-                        }}
+                        position={
+                            new google.maps.LatLng(
+                                selectedPost.latitude,
+                                selectedPost.longitude
+                            )
+                        }
                         options={{
                             closeBoxURL: "",
                             enableEventPropagation: true,
