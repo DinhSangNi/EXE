@@ -68,6 +68,8 @@ api.interceptors.response.use(
                 })
                     .then((token) => {
                         if (originalRequest) {
+                            originalRequest.headers =
+                                originalRequest.headers || {};
                             originalRequest.headers.Authorization = `Bearer ${token}`;
                             return api(originalRequest);
                         }
@@ -83,7 +85,13 @@ api.interceptors.response.use(
                     const newAccessToken = res.data.metadata.accessToken;
                     localStorage.setItem("accessToken", newAccessToken);
                     api.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
+
+                    // Retry các request chờ refresh
                     processRequestToRefreshQueue(null, newAccessToken);
+
+                    // Retry request hiện tại
+                    originalRequest.headers = originalRequest.headers || {};
+                    originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
                     return api(originalRequest);
                 }
             } catch (err) {
@@ -92,11 +100,12 @@ api.interceptors.response.use(
                 await AuthServices.logout();
 
                 const currentPath = window.location.pathname;
+                // Check private route + originalRequest.url
                 if (
                     privateRoutes.some((route) =>
                         currentPath.startsWith(route)
                     ) ||
-                    currentPath.startsWith("/posts")
+                    originalRequest.url?.startsWith("/appointment")
                 ) {
                     window.location.href = "/login";
                 }
