@@ -5,6 +5,7 @@ import type { MenuProps } from "antd";
 import { Menu } from "antd";
 import { FaHome, FaUser, FaCalendarAlt, FaBell } from "react-icons/fa";
 import { BsHouseAddFill } from "react-icons/bs";
+import { AiFillDashboard } from "react-icons/ai";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type Props = {
@@ -78,6 +79,11 @@ const LeftSideBar = ({ className }: Props) => {
         case "admin":
             menuItems = [
                 {
+                    key: "overview",
+                    label: "Tổng quan",
+                    icon: <AiFillDashboard />,
+                },
+                {
                     key: "account",
                     label: <p>Tài khoản của tôi</p>,
                     icon: <FaUser />,
@@ -92,11 +98,11 @@ const LeftSideBar = ({ className }: Props) => {
                         },
                     ],
                 },
-                {
-                    key: "users",
-                    label: "Quản lí người dùng",
-                    icon: <FaHome />,
-                },
+                // {
+                //     key: "users",
+                //     label: "Quản lí người dùng",
+                //     icon: <FaHome />,
+                // },
                 {
                     key: "posts",
                     label: "Quản lí bài đăng",
