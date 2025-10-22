@@ -10,6 +10,7 @@ import Searchbar from "./SearchBar";
 import { AuthServices } from "@/services/auth";
 import { logout } from "@/stores/userSlice";
 import { toast } from "react-toastify";
+import { useEffect } from "react";
 
 const LeanHeader = () => {
     const storedUser = useSelector((state: RootState) => state.user);
@@ -101,6 +102,12 @@ const LeanHeader = () => {
 
         return [authItem];
     };
+
+    useEffect(() => {
+        if (storedUser.role === "admin") {
+            navigate("/admin/overview");
+        }
+    }, [storedUser]);
 
     return (
         <div className="fixed top-0 z-30 flex h-[var(--lean-header-height)] w-full items-center border-b-[1px] border-gray-300 bg-white px-14 py-4">

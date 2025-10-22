@@ -1,10 +1,11 @@
 import api from "@/config/axios";
 
-export type Filter = {
-    granularity: "daily" | "weekly" | "monthly";
-    startDate?: string;
-    endDate?: string;
-};
+export type Filter =
+    | {
+          month?: number;
+          year?: number;
+      }
+    | undefined;
 
 export const AdminServices = {
     overviewCount: async () => {

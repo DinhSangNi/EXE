@@ -68,6 +68,12 @@ const NavBar = ({ isTop }: Props) => {
         });
     }, [isTop, searchAnim]);
 
+    useEffect(() => {
+        if (user.role === "admin") {
+            navigate("/admin/overview");
+        }
+    }, [user]);
+
     return (
         <div className="w-full">
             <div className="relative mx-auto flex w-[95%] pb-6">

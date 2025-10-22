@@ -12,69 +12,56 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
-import { Select, DatePicker, Row, Col, Spin } from "antd";
-import type { Dayjs } from "dayjs";
+import { Select, DatePicker, Row, Col, Spin, message } from "antd";
+import dayjs, { Dayjs } from "dayjs";
+import YearSelect from "./YearSelect";
 
 const { Option } = Select;
-const { RangePicker } = DatePicker;
 
 type Props = {
     className?: string;
 };
 
 const PostsAndAppointmentsChart = ({ className }: Props) => {
-    const [granularity, setGranularity] = useState<
-        "daily" | "weekly" | "monthly"
-    >("weekly");
-    const [dateRange, setDateRange] = useState<[Dayjs, Dayjs] | null>(null);
+    const [month, setMonth] = useState<number | undefined>(undefined);
+    const [year, setYear] = useState<number>(dayjs().year());
 
-    // Nếu user chọn date range, sẽ dùng start/end đó; nếu không dùng granularity
-    const startDate = dateRange ? dateRange[0].format("YYYY-MM-DD") : undefined;
-    const endDate = dateRange ? dateRange[1].format("YYYY-MM-DD") : undefined;
-
-    // Custom hook gọi API
     const { data, isLoading, refetch } = useOverviewPostsAndAppointments({
-        granularity,
-        startDate,
-        endDate,
+        month,
+        year,
     });
 
-    // Tự động refetch khi granularity hoặc dateRange thay đổi
     useEffect(() => {
-        refetch();
-    }, [granularity, startDate, endDate, refetch]);
-
-    const handleRangeChange = (dates: null | [Dayjs | null, Dayjs | null]) => {
-        if (dates && dates[0] && dates[1]) {
-            setDateRange([dates[0], dates[1]]);
-        } else {
-            setDateRange(null); // Xóa dateRange → dùng lại granularity
+        if (month && !year) {
+            const currentYear = dayjs().year();
+            setYear(currentYear);
+            return;
         }
-    };
+
+        refetch();
+    }, [month, year, refetch]);
 
     return (
         <div className={`w-full ${className}`}>
             {/* Controls */}
             <Row gutter={16} className="mb-4">
                 <Col>
-                    <Select
-                        value={granularity}
-                        onChange={(value) => setGranularity(value)}
-                        style={{ width: 120 }}
-                        disabled={!!dateRange} // Nếu user chọn dateRange → disable granularity
-                    >
-                        <Option value="daily">Ngày</Option>
-                        <Option value="weekly">Tuần</Option>
-                        <Option value="monthly">Tháng</Option>
-                    </Select>
+                    <YearSelect year={year} setYear={setYear} />
                 </Col>
                 <Col>
-                    <RangePicker
-                        value={dateRange}
-                        onChange={handleRangeChange}
-                        format="YYYY-MM-DD"
-                        allowEmpty={[true, true]}
-                    />
+                    <Select
+                        placeholder="Chọn tháng (tuỳ chọn)"
+                        style={{ width: 150 }}
+                        value={month}
+                        onChange={(value) => setMonth(value)}
+                        allowClear
+                    >
+                        {Array.from({ length: 12 }).map((_, i) => (
+                            <Option key={i + 1} value={i + 1}>
+                                Tháng {i + 1}
+                            </Option>
+                        ))}
+                    </Select>
                 </Col>
             </Row>
 
@@ -90,25 +77,32 @@ const PostsAndAppointmentsChart = ({ className }: Props) => {
                     </h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <LineChart
-                            data={data}
+                            data={data?.data}
                             margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
                         >
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="period" />
+                            <XAxis
+                                dataKey="period"
+                                tickFormatter={(value) => {
+                                    return data?.granularity === "month"
+                                        ? `${dayjs(value).month()}`
+                                        : `${dayjs(value).date()}`;
+                                }}
+                            />
                             <YAxis />
                             <Tooltip />
                             <Legend />
                             <Line
                                 type="monotone"
                                 dataKey="posts"
-                                stroke="#8884d8"
-                                name="Posts"
+                                stroke="#0088FE"
+                                name="Bài đăng"
                             />
                             <Line
                                 type="monotone"
                                 dataKey="appointments"
-                                stroke="#82ca9d"
-                                name="Appointments"
+                                stroke="#a83232"
+                                name="Lịch hẹn"
                             />
                         </LineChart>
                     </ResponsiveContainer>
@@ -119,19 +113,30 @@ const PostsAndAppointmentsChart = ({ className }: Props) => {
                     </h3>
                     <ResponsiveContainer width="100%" height={300}>
                         <BarChart
-                            data={data}
+                            data={data?.data}
                             margin={{ top: 20, right: 30, left: 0, bottom: 5 }}
                         >
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="period" />
+                            <XAxis
+                                dataKey="period"
+                                tickFormatter={(value) => {
+                                    return data?.granularity === "month"
+                                        ? `${dayjs(value).month()}`
+                                        : `${dayjs(value).date()}`;
+                                }}
+                            />
                             <YAxis />
                             <Tooltip />
                             <Legend />
-                            <Bar dataKey="posts" fill="#8884d8" name="Posts" />
+                            <Bar
+                                dataKey="posts"
+                                fill="#0088FE"
+                                name="Bài đăng"
+                            />
                             <Bar
                                 dataKey="appointments"
-                                fill="#82ca9d"
-                                name="Appointments"
+                                fill="#a83232"
+                                name="Lịch hẹn"
                             />
                         </BarChart>
                     </ResponsiveContainer>

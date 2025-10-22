@@ -67,7 +67,7 @@ const PostsManagement = ({ role = "user" }: Props) => {
         page: searchParams.get("page") ? Number(searchParams.get("page")) : 1,
         limit: searchParams.get("limit")
             ? Number(searchParams.get("limit"))
-            : 2,
+            : 5,
         category: searchParams.get("category") || undefined,
         province: searchParams.get("province") || undefined,
         district: searchParams.get("district") || undefined,

@@ -709,10 +709,15 @@ const AccommodationPostForm = ({ defaultLocation }: Props) => {
     }, [province, district, ward, street]);
 
     return (
-        <form onSubmit={handleSubmit(handleOnSubmit)}>
+        <form onSubmit={handleSubmit(handleOnSubmit)} className="mb-10 px-10">
             {/* Address */}
             <div className="mb-8 w-full">
-                <h1 className="mb-4 text-[1.2rem] font-bold">Địa chỉ</h1>
+                <div>
+                    <h1 className="mb-8 text-[1.4rem] font-bold">
+                        Tạo bài viết
+                    </h1>
+                </div>
+                <h1 className="mb-4 text-[1.1rem] font-bold">Địa chỉ</h1>
                 <div className="mb-4 flex w-full flex-wrap justify-between gap-4">
                     <Controller
                         name="province"
@@ -768,22 +773,26 @@ const AccommodationPostForm = ({ defaultLocation }: Props) => {
                         </p>
                     )}
                 </div>
-                <Controller
-                    name="street"
-                    control={control}
-                    render={({ field }) => (
-                        <Input
-                            {...field}
-                            placeholder="Tên đường, số nhà..."
-                            className="w-full text-[0.9rem]"
-                        />
-                    )}
-                />
-                <Input
-                    value={address}
-                    disabled
-                    className="mt-2 w-full text-[0.9rem]"
-                />
+                <div>
+                    <h1 className="mb-1 text-[1rem]">Tên đường, số nhà,...</h1>
+                    <Controller
+                        name="street"
+                        control={control}
+                        render={({ field }) => (
+                            <Input
+                                {...field}
+                                placeholder="Tên đường, số nhà..."
+                                className="w-full text-[0.9rem]"
+                            />
+                        )}
+                    />
+                    <h1 className="mb-1 mt-4 text-[1rem]">Địa chỉ cụ thể</h1>
+                    <Input
+                        value={address}
+                        disabled
+                        className="w-full text-[0.9rem]"
+                    />
+                </div>
                 <div className="mt-4 h-[300px] w-full">
                     <Map address={address} onChange={setLocation} />
                 </div>
@@ -818,8 +827,8 @@ const AccommodationPostForm = ({ defaultLocation }: Props) => {
                 </h1>
                 {/* Name */}
                 <div className="mb-4">
-                    <label htmlFor="title" className="mb-1 text-[0.9rem]">
-                        Tên
+                    <label htmlFor="title" className="mb-1 text-[1rem]">
+                        Tiêu Đề
                     </label>
                     <Controller
                         name="title"
@@ -842,7 +851,7 @@ const AccommodationPostForm = ({ defaultLocation }: Props) => {
                 </div>
                 {/* Square */}
                 <div className="mb-4">
-                    <label htmlFor="square" className="mb-1 text-[0.9rem]">
+                    <label htmlFor="square" className="mb-1 text-[1rem]">
                         Diện tích
                     </label>
                     <Controller
@@ -877,8 +886,8 @@ const AccommodationPostForm = ({ defaultLocation }: Props) => {
                 </div>
                 {/* Price */}
                 <div className="mb-4">
-                    <label htmlFor="price" className="mb-1 text-[0.9rem]">
-                        Diện tích
+                    <label htmlFor="price" className="mb-1 text-[1rem]">
+                        Giá
                     </label>
                     <Controller
                         name="price"
@@ -905,7 +914,7 @@ const AccommodationPostForm = ({ defaultLocation }: Props) => {
                     )}
                 </div>
                 <div className="mb-4">
-                    <label htmlFor="descriptions" className="text-[0.9rem]">
+                    <label htmlFor="descriptions" className="text-[1rem]">
                         Nội dung mô tả
                     </label>
                     <Controller

@@ -146,7 +146,7 @@ const AppointmentManagement = () => {
                         allowClear
                         style={{ width: 300 }}
                     />
-                    <span>Status:</span>
+                    <span>Trạng thái:</span>
                     <Select
                         style={{ width: 200 }}
                         placeholder="Chọn trạng thái"
@@ -154,12 +154,12 @@ const AppointmentManagement = () => {
                         value={statusFilter}
                         onChange={setStatusFilter}
                     >
-                        <Option value="pending">Pending</Option>
-                        <Option value="confirmed">Confirmed</Option>
-                        <Option value="rejected">Rejected</Option>
-                        <Option value="cancelled">Cancelled</Option>
+                        <Option value="pending">Đang chờ duyệt</Option>
+                        <Option value="confirmed">Đã xác nhận</Option>
+                        <Option value="rejected">Đã từ chối</Option>
+                        <Option value="cancelled">Đã hủy</Option>
                     </Select>
-                    <span>Sort:</span>
+                    <span>Sắp xếp:</span>
                     <Select
                         style={{ width: 250 }}
                         value={`${sortBy}_${sortOrder}`}

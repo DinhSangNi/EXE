@@ -46,18 +46,18 @@ const NotificationManagement = () => {
             render: (text) => <p className="line-clamp-1">{text}</p>,
         },
         {
-            title: "Title",
+            title: "Tiêu đề",
             dataIndex: "title",
             key: "title",
         },
         {
-            title: "Message",
+            title: "Lời nhắn",
             dataIndex: "message",
             key: "message",
             render: (text) => <p className="line-clamp-2">{text}</p>,
         },
         {
-            title: "Created At",
+            title: "Ngày tạo",
             dataIndex: "createdAt",
             key: "createdAt",
             render: (text) => formatPostDate(text),
@@ -65,7 +65,6 @@ const NotificationManagement = () => {
     ];
 
     const resolvedData: DataType[] = useMemo(() => {
-        // console.log("data: ", data);
         return (
             data?.data.map((n) => ({
                 id: n.id,
@@ -79,7 +78,6 @@ const NotificationManagement = () => {
         );
     }, [data]);
 
-    // Refetch khi sort thay đổi
     useEffect(() => {
         setPagination((prev) => ({ ...prev, current: 1 }));
         refetch();
@@ -93,7 +91,6 @@ const NotificationManagement = () => {
 
                 {/* Sort */}
                 <div className="mb-4 flex items-center gap-4">
-                    <span>Sort:</span>
                     <Select
                         style={{ width: 250 }}
                         value={sortKey}

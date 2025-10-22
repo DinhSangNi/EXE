@@ -8,10 +8,13 @@ const useOverviewPostsAndAppointments = (filter: Filter) => {
             const res =
                 await AdminServices.overviewPostsAndAppointments(filter);
             return res.data as {
-                period: string;
-                posts: number;
-                appointments: number;
-            }[];
+                data: {
+                    period: string;
+                    posts: number;
+                    appointments: number;
+                }[];
+                granularity: "day" | "month";
+            };
         },
         staleTime: 60 * 1000,
     });
