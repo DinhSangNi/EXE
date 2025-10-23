@@ -124,7 +124,7 @@ const LeanHeader = () => {
 
                 {/* Center */}
                 <div className="flex w-3/5 justify-center text-sm md:text-base">
-                    <Searchbar isTop={true} />
+                    <Searchbar />
                 </div>
 
                 {/* Right */}
