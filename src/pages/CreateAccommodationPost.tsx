@@ -718,60 +718,66 @@ const AccommodationPostForm = ({ defaultLocation }: Props) => {
                     </h1>
                 </div>
                 <h1 className="mb-4 text-[1.1rem] font-bold">Địa chỉ</h1>
-                <div className="mb-4 flex w-full flex-wrap justify-between gap-4">
-                    <Controller
-                        name="province"
-                        control={control}
-                        render={({ field }) => (
-                            <AddressSelector
-                                value={field.value || null}
-                                onChange={field.onChange}
-                                type="province"
-                                className="w-1/4 text-[0.9rem]"
-                            />
+                <div className="mb-4 flex w-full justify-between gap-8">
+                    <div>
+                        <Controller
+                            name="province"
+                            control={control}
+                            render={({ field }) => (
+                                <AddressSelector
+                                    value={field.value || null}
+                                    onChange={field.onChange}
+                                    type="province"
+                                    className="w-1/4 text-[0.9rem]"
+                                />
+                            )}
+                        />
+                        {errors.province && (
+                            <p className="text-[0.8rem] text-red-500">
+                                Vui lòng chọn tỉnh/thành phố
+                            </p>
                         )}
-                    />
-                    {errors.province && (
-                        <p className="text-[0.8rem] text-red-500">
-                            Vui lòng chọn tỉnh/thành phố
-                        </p>
-                    )}
-                    <Controller
-                        name="district"
-                        control={control}
-                        render={({ field }) => (
-                            <AddressSelector
-                                value={field.value}
-                                provinceCode={province?.split("|")?.[0]}
-                                onChange={field.onChange}
-                                type="district"
-                                className="w-1/4 text-[0.9rem]"
-                            />
+                    </div>
+                    <div>
+                        <Controller
+                            name="district"
+                            control={control}
+                            render={({ field }) => (
+                                <AddressSelector
+                                    value={field.value}
+                                    provinceCode={province?.split("|")?.[0]}
+                                    onChange={field.onChange}
+                                    type="district"
+                                    className="w-1/4 text-[0.9rem]"
+                                />
+                            )}
+                        />
+                        {errors.district && (
+                            <p className="text-[0.8rem] text-red-500">
+                                Vui lòng chọn quận/huyện
+                            </p>
                         )}
-                    />
-                    {errors.district && (
-                        <p className="text-[0.8rem] text-red-500">
-                            Vui lòng chọn quận/huyện
-                        </p>
-                    )}
-                    <Controller
-                        name="ward"
-                        control={control}
-                        render={({ field }) => (
-                            <AddressSelector
-                                value={field.value}
-                                districtCode={district?.split("|")?.[0]}
-                                onChange={field.onChange}
-                                type="ward"
-                                className="w-1/4 text-[0.9rem]"
-                            />
+                    </div>
+                    <div>
+                        <Controller
+                            name="ward"
+                            control={control}
+                            render={({ field }) => (
+                                <AddressSelector
+                                    value={field.value}
+                                    districtCode={district?.split("|")?.[0]}
+                                    onChange={field.onChange}
+                                    type="ward"
+                                    className="w-1/4 text-[0.9rem]"
+                                />
+                            )}
+                        />
+                        {errors.ward && (
+                            <p className="text-[0.8rem] text-red-500">
+                                Vui lòng chọn phường/xã
+                            </p>
                         )}
-                    />
-                    {errors.ward && (
-                        <p className="text-[0.8rem] text-red-500">
-                            Vui lòng chọn phường/xã
-                        </p>
-                    )}
+                    </div>
                 </div>
                 <div>
                     <h1 className="mb-1 text-[1rem]">Tên đường, số nhà,...</h1>

@@ -40,7 +40,7 @@ const rentalCategory = [
 const Footer = () => {
     return (
         <>
-            <div className="h-[450px] w-full bg-gray-100">
+            <div className="h-[450px] w-full bg-[#fbf6f0]">
                 <div className="mx-auto w-[90%] py-14">
                     <div className="sm:grid sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
                         {rentalCategory.map((rentalCate) => {

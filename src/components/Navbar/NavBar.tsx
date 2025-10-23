@@ -119,11 +119,19 @@ const NavBar = ({ isTop }: Props) => {
                     <Dropdown menu={{ items }} trigger={["click"]}>
                         <button className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200 hover:bg-gray-300">
                             {user.id ? (
-                                <img
-                                    src={user.avatar ?? ""}
-                                    alt="user_avatar"
-                                    className="h-full w-full object-cover"
-                                />
+                                user.avatar ? (
+                                    <img
+                                        src={user.avatar ?? ""}
+                                        alt="user_avatar"
+                                        className="h-full w-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="flex h-full w-full items-center justify-center rounded-full bg-blue-600 font-bold text-white">
+                                        {user.name
+                                            ? user.name.charAt(0).toUpperCase()
+                                            : "U"}
+                                    </div>
+                                )
                             ) : (
                                 <FaBars className="h-3 w-3" />
                             )}

@@ -17,6 +17,7 @@ import AppointmentManagement from "@/pages/AppointmentManagement";
 import AppointmentDetail from "@/pages/AppointmentDetail";
 import NotificationManagement from "@/pages/NotificationManagement";
 import AdminOverview from "@/pages/AdminOverview";
+import UserManagement from "@/pages/UserManagement";
 
 export const routes = [
     // Public routes
@@ -127,6 +128,10 @@ export const routes = [
                             {
                                 path: "overview",
                                 element: <AdminOverview />,
+                            },
+                            {
+                                path: "users",
+                                element: <UserManagement />,
                             },
                             {
                                 path: "appointment",

@@ -71,6 +71,14 @@ const AddressSelector = ({
                             label: w.name,
                         })
                     );
+
+                    data = [
+                        {
+                            value: "12|Phường Trần Hưng Đạo",
+                            label: "Phường Trần Hưng Đạo",
+                        },
+                        ...data,
+                    ];
                 }
             }
 

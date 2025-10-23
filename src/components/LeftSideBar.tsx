@@ -83,26 +83,26 @@ const LeftSideBar = ({ className }: Props) => {
                     label: "Tổng quan",
                     icon: <AiFillDashboard />,
                 },
-                {
-                    key: "account",
-                    label: <p>Tài khoản của tôi</p>,
-                    icon: <FaUser />,
-                    children: [
-                        {
-                            key: "account/profile",
-                            label: <p>Hồ sơ</p>,
-                        },
-                        {
-                            key: "account/change-password",
-                            label: <p>Đổi mật khẩu</p>,
-                        },
-                    ],
-                },
                 // {
-                //     key: "users",
-                //     label: "Quản lí người dùng",
-                //     icon: <FaHome />,
+                //     key: "account",
+                //     label: <p>Tài khoản của tôi</p>,
+                //     icon: <FaUser />,
+                //     children: [
+                //         {
+                //             key: "account/profile",
+                //             label: <p>Hồ sơ</p>,
+                //         },
+                //         {
+                //             key: "account/change-password",
+                //             label: <p>Đổi mật khẩu</p>,
+                //         },
+                //     ],
                 // },
+                {
+                    key: "users",
+                    label: "Quản lí người dùng",
+                    icon: <FaHome />,
+                },
                 {
                     key: "posts",
                     label: "Quản lí bài đăng",

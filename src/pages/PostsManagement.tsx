@@ -37,6 +37,14 @@ const PostsManagement = ({ role = "user" }: Props) => {
         "pending" | "approved" | "rejected" | "expired" | undefined
     >(searchParams.get("status") as any);
 
+    const [summaryData, setSummaryData] = useState({
+        totalAllItems: 0,
+        totalApprovedItems: 0,
+        totalPendingItems: 0,
+        totalRejectedItems: 0,
+        totalExpiredItems: 0,
+    });
+
     // Debounce update searchParams khi gõ
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -99,12 +107,36 @@ const PostsManagement = ({ role = "user" }: Props) => {
 
     const { data, isLoading, isSuccess } = usePosts(appliedFilterData, role);
 
+    useEffect(() => {
+        if (!data) return;
+
+        // So sánh data hiện tại với summaryData
+        const isDifferent =
+            summaryData.totalAllItems !== data.totalAllItems ||
+            summaryData.totalApprovedItems !== data.totalApprovedItems ||
+            summaryData.totalPendingItems !== data.totalPendingItems ||
+            summaryData.totalRejectedItems !== data.totalRejectedItems ||
+            summaryData.totalExpiredItems !== data.totalExpiredItems;
+
+        if (isDifferent) {
+            setSummaryData({
+                totalAllItems: data.totalAllItems ?? 0,
+                totalApprovedItems: data.totalApprovedItems ?? 0,
+                totalPendingItems: data.totalPendingItems ?? 0,
+                totalRejectedItems: data.totalRejectedItems ?? 0,
+                totalExpiredItems: data.totalExpiredItems ?? 0,
+            });
+        }
+    }, [data]);
+
     const handlePaginationChange = (page: number, pageSize: number) => {
         setSearchParams((prev) => ({
             ...Object.fromEntries(prev),
             page: page.toString(),
             limit: pageSize.toString(),
         }));
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     const applyFilter = (newFilter: Partial<PostFilter>) => {
@@ -130,7 +162,7 @@ const PostsManagement = ({ role = "user" }: Props) => {
     };
 
     return (
-        <div className="w-full bg-gray-100">
+        <div className="w-full bg-gray-100 pb-10">
             <div className="mx-auto min-h-screen w-4/5 pt-4">
                 <h1 className="text-[1.4rem] font-bold">Quản lí bài đăng</h1>
                 <Divider />
@@ -146,7 +178,7 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 <div>
                                     <h1>Tổng tin đăng</h1>
                                     <p className="text-[1.3rem] font-bold">
-                                        {data?.totalAllItems ?? 0}
+                                        {summaryData.totalAllItems ?? 0}
                                     </p>
                                 </div>
                                 <FaHome className="text-[2rem] text-primary" />
@@ -158,7 +190,7 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 <div>
                                     <h1>Đang hoạt động</h1>
                                     <p className="text-[1.3rem] font-bold">
-                                        {data?.totalApprovedItems ?? 0}
+                                        {summaryData.totalApprovedItems ?? 0}
                                     </p>
                                 </div>
                                 <IoMdTrendingUp className="text-[2rem] text-green-400" />
@@ -170,7 +202,7 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 <div>
                                     <h1>Đang chờ duyệt</h1>
                                     <p className="text-[1.3rem] font-bold">
-                                        {data?.totalPendingItems ?? 0}
+                                        {summaryData.totalPendingItems ?? 0}
                                     </p>
                                 </div>
                                 <MdPending className="text-[2rem] text-yellow-400" />
@@ -182,7 +214,7 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 <div>
                                     <h1>Đã từ chối</h1>
                                     <p className="text-[1.3rem] font-bold">
-                                        {data?.totalRejectedItems ?? 0}
+                                        {summaryData.totalRejectedItems ?? 0}
                                     </p>
                                 </div>
                                 <FaTimes className="text-[2rem] text-red-500" />
@@ -194,7 +226,7 @@ const PostsManagement = ({ role = "user" }: Props) => {
                                 <div>
                                     <h1>Đã hết hạn</h1>
                                     <p className="text-[1.3rem] font-bold">
-                                        {data?.totalExpiredItems ?? 0}
+                                        {summaryData.totalExpiredItems ?? 0}
                                     </p>
                                 </div>
                                 <MdOutlineTimerOff className="text-[2rem] text-gray-500" />

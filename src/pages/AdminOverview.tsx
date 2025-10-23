@@ -13,7 +13,7 @@ const AdminOverview = () => {
     const { data: overviewCount, isLoading } = useOverviewCount();
 
     return (
-        <div className="w-full bg-gray-100">
+        <div className="w-full bg-gray-100 pb-10">
             <div className="mx-auto min-h-screen w-full px-10 pt-4">
                 <h1 className="text-[1.4rem] font-bold">Tổng quan</h1>
                 <Divider />

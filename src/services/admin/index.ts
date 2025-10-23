@@ -7,6 +7,13 @@ export type Filter =
       }
     | undefined;
 
+export type UserQuery = {
+    q?: string;
+    role?: "user" | "admin";
+    page?: number;
+    limit?: number;
+};
+
 export const AdminServices = {
     overviewCount: async () => {
         return await api.get(`/admin/overview/counts`);
@@ -19,5 +26,10 @@ export const AdminServices = {
     },
     overviewPostsByCategory: async () => {
         return await api.get(`/admin/overview/posts-by-category`);
+    },
+    getUsersList: async (query: UserQuery) => {
+        return await api.get(`/admin/users/list`, {
+            params: query,
+        });
     },
 };

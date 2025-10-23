@@ -90,7 +90,7 @@ const PostManagementCard = ({ className, data }: Props) => {
                   {
                       label: (
                           <div
-                              className="flex items-center gap-3 text-red-500"
+                              className="flex items-center gap-3 text-orange-500"
                               onClick={() => handleChangeStatus("rejected")}
                           >
                               <FaTimes className="text-[1rem]" />
