@@ -2,13 +2,19 @@
 import { useState, useMemo, useEffect } from "react";
 import useNotifications from "@/hooks/notification/useNotifications";
 import { formatPostDate } from "@/utils/format";
-import { Divider, Table, Select, ConfigProvider } from "antd";
+import { Table, Select, Card, Space, Tag, Typography, Badge } from "antd";
 import type { TableProps } from "antd/lib";
 import { useNavigate } from "react-router-dom";
 import type { Appointment } from "@/stores/type";
 import useMarkNotificationRead from "@/hooks/notification/useMarkNotificationRead";
+import {
+    BellOutlined,
+    ClockCircleOutlined,
+    CheckCircleOutlined,
+} from "@ant-design/icons";
 
 const { Option } = Select;
+const { Text } = Typography;
 
 interface DataType {
     id: string;
@@ -43,24 +49,63 @@ const NotificationManagement = () => {
             title: "ID",
             dataIndex: "id",
             key: "id",
-            render: (text) => <p className="line-clamp-1">{text}</p>,
+            width: 120,
+            render: (id: string) => (
+                <Text copyable={{ text: id }} className="text-xs">
+                    {id.slice(0, 8)}...
+                </Text>
+            ),
         },
         {
             title: "Tiêu đề",
             dataIndex: "title",
             key: "title",
+            render: (text: string, record: DataType) => (
+                <div className="flex items-center gap-2">
+                    {!record.isRead && (
+                        <Badge status="processing" className="animate-pulse" />
+                    )}
+                    <span className={record.isRead ? "" : "font-semibold"}>
+                        {text}
+                    </span>
+                </div>
+            ),
         },
         {
             title: "Lời nhắn",
             dataIndex: "message",
             key: "message",
-            render: (text) => <p className="line-clamp-2">{text}</p>,
+            ellipsis: true,
+            render: (text: string) => (
+                <span className="text-gray-600">{text}</span>
+            ),
         },
         {
             title: "Ngày tạo",
             dataIndex: "createdAt",
             key: "createdAt",
-            render: (text) => formatPostDate(text),
+            width: 180,
+            render: (text: string) => (
+                <Space>
+                    <ClockCircleOutlined className="text-gray-400" />
+                    <span>{formatPostDate(text)}</span>
+                </Space>
+            ),
+        },
+        {
+            title: "Trạng thái",
+            dataIndex: "isRead",
+            key: "isRead",
+            width: 130,
+            align: "center",
+            render: (isRead: boolean) => (
+                <Tag
+                    icon={isRead ? <CheckCircleOutlined /> : <BellOutlined />}
+                    color={isRead ? "default" : "blue"}
+                >
+                    {isRead ? "Đã đọc" : "Chưa đọc"}
+                </Tag>
+            ),
         },
     ];
 
@@ -84,48 +129,50 @@ const NotificationManagement = () => {
     }, [sortKey, refetch]);
 
     return (
-        <div className="w-full bg-gray-100">
-            <div className="mx-auto min-h-screen w-4/5 pt-4">
-                <h1 className="text-[1.4rem] font-bold">Thông báo</h1>
-                <Divider />
-
-                {/* Sort */}
-                <div className="mb-4 flex items-center gap-4">
-                    <Select
-                        style={{ width: 250 }}
-                        value={sortKey}
-                        onChange={(value) => {
-                            const [_, order] = (value as string).split("_");
-                            setSortOrder(order as "asc" | "desc");
-                            setSortKey(value as string);
-                        }}
-                    >
-                        <Option value="createdAt_desc">
-                            Mới nhất → Cũ nhất
-                        </Option>
-                        <Option value="createdAt_asc">
-                            Cũ nhất → Mới nhất
-                        </Option>
-                    </Select>
+        <div className="w-full bg-gray-50 pb-10">
+            <div className="mx-auto min-h-screen w-full px-10 pt-6">
+                {/* Header */}
+                <div className="mb-6">
+                    <h1 className="text-[1.8rem] font-bold text-gray-800">
+                        Quản lý thông báo
+                    </h1>
+                    <p className="text-gray-500">
+                        Theo dõi và quản lý các thông báo trong hệ thống
+                    </p>
                 </div>
 
-                <ConfigProvider
-                    theme={{
-                        components: {
-                            Table: {
-                                rowHoverBg: "",
-                                headerBg: "",
-                            },
-                        },
-                    }}
-                >
+                {/* Filters Card */}
+                <Card className="mb-6 shadow-md">
+                    <Space size="middle" wrap className="w-full">
+                        <Select
+                            placeholder="Sắp xếp"
+                            value={sortKey}
+                            onChange={(value) => {
+                                const [_, order] = (value as string).split("_");
+                                setSortOrder(order as "asc" | "desc");
+                                setSortKey(value as string);
+                            }}
+                            style={{ width: 250 }}
+                            size="large"
+                        >
+                            <Option value="createdAt_desc">
+                                Mới nhất → Cũ nhất
+                            </Option>
+                            <Option value="createdAt_asc">
+                                Cũ nhất → Mới nhất
+                            </Option>
+                        </Select>
+                    </Space>
+                </Card>
+
+                {/* Table Card */}
+                <Card className="shadow-md">
                     <Table
                         className="w-full"
                         columns={columns}
                         dataSource={resolvedData}
                         rowKey="id"
                         loading={isLoading}
-                        rowHoverable
                         onRow={(record) => {
                             return {
                                 onClick: () => {
@@ -139,13 +186,19 @@ const NotificationManagement = () => {
                                         `/user/appointment/${record.appointment.id}`
                                     );
                                 },
-                                className: `${record.isRead ? "bg-white" : "bg-gray-100"} cursor-pointer transition-colors duration-200 hover:bg-primary/30`,
+                                className: `${
+                                    record.isRead ? "" : "bg-blue-50"
+                                } cursor-pointer transition-colors duration-200 hover:bg-blue-100`,
                             };
                         }}
                         pagination={{
                             current: pagination.current,
                             pageSize: pagination.pageSize,
                             total: data?.totalItems || 0,
+                            showSizeChanger: true,
+                            showTotal: (total, range) =>
+                                `${range[0]}-${range[1]} của ${total} thông báo`,
+                            pageSizeOptions: ["5", "10", "20", "50"],
                             onChange: (page, pageSize) =>
                                 setPagination((prev) => ({
                                     ...prev,
@@ -154,7 +207,7 @@ const NotificationManagement = () => {
                                 })),
                         }}
                     />
-                </ConfigProvider>
+                </Card>
             </div>
         </div>
     );

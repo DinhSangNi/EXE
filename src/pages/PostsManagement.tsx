@@ -2,10 +2,26 @@
 import PostManagementCard from "@/components/PostManagementCard";
 import Spinner from "@/components/Spinner";
 import type { Post, PostFilter } from "@/stores/type";
-import { Divider, Pagination, Input, Select } from "antd";
-import { FaFilter, FaHome, FaTimes, FaSearch } from "react-icons/fa";
-import { IoMdTrendingUp } from "react-icons/io";
-import { MdPending, MdOutlineTimerOff } from "react-icons/md";
+import {
+    Pagination,
+    Input,
+    Select,
+    Card,
+    Row,
+    Col,
+    Statistic,
+    Space,
+    Empty,
+} from "antd";
+import { FaFilter } from "react-icons/fa";
+import {
+    SearchOutlined,
+    HomeOutlined,
+    CheckCircleOutlined,
+    ClockCircleOutlined,
+    CloseCircleOutlined,
+    StopOutlined,
+} from "@ant-design/icons";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import usePosts from "@/hooks/posts/usePosts";
@@ -161,119 +177,195 @@ const PostsManagement = ({ role = "user" }: Props) => {
         setStatusFilter(status);
     };
 
-    return (
-        <div className="w-full bg-gray-100 pb-10">
-            <div className="mx-auto min-h-screen w-4/5 pt-4">
-                <h1 className="text-[1.4rem] font-bold">Quản lí bài đăng</h1>
-                <Divider />
+    const statsConfig = [
+        {
+            key: "totalAllItems",
+            title: "Tổng tin đăng",
+            icon: <HomeOutlined style={{ fontSize: 24, color: "#1890ff" }} />,
+            color: "#1890ff",
+            bgColor: "#e6f7ff",
+            status: undefined,
+        },
+        {
+            key: "totalApprovedItems",
+            title: "Đang hoạt động",
+            icon: (
+                <CheckCircleOutlined
+                    style={{ fontSize: 24, color: "#52c41a" }}
+                />
+            ),
+            color: "#52c41a",
+            bgColor: "#f6ffed",
+            status: "approved" as const,
+        },
+        {
+            key: "totalPendingItems",
+            title: "Đang chờ duyệt",
+            icon: (
+                <ClockCircleOutlined
+                    style={{ fontSize: 24, color: "#faad14" }}
+                />
+            ),
+            color: "#faad14",
+            bgColor: "#fffbe6",
+            status: "pending" as const,
+        },
+        {
+            key: "totalRejectedItems",
+            title: "Đã từ chối",
+            icon: (
+                <CloseCircleOutlined
+                    style={{ fontSize: 24, color: "#ff4d4f" }}
+                />
+            ),
+            color: "#ff4d4f",
+            bgColor: "#fff2f0",
+            status: "rejected" as const,
+        },
+        {
+            key: "totalExpiredItems",
+            title: "Đã hết hạn",
+            icon: <StopOutlined style={{ fontSize: 24, color: "#8c8c8c" }} />,
+            color: "#8c8c8c",
+            bgColor: "#f5f5f5",
+            status: "expired" as const,
+        },
+    ];
 
-                {/* Summary cards */}
+    return (
+        <div className="w-full bg-gray-50 pb-10">
+            <div className="mx-auto min-h-screen w-full px-10 pt-6">
+                {/* Header */}
+                <div className="mb-6">
+                    <h1 className="text-[1.8rem] font-bold text-gray-800">
+                        Quản lí bài đăng
+                    </h1>
+                    <p className="text-gray-500">
+                        Quản lý và theo dõi các bài đăng trong hệ thống
+                    </p>
+                </div>
+
+                {/* Stats Cards - Only for Admin */}
                 {storedUser.role === "admin" && (
-                    <div className="mb-4 w-full">
-                        <div className="grid grid-cols-5 gap-5">
-                            <div
-                                className="flex cursor-pointer items-center justify-between bg-white p-4 shadow-lg"
-                                onClick={() => filterWithStatus(undefined)}
+                    <Row gutter={[16, 16]} className="mb-6">
+                        {statsConfig.map((stat) => (
+                            <Col
+                                xs={24}
+                                sm={12}
+                                md={12}
+                                lg={12}
+                                xl={24 / 5}
+                                xxl={24 / 5}
+                                key={stat.key}
+                                style={{
+                                    minWidth: "19.2%",
+                                    flex: "0 0 auto",
+                                }}
                             >
-                                <div>
-                                    <h1>Tổng tin đăng</h1>
-                                    <p className="text-[1.3rem] font-bold">
-                                        {summaryData.totalAllItems ?? 0}
-                                    </p>
-                                </div>
-                                <FaHome className="text-[2rem] text-primary" />
-                            </div>
-                            <div
-                                className="flex cursor-pointer items-center justify-between bg-white p-4 shadow-lg"
-                                onClick={() => filterWithStatus("approved")}
-                            >
-                                <div>
-                                    <h1>Đang hoạt động</h1>
-                                    <p className="text-[1.3rem] font-bold">
-                                        {summaryData.totalApprovedItems ?? 0}
-                                    </p>
-                                </div>
-                                <IoMdTrendingUp className="text-[2rem] text-green-400" />
-                            </div>
-                            <div
-                                className="flex cursor-pointer items-center justify-between bg-white p-4 shadow-lg"
-                                onClick={() => filterWithStatus("pending")}
-                            >
-                                <div>
-                                    <h1>Đang chờ duyệt</h1>
-                                    <p className="text-[1.3rem] font-bold">
-                                        {summaryData.totalPendingItems ?? 0}
-                                    </p>
-                                </div>
-                                <MdPending className="text-[2rem] text-yellow-400" />
-                            </div>
-                            <div
-                                className="flex cursor-pointer items-center justify-between bg-white p-4 shadow-lg"
-                                onClick={() => filterWithStatus("rejected")}
-                            >
-                                <div>
-                                    <h1>Đã từ chối</h1>
-                                    <p className="text-[1.3rem] font-bold">
-                                        {summaryData.totalRejectedItems ?? 0}
-                                    </p>
-                                </div>
-                                <FaTimes className="text-[2rem] text-red-500" />
-                            </div>
-                            <div
-                                className="flex cursor-pointer items-center justify-between bg-white p-4 shadow-lg"
-                                onClick={() => filterWithStatus("expired")}
-                            >
-                                <div>
-                                    <h1>Đã hết hạn</h1>
-                                    <p className="text-[1.3rem] font-bold">
-                                        {summaryData.totalExpiredItems ?? 0}
-                                    </p>
-                                </div>
-                                <MdOutlineTimerOff className="text-[2rem] text-gray-500" />
-                            </div>
-                        </div>
-                    </div>
+                                <Card
+                                    hoverable
+                                    onClick={() =>
+                                        filterWithStatus(stat.status)
+                                    }
+                                    className="cursor-pointer shadow-md transition-all duration-300 hover:shadow-lg"
+                                    style={{
+                                        borderTop: `4px solid ${stat.color}`,
+                                    }}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex-1">
+                                            <div className="mb-2 text-sm text-gray-600">
+                                                {stat.title}
+                                            </div>
+                                            <div
+                                                className="text-2xl font-bold"
+                                                style={{ color: stat.color }}
+                                            >
+                                                {summaryData[
+                                                    stat.key as keyof typeof summaryData
+                                                ] || 0}
+                                            </div>
+                                        </div>
+                                        <div
+                                            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full"
+                                            style={{
+                                                backgroundColor: stat.bgColor,
+                                            }}
+                                        >
+                                            {stat.icon}
+                                        </div>
+                                    </div>
+                                </Card>
+                            </Col>
+                        ))}
+                    </Row>
                 )}
 
-                {/* Search + Status + Filter */}
-                <div className="mb-6 flex w-full items-end gap-4">
-                    <Input
-                        placeholder="Tìm kiếm theo tên bài đăng..."
-                        value={keyword}
-                        onChange={(e) => setKeyword(e.target.value)}
-                        prefix={<FaSearch className="text-gray-400" />}
-                        className="w-1/3"
-                        allowClear
-                    />
+                {/* Filters Card */}
+                <Card className="mb-6 shadow-md">
+                    <Space size="middle" wrap className="w-full">
+                        <Input
+                            placeholder="Tìm kiếm theo tên bài đăng..."
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                            prefix={
+                                <SearchOutlined className="text-gray-400" />
+                            }
+                            style={{ width: 300 }}
+                            size="large"
+                            allowClear
+                        />
 
-                    <Select
-                        placeholder="Trạng thái"
-                        value={statusFilter}
-                        onChange={(value) =>
-                            setStatusFilter(
-                                value as
-                                    | "pending"
-                                    | "approved"
-                                    | "rejected"
-                                    | "expired"
-                            )
-                        }
-                        allowClear
-                        className="w-1/4"
-                    >
-                        <Option value="pending">Đang chờ duyệt</Option>
-                        <Option value="approved">Đang hoạt động</Option>
-                        <Option value="rejected">Đã từ chối</Option>
-                        <Option value="expired">Đã hết hạn</Option>
-                    </Select>
+                        <Select
+                            placeholder="Trạng thái"
+                            value={statusFilter}
+                            onChange={(value) =>
+                                setStatusFilter(
+                                    value as
+                                        | "pending"
+                                        | "approved"
+                                        | "rejected"
+                                        | "expired"
+                                )
+                            }
+                            allowClear
+                            style={{ width: 200 }}
+                            size="large"
+                        >
+                            <Option value="pending">
+                                <Space>
+                                    <ClockCircleOutlined />
+                                    Đang chờ duyệt
+                                </Space>
+                            </Option>
+                            <Option value="approved">
+                                <Space>
+                                    <CheckCircleOutlined />
+                                    Đang hoạt động
+                                </Space>
+                            </Option>
+                            <Option value="rejected">
+                                <Space>
+                                    <CloseCircleOutlined />
+                                    Đã từ chối
+                                </Space>
+                            </Option>
+                            <Option value="expired">
+                                <Space>
+                                    <StopOutlined />
+                                    Đã hết hạn
+                                </Space>
+                            </Option>
+                        </Select>
 
-                    <button
-                        className="flex items-center gap-1 p-1 transition-colors duration-100 hover:bg-gray-300"
-                        onClick={() => setIsFilterModalOpen(true)}
-                    >
-                        <FaFilter />
-                        <p>Bộ lọc</p>
-                    </button>
+                        <button
+                            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-gray-700 transition-colors duration-200 hover:bg-gray-50"
+                            onClick={() => setIsFilterModalOpen(true)}
+                        >
+                            <FaFilter />
+                            <span>Bộ lọc nâng cao</span>
+                        </button>
+                    </Space>
 
                     <PostsFilterModal
                         open={isFilterModalOpen}
@@ -281,38 +373,49 @@ const PostsManagement = ({ role = "user" }: Props) => {
                         initialFilterData={appliedFilterData}
                         onApply={applyFilter}
                     />
-                </div>
+                </Card>
 
-                {/* List */}
-                <div className="flex h-full flex-col gap-y-4">
+                {/* Posts List Card */}
+                <Card className="shadow-md">
                     {isLoading ? (
-                        <div className="w-full text-center">
-                            <Spinner className="mt-16 h-[100px] w-[100px]" />
-                            <p>Đang tải dữ liệu...</p>
+                        <div className="flex min-h-[400px] flex-col items-center justify-center">
+                            <Spinner className="h-[100px] w-[100px]" />
+                            <p className="mt-4 text-gray-500">
+                                Đang tải dữ liệu...
+                            </p>
                         </div>
                     ) : isSuccess && data?.data.length > 0 ? (
-                        data?.data.map((post: Post) => (
-                            <div key={post.id}>
-                                <PostManagementCard data={post} />
-                            </div>
-                        ))
+                        <div className="flex flex-col gap-y-4">
+                            {data?.data.map((post: Post) => (
+                                <div key={post.id}>
+                                    <PostManagementCard data={post} />
+                                </div>
+                            ))}
+                        </div>
                     ) : (
-                        <div className="w-full text-center">
-                            <h1 className="text-[1.2rem]">
-                                Chưa có bài đăng nào
-                            </h1>
+                        <Empty
+                            description="Chưa có bài đăng nào"
+                            className="my-16"
+                        />
+                    )}
+
+                    {/* Pagination */}
+                    {isSuccess && data?.data.length > 0 && (
+                        <div className="mt-6 flex justify-center">
+                            <Pagination
+                                onChange={handlePaginationChange}
+                                current={appliedFilterData.page}
+                                pageSize={appliedFilterData.limit}
+                                total={data?.totalItems ?? 0}
+                                showSizeChanger
+                                showTotal={(total, range) =>
+                                    `${range[0]}-${range[1]} của ${total} bài đăng`
+                                }
+                                pageSizeOptions={["5", "10", "20", "50"]}
+                            />
                         </div>
                     )}
-                </div>
-
-                <Pagination
-                    onChange={handlePaginationChange}
-                    current={appliedFilterData.page}
-                    pageSize={appliedFilterData.limit}
-                    className="mt-4"
-                    align="end"
-                    total={data?.totalItems ?? 0}
-                />
+                </Card>
             </div>
         </div>
     );

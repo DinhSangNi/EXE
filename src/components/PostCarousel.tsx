@@ -6,6 +6,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import SwiperCore from "swiper";
 import { useNavigate } from "react-router-dom";
 import type { Post } from "@/stores/type";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 type Props = {
     title?: string;
@@ -30,23 +31,24 @@ const PostCarousel = ({ title, data = [], loading = false }: Props) => {
     return (
         <>
             <div className="w-full">
-                <div className="flex items-center justify-between">
-                    <h1 className="my-4 flex items-center gap-1 text-[1.2rem] font-bold">
-                        <p>{title}</p>
-                        <span>{">"}</span>
-                    </h1>
-                    <div className="flex gap-2 text-[1.2rem] font-bold">
+                <div className="mb-6 flex items-center justify-between">
+                    {title && (
+                        <h2 className="text-2xl font-bold text-gray-800">
+                            {title}
+                        </h2>
+                    )}
+                    <div className="flex gap-3">
                         <button
-                            className="h-8 w-8 rounded-full bg-gray-100 text-center hover:bg-gray-200"
+                            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-600 shadow-sm transition-all duration-300 hover:border-blue-500 hover:bg-blue-500 hover:text-white hover:shadow-md"
                             onClick={handlePrevious}
                         >
-                            <p>{"<"}</p>
+                            <LeftOutlined className="text-base" />
                         </button>
                         <button
-                            className="h-8 w-8 rounded-full bg-gray-100 text-center hover:bg-gray-200"
+                            className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 bg-white text-gray-600 shadow-sm transition-all duration-300 hover:border-blue-500 hover:bg-blue-500 hover:text-white hover:shadow-md"
                             onClick={handleNext}
                         >
-                            <p>{">"}</p>
+                            <RightOutlined className="text-base" />
                         </button>
                     </div>
                 </div>
@@ -87,9 +89,9 @@ const PostCarousel = ({ title, data = [], loading = false }: Props) => {
                     )}
                 </Swiper>
                 {data && data.length > 6 && (
-                    <div className="mt-4 w-full text-center">
+                    <div className="mt-8 w-full text-center">
                         <button
-                            className="rounded-md bg-gray-200 px-4 py-2 text-[0.9rem] font-semibold hover:bg-gray-300"
+                            className="rounded-lg bg-blue-500 px-8 py-3 text-base font-semibold text-white shadow-md transition-all duration-300 hover:bg-blue-600 hover:shadow-lg"
                             onClick={() => navigate("/posts")}
                         >
                             Xem thêm

@@ -82,11 +82,6 @@ const PostImageCarousel = ({
                             size="small"
                         />
                     )}
-
-                    {/* Slide indicator */}
-                    <div className="absolute bottom-2 right-2 rounded-full bg-black/50 px-2 py-1 text-xs text-white">
-                        {currentSlide + 1} / {images.length}
-                    </div>
                 </>
             )}
         </div>
