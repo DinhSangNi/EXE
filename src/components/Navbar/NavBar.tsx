@@ -19,9 +19,7 @@ const POST_TYPES = [
     { title: "service", icon: FaConciergeBell },
 ];
 
-type Props = { isTop: boolean };
-
-const NavBar = ({ isTop }: Props) => {
+const NavBar = () => {
     const user = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();

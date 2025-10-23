@@ -6,11 +6,7 @@ import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { FaArrowLeft } from "react-icons/fa";
 
-type Props = {
-    isTop: boolean;
-};
-
-const Searchbar = ({ isTop }: Props) => {
+const Searchbar = () => {
     //states
     const [searchParams] = useSearchParams();
     const [open, setOpen] = useState<boolean>(false);

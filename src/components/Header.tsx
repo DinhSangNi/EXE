@@ -19,12 +19,12 @@ const Header = () => {
 
                     {/* SearchBar - chiếm phần còn lại */}
                     <div className="flex-1">
-                        <Searchbar isTop={true} />
+                        <Searchbar />
                     </div>
 
                     {/* NavBar items (user menu, notification, etc.) */}
                     <div className="flex-shrink-0">
-                        <NavBar isTop={true} />
+                        <NavBar />
                     </div>
                 </div>
             </div>
