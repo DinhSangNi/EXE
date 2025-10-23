@@ -12,8 +12,8 @@ import {
     XAxis,
     YAxis,
 } from "recharts";
-import { Select, DatePicker, Row, Col, Spin, message } from "antd";
-import dayjs, { Dayjs } from "dayjs";
+import { Select, Row, Col, Spin } from "antd";
+import dayjs from "dayjs";
 import YearSelect from "./YearSelect";
 
 const { Option } = Select;
