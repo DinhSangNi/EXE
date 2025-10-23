@@ -1,20 +1,17 @@
 // NavBar.tsx
-import { IoHome } from "react-icons/io5";
 import { FaConciergeBell } from "react-icons/fa";
 import { FaBars } from "react-icons/fa6";
-import { useEffect, useRef, useState } from "react";
+import { IoHome } from "react-icons/io5";
+import { useEffect, useState } from "react";
 import { Dropdown, Modal, type MenuProps } from "antd";
-import { useAnimation, motion } from "framer-motion";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "@/stores/store";
 import { AuthServices } from "@/services/auth";
 import { logout } from "@/stores/userSlice";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { logo } from "@/assets/images";
 import NotificationBell from "../NotificationBell";
 import HostTypeCard from "./HostTypeCard";
-import NavOption from "./NavbarOption";
 import { getMenuItems } from "./MenuItems";
 
 const POST_TYPES = [
@@ -29,16 +26,10 @@ const NavBar = ({ isTop }: Props) => {
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
-    const [selectedOption, setSelectedOption] = useState<
-        "accomodation" | "service"
-    >("accomodation");
     const [openHostModal, setOpenHostModal] = useState(false);
     const [selectedHostOption, setSelectedHostOption] = useState<
         "accomodation" | "service" | null
     >(null);
-
-    const searchAnim = useAnimation();
-    const optionRef = useRef<HTMLDivElement>(null);
 
     const handleLogout = async () => {
         try {
@@ -62,13 +53,6 @@ const NavBar = ({ isTop }: Props) => {
     );
 
     useEffect(() => {
-        searchAnim.start({
-            y: isTop ? 0 : -64,
-            transition: { duration: 0.3 },
-        });
-    }, [isTop, searchAnim]);
-
-    useEffect(() => {
         if (user.role === "admin") {
             navigate("/admin/overview");
         }
@@ -76,68 +60,38 @@ const NavBar = ({ isTop }: Props) => {
 
     return (
         <div className="w-full">
-            <div className="relative mx-auto flex w-[95%] pb-6">
-                {/* Logo */}
-                <div className="w-1/5">
-                    <img
-                        src={logo ?? ""}
-                        alt="logo"
-                        className="h-auto w-10 cursor-pointer object-cover"
-                        onClick={() => navigate("/")}
-                    />
-                </div>
-
-                {/* CenterSide */}
-                <motion.div
-                    initial={{ opacity: 1 }}
-                    animate={searchAnim}
-                    ref={optionRef}
-                    className="flex h-fit w-3/5 justify-center gap-10 text-[0.8rem] md:text-[0.9rem]"
-                >
-                    {POST_TYPES.map((opt) => (
-                        <NavOption
-                            key={opt.title}
-                            icon={opt.icon}
-                            title={opt.title as "accomodation" | "service"}
-                            selected={selectedOption}
-                            onSelect={setSelectedOption}
-                        />
-                    ))}
-                </motion.div>
-
-                {/* RightSide */}
-                <div className="flex w-1/5 items-center justify-end gap-4">
-                    {user?.role === "user" && (
-                        <button
-                            className="hidden h-9 items-center rounded-full p-3 hover:bg-gray-300 lg:flex"
-                            onClick={() => setOpenHostModal(true)}
-                        >
-                            <p className="text-[0.9rem] font-bold">Đăng tin</p>
-                        </button>
-                    )}
-                    <NotificationBell />
-                    <Dropdown menu={{ items }} trigger={["click"]}>
-                        <button className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200 hover:bg-gray-300">
-                            {user.id ? (
-                                user.avatar ? (
-                                    <img
-                                        src={user.avatar ?? ""}
-                                        alt="user_avatar"
-                                        className="h-full w-full object-cover"
-                                    />
-                                ) : (
-                                    <div className="flex h-full w-full items-center justify-center rounded-full bg-blue-600 font-bold text-white">
-                                        {user.name
-                                            ? user.name.charAt(0).toUpperCase()
-                                            : "U"}
-                                    </div>
-                                )
+            <div className="flex items-center justify-end gap-4">
+                {/* RightSide - Only show user controls */}
+                {user?.role === "user" && (
+                    <button
+                        className="hidden h-9 items-center rounded-full p-3 hover:bg-gray-300 lg:flex"
+                        onClick={() => setOpenHostModal(true)}
+                    >
+                        <p className="text-[0.9rem] font-bold">Đăng tin</p>
+                    </button>
+                )}
+                <NotificationBell />
+                <Dropdown menu={{ items }} trigger={["click"]}>
+                    <button className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gray-200 hover:bg-gray-300">
+                        {user.id ? (
+                            user.avatar ? (
+                                <img
+                                    src={user.avatar ?? ""}
+                                    alt="user_avatar"
+                                    className="h-full w-full object-cover"
+                                />
                             ) : (
-                                <FaBars className="h-3 w-3" />
-                            )}
-                        </button>
-                    </Dropdown>
-                </div>
+                                <div className="flex h-full w-full items-center justify-center rounded-full bg-blue-600 font-bold text-white">
+                                    {user.name
+                                        ? user.name.charAt(0).toUpperCase()
+                                        : "U"}
+                                </div>
+                            )
+                        ) : (
+                            <FaBars className="h-3 w-3" />
+                        )}
+                    </button>
+                </Dropdown>
             </div>
 
             {/* Modal chọn loại đăng tin */}

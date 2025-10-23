@@ -1,9 +1,14 @@
 /* eslint-disable */
-import { FaHome, FaMapMarkerAlt } from "react-icons/fa";
 import type { Post } from "@/stores/type";
 import { formatPostDate, resolveAddress } from "@/utils/format";
-import { BsCalendarDateFill } from "react-icons/bs";
-import { IoIosPricetags } from "react-icons/io";
+import {
+    HomeOutlined,
+    EnvironmentOutlined,
+    DollarOutlined,
+    CalendarOutlined,
+    UserOutlined,
+} from "@ant-design/icons";
+import { Card, Avatar, Tag, Space } from "antd";
 import PostImageCarousel from "./PostImageCarousel";
 import { useNavigate } from "react-router-dom";
 
@@ -18,69 +23,101 @@ const PostCard = ({ className, data, loading }: Props) => {
 
     if (loading) {
         return (
-            <div className="relative animate-pulse cursor-pointer">
-                <div className="aspect-square w-full rounded-3xl bg-gray-200" />
-                <div className="mt-2 h-4 w-2/3 rounded bg-gray-200" />
-                <div className="mt-1 h-3 w-1/3 rounded bg-gray-200" />
-            </div>
+            <Card
+                hoverable
+                className={`overflow-hidden ${className}`}
+                cover={
+                    <div className="aspect-[4/3] w-full animate-pulse bg-gray-200" />
+                }
+            >
+                <div className="space-y-3">
+                    <div className="h-6 w-3/4 animate-pulse rounded bg-gray-200" />
+                    <div className="h-4 w-1/2 animate-pulse rounded bg-gray-200" />
+                    <div className="h-4 w-2/3 animate-pulse rounded bg-gray-200" />
+                </div>
+            </Card>
         );
     }
 
     return (
-        <div
-            className={`h-[400px] cursor-pointer overflow-hidden rounded-md bg-white shadow-md ${className} `}
-            onClick={() => navigate(`/posts/${data?.id}`)}
-        >
-            <PostImageCarousel
-                images={data?.medias || []}
-                height="h-48"
-                className="overflow-hidden rounded-t-md"
-            />
-
-            <div className="flex h-1/2 flex-col justify-between px-4 pt-2">
-                <div>
-                    <h1 className="py-2 font-bold">{data?.title}</h1>
-                    <div className="flex items-center gap-4">
-                        <p className="flex items-center gap-1 text-[0.9rem]">
-                            <IoIosPricetags />
-                            {data?.price
-                                ? `${data?.price.toLocaleString("vn-VN")} VNG`
-                                : `${new Number(2400000).toLocaleString("vn-VN")} VNG`}
-                        </p>
-
-                        <div className="flex items-center gap-1 text-[0.9rem]">
-                            <FaHome />
+        <Card
+            hoverable
+            className={`group overflow-hidden transition-all duration-300 hover:shadow-2xl ${className}`}
+            cover={
+                <div className="relative overflow-hidden">
+                    <PostImageCarousel
+                        images={data?.medias || []}
+                        height="h-56"
+                        className="transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute right-3 top-3">
+                        <Tag
+                            color="blue"
+                            className="rounded-full px-3 py-1 text-sm font-semibold shadow-lg"
+                        >
+                            <HomeOutlined className="mr-1" />
                             {data?.square}m²
-                        </div>
+                        </Tag>
                     </div>
-                    <p className="flex items-center gap-1 text-[0.9rem]">
-                        <FaMapMarkerAlt />
+                </div>
+            }
+            onClick={() => navigate(`/posts/${data?.id}`)}
+            bodyStyle={{ padding: "16px" }}
+        >
+            <div className="space-y-3">
+                {/* Title */}
+                <h3 className="line-clamp-2 text-lg font-bold text-gray-800 transition-colors group-hover:text-blue-500">
+                    {data?.title}
+                </h3>
+
+                {/* Price */}
+                <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-50">
+                        <DollarOutlined className="text-blue-500" />
+                    </div>
+                    <span className="text-xl font-bold text-blue-500">
+                        {data?.price
+                            ? `${data.price.toLocaleString("vi-VN")} VNĐ`
+                            : "Liên hệ"}
+                    </span>
+                </div>
+
+                {/* Location */}
+                <div className="flex items-start gap-2 text-gray-600">
+                    <EnvironmentOutlined className="mt-1 text-base" />
+                    <span className="line-clamp-2 text-sm">
                         {resolveAddress(
                             data?.city ?? "",
                             data?.district ?? "",
-                            "",
+                            data?.ward ?? "",
                             ""
                         )}
-                    </p>
+                    </span>
                 </div>
-                <div className="flex w-full items-center justify-between pb-2">
-                    <div className="flex items-center gap-1 text-[0.9rem]">
-                        <div className="h-8 w-8 overflow-hidden rounded-full">
-                            <img
-                                src={data?.owner?.medias?.[0]?.url ?? ""}
-                                alt=""
-                                className="h-full w-full object-cover"
-                            />
-                        </div>
-                        <p>{data?.owner?.name}</p>
-                    </div>
-                    <div className="flex items-center gap-1 text-[0.8rem]">
-                        <BsCalendarDateFill />
-                        <p>{formatPostDate(data?.createdAt ?? "")}</p>
-                    </div>
+
+                {/* Divider */}
+                <div className="border-t border-gray-100" />
+
+                {/* Footer */}
+                <div className="flex items-center justify-between">
+                    <Space size="small">
+                        <Avatar
+                            size="small"
+                            src={data?.owner?.medias?.[0]?.url}
+                            icon={<UserOutlined />}
+                            className="border-2 border-blue-100"
+                        />
+                        <span className="text-sm font-medium text-gray-700">
+                            {data?.owner?.name}
+                        </span>
+                    </Space>
+                    <Space size={4} className="text-xs text-gray-500">
+                        <CalendarOutlined />
+                        <span>{formatPostDate(data?.createdAt ?? "")}</span>
+                    </Space>
                 </div>
             </div>
-        </div>
+        </Card>
     );
 };
 

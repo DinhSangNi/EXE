@@ -64,7 +64,7 @@ const HeroCarousel = () => {
             <Carousel {...settings}>
                 {carouselItems.map((item) => (
                     <div key={item.id} className="relative">
-                        <div className="relative h-[500px] w-full overflow-hidden">
+                        <div className="relative h-[300px] w-full overflow-hidden md:h-[350px] lg:h-[550px]">
                             <img
                                 src={item.image}
                                 alt="Carousel banner"

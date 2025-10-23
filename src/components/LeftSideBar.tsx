@@ -31,8 +31,25 @@ const LeftSideBar = ({ className }: Props) => {
     const rolePrefix = `/${user.role}/`;
     // ví dụ: /user/appointment/83be39...  -> "appointment/83be39..."
     const currentPath = pathname.replace(rolePrefix, "");
-    // lấy phần đầu tiên để match key menu
-    const selectedKey = currentPath.split("/")[0]; // appointment
+
+    // Xác định selectedKey: ưu tiên match đầy đủ trước (vd: "posts/create-accomodation")
+    // Nếu không match được thì lấy phần đầu tiên
+    const getSelectedKey = () => {
+        // Kiểm tra các key đặc biệt cần match đầy đủ
+        if (currentPath.startsWith("posts/create-accomodation")) {
+            return "posts/create-accomodation";
+        }
+        if (currentPath.startsWith("posts/edit-accomodation")) {
+            return "posts"; // Edit vẫn thuộc quản lý bài đăng
+        }
+        if (currentPath.startsWith("account/")) {
+            return currentPath; // Giữ nguyên cho submenu account
+        }
+        // Mặc định lấy phần đầu tiên
+        return currentPath.split("/")[0];
+    };
+
+    const selectedKey = getSelectedKey();
 
     // Lấy openKey từ path để mở SubMenu (nếu có)
     const getOpenKey = (key: string) => {

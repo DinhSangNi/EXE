@@ -1,7 +1,6 @@
 import MagnifyinGlassIcon from "@/assets/icons/MagnifyinGlassIcon";
 import useDistrictsByProvince from "@/hooks/address/useDistrictsByProvince";
 import useProvinces from "@/hooks/address/useProvinces";
-import { useAnimation, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -44,9 +43,6 @@ const Searchbar = ({ isTop }: Props) => {
     // hooks
     const { data: provinces } = useProvinces();
     const { data: districts } = useDistrictsByProvince(address.province.code);
-
-    // animations
-    const controls = useAnimation();
 
     // event handlers
     const handleClick = () => {
@@ -98,22 +94,6 @@ const Searchbar = ({ isTop }: Props) => {
     }, [searchParams]);
 
     useEffect(() => {
-        if (!isTop) {
-            controls.start({
-                width: "40%",
-                y: -64,
-                transition: { duration: 0.3 },
-            });
-        } else {
-            controls.start({
-                width: "60%",
-                y: 0,
-                transition: { duration: 0.3 },
-            });
-        }
-    }, [controls, isTop]);
-
-    useEffect(() => {
         if (!open) return;
         const handleClickOutside = (e: MouseEvent) => {
             if (!containerRef.current?.contains(e.target as Node)) {
@@ -127,12 +107,7 @@ const Searchbar = ({ isTop }: Props) => {
 
     return (
         <>
-            <motion.div
-                ref={containerRef}
-                initial={{ opacity: 1 }}
-                animate={controls}
-                className="relative mx-auto w-[90%] xl:w-[60%]"
-            >
+            <div ref={containerRef} className="relative w-full">
                 <div className="flex rounded-full border border-gray-200 bg-white px-2 py-2 shadow-lg">
                     <div
                         className="ml-2 flex flex-1 items-center gap-1"
@@ -215,7 +190,7 @@ const Searchbar = ({ isTop }: Props) => {
                         )}
                     </div>
                 )}
-            </motion.div>
+            </div>
         </>
     );
 };
