@@ -3,9 +3,18 @@ import { useSelector } from "react-redux";
 
 import type { MenuProps } from "antd";
 import { Menu } from "antd";
-import { FaHome, FaUser, FaCalendarAlt, FaBell } from "react-icons/fa";
-import { BsHouseAddFill } from "react-icons/bs";
-import { AiFillDashboard } from "react-icons/ai";
+import {
+    HomeOutlined,
+    UserOutlined,
+    CalendarOutlined,
+    BellOutlined,
+    DashboardOutlined,
+    TeamOutlined,
+    FileTextOutlined,
+    PlusCircleOutlined,
+    LockOutlined,
+    ProfileOutlined,
+} from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 
 type Props = {
@@ -41,38 +50,40 @@ const LeftSideBar = ({ className }: Props) => {
             menuItems = [
                 {
                     key: "account",
-                    label: <p>Tài khoản của tôi</p>,
-                    icon: <FaUser />,
+                    label: "Tài khoản của tôi",
+                    icon: <UserOutlined />,
                     children: [
                         {
                             key: "account/profile",
-                            label: <p>Hồ sơ</p>,
+                            label: "Hồ sơ",
+                            icon: <ProfileOutlined />,
                         },
                         {
                             key: "account/change-password",
-                            label: <p>Đổi mật khẩu</p>,
+                            label: "Đổi mật khẩu",
+                            icon: <LockOutlined />,
                         },
                     ],
                 },
                 {
                     key: "posts",
-                    label: "Quản lí bài đăng",
-                    icon: <FaHome />,
+                    label: "Quản lý bài đăng",
+                    icon: <FileTextOutlined />,
                 },
                 {
                     key: "posts/create-accomodation",
                     label: "Tạo chỗ ở mới",
-                    icon: <BsHouseAddFill />,
+                    icon: <PlusCircleOutlined />,
                 },
                 {
                     key: "appointment",
-                    label: <p>Lịch hẹn</p>,
-                    icon: <FaCalendarAlt />,
+                    label: "Lịch hẹn",
+                    icon: <CalendarOutlined />,
                 },
                 {
                     key: "notification",
-                    label: <p>Thông báo</p>,
-                    icon: <FaBell />,
+                    label: "Thông báo",
+                    icon: <BellOutlined />,
                 },
             ];
             break;
@@ -81,42 +92,27 @@ const LeftSideBar = ({ className }: Props) => {
                 {
                     key: "overview",
                     label: "Tổng quan",
-                    icon: <AiFillDashboard />,
+                    icon: <DashboardOutlined />,
                 },
-                // {
-                //     key: "account",
-                //     label: <p>Tài khoản của tôi</p>,
-                //     icon: <FaUser />,
-                //     children: [
-                //         {
-                //             key: "account/profile",
-                //             label: <p>Hồ sơ</p>,
-                //         },
-                //         {
-                //             key: "account/change-password",
-                //             label: <p>Đổi mật khẩu</p>,
-                //         },
-                //     ],
-                // },
                 {
                     key: "users",
-                    label: "Quản lí người dùng",
-                    icon: <FaHome />,
+                    label: "Quản lý người dùng",
+                    icon: <TeamOutlined />,
                 },
                 {
                     key: "posts",
-                    label: "Quản lí bài đăng",
-                    icon: <FaHome />,
+                    label: "Quản lý bài đăng",
+                    icon: <FileTextOutlined />,
                 },
                 {
                     key: "appointment",
-                    label: <p>Lịch hẹn</p>,
-                    icon: <FaCalendarAlt />,
+                    label: "Lịch hẹn",
+                    icon: <CalendarOutlined />,
                 },
                 {
                     key: "notification",
-                    label: <p>Thông báo</p>,
-                    icon: <FaBell />,
+                    label: "Thông báo",
+                    icon: <BellOutlined />,
                 },
             ];
             break;
@@ -129,15 +125,24 @@ const LeftSideBar = ({ className }: Props) => {
     };
 
     return (
-        <div className={className}>
+        <div className={`${className} bg-white shadow-lg`}>
+            <div className="border-b border-gray-200 px-6 py-6">
+                <h2 className="text-lg font-bold text-gray-800">
+                    {user.role === "admin" ? "Quản trị viên" : "Người dùng"}
+                </h2>
+                <p className="text-sm text-gray-500">Bảng điều khiển</p>
+            </div>
             <Menu
-                className="h-full w-full !border-none"
+                className="h-full w-full !border-none px-3 py-4"
                 mode="inline"
-                // highlight đúng item
                 selectedKeys={[selectedKey]}
                 defaultOpenKeys={getOpenKey(currentPath)}
                 onClick={onClick}
                 items={menuItems}
+                style={{
+                    fontSize: "15px",
+                    fontWeight: 500,
+                }}
             />
         </div>
     );

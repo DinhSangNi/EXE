@@ -3,12 +3,20 @@ import useAppointments from "@/hooks/appointment/useAppointments";
 import useUpdateAppointment from "@/hooks/appointment/useUpdateAppointment";
 import type { updateAppointmentDto } from "@/stores/type";
 import { formatToVietnamTime } from "@/utils/format";
-import { Divider, Table, Select, Input, ConfigProvider } from "antd";
+import { Table, Select, Input, Card, Tag, Space, Typography } from "antd";
 import type { TableProps } from "antd/lib";
-import { FaSearch } from "react-icons/fa";
+import {
+    SearchOutlined,
+    CalendarOutlined,
+    CheckCircleOutlined,
+    ClockCircleOutlined,
+    CloseCircleOutlined,
+    StopOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
+const { Text } = Typography;
 
 interface DataType {
     id: string;
@@ -82,49 +90,109 @@ const AppointmentManagement = () => {
                 title: "ID",
                 dataIndex: "id",
                 key: "id",
+                width: 120,
+                render: (id: string) => (
+                    <Text copyable={{ text: id }} className="text-xs">
+                        {id.slice(0, 8)}...
+                    </Text>
+                ),
             },
-            { title: "Người đặt lịch", dataIndex: "user", key: "user" },
-            { title: "Người được đặt lịch", dataIndex: "host", key: "host" },
+            {
+                title: "Người đặt lịch",
+                dataIndex: "user",
+                key: "user",
+                render: (name: string) => (
+                    <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                            {name.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="font-medium">{name}</span>
+                    </div>
+                ),
+            },
+            {
+                title: "Người được đặt lịch",
+                dataIndex: "host",
+                key: "host",
+                render: (name: string) => (
+                    <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-sm font-semibold text-green-600">
+                            {name.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="font-medium">{name}</span>
+                    </div>
+                ),
+            },
             {
                 title: "Ngày đặt lịch hẹn",
                 dataIndex: "appointmentDateTime",
                 key: "appointmentDateTime",
-                render: (text) => formatToVietnamTime(text),
+                render: (text: string) => (
+                    <Space>
+                        <CalendarOutlined className="text-gray-400" />
+                        <span>{formatToVietnamTime(text)}</span>
+                    </Space>
+                ),
             },
             {
                 title: "Tiêu đề bài đăng",
                 dataIndex: "postTitle",
                 key: "postTitle",
-                render: (text) => <p>{text}</p>,
+                ellipsis: true,
+                render: (text: string) => (
+                    <span className="text-gray-700">{text}</span>
+                ),
             },
             {
                 title: "Trạng thái",
                 dataIndex: "status",
                 key: "status",
-                render: (text) => {
-                    const statusMap: Record<
+                width: 150,
+                align: "center",
+                render: (text: string) => {
+                    const statusConfig: Record<
                         string,
-                        { label: string; color: string }
+                        {
+                            label: string;
+                            color: string;
+                            icon: React.ReactNode;
+                        }
                     > = {
-                        pending: { label: "Đang chờ", color: "text-red-500" },
+                        pending: {
+                            label: "Đang chờ",
+                            color: "warning",
+                            icon: <ClockCircleOutlined />,
+                        },
                         confirmed: {
                             label: "Đã xác nhận",
-                            color: "text-green-500",
+                            color: "success",
+                            icon: <CheckCircleOutlined />,
                         },
                         rejected: {
                             label: "Đã từ chối",
-                            color: "text-gray-500",
+                            color: "error",
+                            icon: <CloseCircleOutlined />,
                         },
                         cancelled: {
                             label: "Đã hủy",
-                            color: "text-yellow-500",
+                            color: "default",
+                            icon: <StopOutlined />,
                         },
                     };
-                    const status = statusMap[text] || {
+                    const config = statusConfig[text] || {
                         label: text,
-                        color: "text-black",
+                        color: "default",
+                        icon: null,
                     };
-                    return <p className={status.color}>{status.label}</p>;
+                    return (
+                        <Tag
+                            icon={config.icon}
+                            color={config.color}
+                            className="m-0"
+                        >
+                            {config.label}
+                        </Tag>
+                    );
                 },
             },
         ],
@@ -132,69 +200,100 @@ const AppointmentManagement = () => {
     );
 
     return (
-        <div className="w-full bg-white">
-            <div className="mx-auto min-h-screen w-4/5 pt-4">
-                <h1 className="text-[1.4rem] font-bold">Lịch hẹn</h1>
-                <Divider />
-                {/* Filter + Sort + Search */}
-                <div className="mb-4 flex items-center gap-4">
-                    <Input
-                        placeholder="Tìm kiếm theo tiêu đề bài đăng..."
-                        value={keyword}
-                        onChange={(e) => setKeyword(e.target.value)}
-                        prefix={<FaSearch className="text-gray-400" />}
-                        allowClear
-                        style={{ width: 300 }}
-                    />
-                    <span>Trạng thái:</span>
-                    <Select
-                        style={{ width: 200 }}
-                        placeholder="Chọn trạng thái"
-                        allowClear
-                        value={statusFilter}
-                        onChange={setStatusFilter}
-                    >
-                        <Option value="pending">Đang chờ duyệt</Option>
-                        <Option value="confirmed">Đã xác nhận</Option>
-                        <Option value="rejected">Đã từ chối</Option>
-                        <Option value="cancelled">Đã hủy</Option>
-                    </Select>
-                    <span>Sắp xếp:</span>
-                    <Select
-                        style={{ width: 250 }}
-                        value={`${sortBy}_${sortOrder}`}
-                        onChange={(value) => {
-                            const [field, order] = (value as string).split("_");
-                            setSortBy(
-                                field as "createdAt" | "appointmentDateTime"
-                            );
-                            setSortOrder(order as "asc" | "desc");
-                        }}
-                    >
-                        <Option value="createdAt_desc">
-                            Mới nhất → Cũ nhất
-                        </Option>
-                        <Option value="createdAt_asc">
-                            Cũ nhất → Mới nhất
-                        </Option>
-                        <Option value="appointmentDateTime_desc">
-                            Ngày hẹn mới → cũ
-                        </Option>
-                        <Option value="appointmentDateTime_asc">
-                            Ngày hẹn cũ → mới
-                        </Option>
-                    </Select>
+        <div className="w-full bg-gray-50 pb-10">
+            <div className="mx-auto min-h-screen w-full px-10 pt-6">
+                {/* Header */}
+                <div className="mb-6">
+                    <h1 className="text-[1.8rem] font-bold text-gray-800">
+                        Quản lý lịch hẹn
+                    </h1>
+                    <p className="text-gray-500">
+                        Quản lý và theo dõi các lịch hẹn trong hệ thống
+                    </p>
                 </div>
 
-                <ConfigProvider
-                    theme={{
-                        components: {
-                            Table: {
-                                rowHoverBg: "hover:bg-primary",
-                            },
-                        },
-                    }}
-                >
+                {/* Filters Card */}
+                <Card className="mb-6 shadow-md">
+                    <Space size="middle" wrap className="w-full">
+                        <Input
+                            placeholder="Tìm kiếm theo tiêu đề bài đăng..."
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                            prefix={
+                                <SearchOutlined className="text-gray-400" />
+                            }
+                            style={{ width: 300 }}
+                            size="large"
+                            allowClear
+                        />
+
+                        <Select
+                            placeholder="Trạng thái"
+                            value={statusFilter}
+                            onChange={setStatusFilter}
+                            allowClear
+                            style={{ width: 200 }}
+                            size="large"
+                        >
+                            <Option value="pending">
+                                <Space>
+                                    <ClockCircleOutlined />
+                                    Đang chờ
+                                </Space>
+                            </Option>
+                            <Option value="confirmed">
+                                <Space>
+                                    <CheckCircleOutlined />
+                                    Đã xác nhận
+                                </Space>
+                            </Option>
+                            <Option value="rejected">
+                                <Space>
+                                    <CloseCircleOutlined />
+                                    Đã từ chối
+                                </Space>
+                            </Option>
+                            <Option value="cancelled">
+                                <Space>
+                                    <StopOutlined />
+                                    Đã hủy
+                                </Space>
+                            </Option>
+                        </Select>
+
+                        <Select
+                            placeholder="Sắp xếp"
+                            value={`${sortBy}_${sortOrder}`}
+                            onChange={(value) => {
+                                const [field, order] = (value as string).split(
+                                    "_"
+                                );
+                                setSortBy(
+                                    field as "createdAt" | "appointmentDateTime"
+                                );
+                                setSortOrder(order as "asc" | "desc");
+                            }}
+                            style={{ width: 250 }}
+                            size="large"
+                        >
+                            <Option value="createdAt_desc">
+                                Mới nhất → Cũ nhất
+                            </Option>
+                            <Option value="createdAt_asc">
+                                Cũ nhất → Mới nhất
+                            </Option>
+                            <Option value="appointmentDateTime_desc">
+                                Ngày hẹn mới → cũ
+                            </Option>
+                            <Option value="appointmentDateTime_asc">
+                                Ngày hẹn cũ → mới
+                            </Option>
+                        </Select>
+                    </Space>
+                </Card>
+
+                {/* Table Card */}
+                <Card className="shadow-md">
                     <Table
                         className="w-full"
                         columns={columns}
@@ -205,12 +304,16 @@ const AppointmentManagement = () => {
                             onClick: () =>
                                 navigate(`/user/appointment/${record.id}`),
                             className:
-                                "cursor-pointer transition-colors duration-200 hover:bg-primary/20",
+                                "cursor-pointer transition-colors duration-200 hover:bg-blue-50",
                         })}
                         pagination={{
                             current: pagination.current,
                             pageSize: pagination.pageSize,
                             total: data?.totalItems || 0,
+                            showSizeChanger: true,
+                            showTotal: (total, range) =>
+                                `${range[0]}-${range[1]} của ${total} lịch hẹn`,
+                            pageSizeOptions: ["5", "10", "20", "50"],
                             onChange: (page, pageSize) =>
                                 setPagination((prev) => ({
                                     ...prev,
@@ -219,7 +322,7 @@ const AppointmentManagement = () => {
                                 })),
                         }}
                     />
-                </ConfigProvider>
+                </Card>
             </div>
         </div>
     );

@@ -186,58 +186,72 @@ const PostManagementCard = ({ className, data }: Props) => {
                             </div>
                         </div>
                         {/* Amenity */}
-                        <div className="mb-2 flex w-full gap-4 overflow-x-auto">
+                        <div className="mb-2 flex w-full gap-2 overflow-x-auto">
                             {data &&
                                 data.postAmenities &&
                                 data.postAmenities
                                     .slice(0, 2)
                                     .map((item, index) => (
-                                        <div
+                                        <span
                                             key={index}
-                                            className="rounded-3xl bg-gray-300 p-1 text-center text-[0.7rem]"
+                                            className="inline-flex items-center whitespace-nowrap rounded-full bg-gray-200 px-3 py-1 text-xs text-gray-700"
                                         >
                                             {item.amenity.name}
-                                        </div>
+                                        </span>
                                     ))}
 
                             {data?.postAmenities &&
                                 data?.postAmenities.length > 3 && (
-                                    <div className="rounded-3xl bg-gray-300 p-1 text-center text-[0.7rem]">
+                                    <span className="inline-flex items-center whitespace-nowrap rounded-full bg-gray-200 px-3 py-1 text-xs text-gray-700">
                                         +{data.postAmenities.length - 2} tiện
                                         ích
-                                    </div>
+                                    </span>
                                 )}
 
                             {data &&
                                 data.postAmenities &&
                                 data?.postAmenities.length === 3 && (
-                                    <div className="rounded-3xl bg-gray-300 p-1 text-center text-[0.7rem]">
+                                    <span className="inline-flex items-center whitespace-nowrap rounded-full bg-gray-200 px-3 py-1 text-xs text-gray-700">
                                         {data.postAmenities[2].amenity.name}
-                                    </div>
+                                    </span>
                                 )}
                         </div>
 
                         {/* Status */}
                         <div className="w-full">
-                            <p
-                                className={`text-sm font-bold ${
-                                    data?.status === "approved"
-                                        ? "text-green-500"
-                                        : data?.status === "pending"
-                                          ? "text-yellow-500"
-                                          : data?.status === "rejected"
-                                            ? "text-red-500"
-                                            : "text-gray-500"
-                                }`}
-                            >
-                                {data?.status === "approved"
-                                    ? "Đã duyệt"
-                                    : data?.status === "pending"
-                                      ? "Đang chờ duyệt"
-                                      : data?.status === "rejected"
-                                        ? "Bị từ chối"
-                                        : "Chưa rõ"}
-                            </p>
+                            {data?.status === "approved" ? (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-green-500 px-3 py-1 text-sm font-bold text-white shadow-md">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        className="h-4 w-4"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                    Đã duyệt
+                                </span>
+                            ) : (
+                                <p
+                                    className={`text-sm font-bold ${
+                                        data?.status === "pending"
+                                            ? "text-yellow-500"
+                                            : data?.status === "rejected"
+                                              ? "text-red-500"
+                                              : "text-gray-500"
+                                    }`}
+                                >
+                                    {data?.status === "pending"
+                                        ? "Đang chờ duyệt"
+                                        : data?.status === "rejected"
+                                          ? "Bị từ chối"
+                                          : "Chưa rõ"}
+                                </p>
+                            )}
                         </div>
                     </div>
                 </div>
