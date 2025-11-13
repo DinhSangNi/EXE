@@ -85,7 +85,7 @@ const PostsAndAppointmentsChart = ({ className }: Props) => {
                                 dataKey="period"
                                 tickFormatter={(value) => {
                                     return data?.granularity === "month"
-                                        ? `${dayjs(value).month()}`
+                                        ? `${dayjs(value).month() + 1}`
                                         : `${dayjs(value).date()}`;
                                 }}
                             />
@@ -121,7 +121,7 @@ const PostsAndAppointmentsChart = ({ className }: Props) => {
                                 dataKey="period"
                                 tickFormatter={(value) => {
                                     return data?.granularity === "month"
-                                        ? `${dayjs(value).month()}`
+                                        ? `${dayjs(value).month() + 1}`
                                         : `${dayjs(value).date()}`;
                                 }}
                             />
