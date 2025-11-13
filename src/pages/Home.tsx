@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import HeroCarousel from "@/components/HeroCarousel";
 import PostCarousel from "@/components/PostCarousel";
 import {

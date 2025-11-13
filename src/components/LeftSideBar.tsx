@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import type { MenuProps } from "antd";
 import { Menu } from "antd";
 import {
-    HomeOutlined,
     UserOutlined,
     CalendarOutlined,
     BellOutlined,

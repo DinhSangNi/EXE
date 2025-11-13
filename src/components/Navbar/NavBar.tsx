@@ -21,7 +21,7 @@ const POST_TYPES = [
 
 type Props = { isTop: boolean };
 
-const NavBar = ({ isTop }: Props) => {
+const NavBar = ({}: Props) => {
     const user = useSelector((state: RootState) => state.user);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();

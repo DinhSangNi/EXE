@@ -10,7 +10,7 @@ type Props = {
     isTop: boolean;
 };
 
-const Searchbar = ({ isTop }: Props) => {
+const Searchbar = ({}: Props) => {
     //states
     const [searchParams] = useSearchParams();
     const [open, setOpen] = useState<boolean>(false);

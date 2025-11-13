@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import { useParams, useNavigate } from "react-router-dom";
 import { Divider, Spin, Card, Button, Tag, Modal } from "antd";
 import useAppointmentById from "@/hooks/appointment/useAppointmentById";
