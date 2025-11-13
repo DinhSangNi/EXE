@@ -2,17 +2,7 @@
 import PostManagementCard from "@/components/PostManagementCard";
 import Spinner from "@/components/Spinner";
 import type { Post, PostFilter } from "@/stores/type";
-import {
-    Pagination,
-    Input,
-    Select,
-    Card,
-    Row,
-    Col,
-    Statistic,
-    Space,
-    Empty,
-} from "antd";
+import { Pagination, Input, Select, Card, Row, Col, Space, Empty } from "antd";
 import { FaFilter } from "react-icons/fa";
 import {
     SearchOutlined,
